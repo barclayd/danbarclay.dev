@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --color-gray-100: #D1D1D1;
+        --color-gray-200: #BFBFBF;
+        --color-black: #000000;
+        --color-white: #ffffff;
+        font-family: "Neutraliser Sans", system-ui, sans-serif;
+    }
+
+    @font-face {
+        font-family: 'Neutraliser Sans';
+        src: url('/fonts/NeutraliserSansBold.ttf') format('ttf');
+        font-weight: bold;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: 'Neutraliser Sans';
+        src: url('/fonts/NeutraliserSansRegular.ttf') format('ttf');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+}

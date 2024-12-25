@@ -1,0 +1,27 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import danImage from '../assets/dan.jpeg';
+---
+
+<Layout>
+	<div class="h-[80vh] w-[80vw] mx-auto border-2 rounded-lg border-gray-200 my-8 p-8 space-y-4">
+		<div class="flex flex-row justify-start items-center">
+			<div class="w-32 h-32 border-gray-200 border-4 rounded-full flex items-center justify-center overflow-hidden">
+				<Image class="w-full h-full object-cover" src={danImage} alt="Profile picture of Dan" />
+			</div>
+			<div class="flex-col">
+				<h1 class="text-xl uppercase text-white">Dan Barclay</h1>
+				<h4 class="text-xl uppercase text-gray-200">Technical Lead</h4>
+			</div>
+			</div>
+
+		<p class="text-gray-200 ">
+			A highly experienced software engineer, empowered by delivering experiences to users  through software that feel like magic.
+		</p>
+
+		<p class="text-gray-200">
+			Having worked for some of the biggest companies and household names in the UK, Dan has a true understanding and track record of how to architect, design, develop and deploy highly maintainable and scalable software that lasts the test of time.
+		</p>
+	</div>
+</Layout>
