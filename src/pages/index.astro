@@ -1,17 +1,37 @@
 ---
-
+import Base from "../layouts/Base.astro";
+import IdentityPanel from "../components/IdentityPanel.astro";
+import HeatmapPanel from "../components/HeatmapPanel.astro";
+import ProjectsPanel from "../components/ProjectsPanel.astro";
+import CommsPanel from "../components/CommsPanel.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base>
+  <main
+    class="mx-auto flex w-full max-w-[1400px] flex-col gap-12 px-4 py-10 sm:gap-16 sm:px-8 sm:py-14 lg:gap-20 lg:px-12"
+  >
+    <!-- Top system rail -->
+    <header
+      class="flex flex-wrap items-center justify-between gap-y-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]"
+    >
+      <div class="flex items-center gap-2">
+        <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)]"></span>
+        <span>DANBARCLAY.DEV · TERMINAL/00</span>
+      </div>
+      <div class="hidden gap-4 md:flex">
+        <a href="#identity" class="hover:text-[var(--color-amber-glow)]">CH/00 IDENTITY</a>
+        <a href="#signal" class="hover:text-[var(--color-amber-glow)]">CH/01 SIGNAL</a>
+        <a href="#trans" class="hover:text-[var(--color-amber-glow)]">CH/02 TRANSMISSIONS</a>
+        <a href="#comms" class="hover:text-[var(--color-amber-glow)]">CH/03 COMMS</a>
+      </div>
+      <div>
+        <span>STATUS · NOMINAL</span>
+      </div>
+    </header>
+
+    <section id="identity"><IdentityPanel /></section>
+    <section id="signal"><HeatmapPanel /></section>
+    <section id="trans"><ProjectsPanel /></section>
+    <section id="comms"><CommsPanel /></section>
+  </main>
+</Base>

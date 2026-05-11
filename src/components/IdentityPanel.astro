@@ -1,0 +1,124 @@
+---
+import HudFrame from "./HudFrame.astro";
+import DuotoneAvatar from "./DuotoneAvatar.astro";
+import TelemetryClock from "./TelemetryClock.tsx";
+import contributions from "../data/contributions.json";
+
+const AVATAR_URL = "https://avatars.githubusercontent.com/u/39765499?v=4";
+
+const fmtNumber = (n: number) =>
+  n.toLocaleString("en-GB").replace(/,/g, ",");
+
+const totalContributions = contributions.total;
+const fetchedAt = new Date(contributions.fetchedAt);
+const fetchedAtLabel =
+  fetchedAt.toISOString().slice(0, 10).replace(/-/g, ".") +
+  " " +
+  fetchedAt.toISOString().slice(11, 16) +
+  " UTC";
+---
+
+<HudFrame
+  label="C/00 // SUBJECT"
+  index="REC. 39765499"
+  className="px-6 py-8 sm:px-10 sm:py-12 md:px-14 md:py-16"
+>
+  <div class="grid gap-10 md:grid-cols-[260px_1fr] md:gap-16 boot-stagger">
+    <!-- Left column: avatar block -->
+    <div class="flex flex-col items-start gap-4">
+      <DuotoneAvatar
+        src={AVATAR_URL}
+        alt="Dan Barclay"
+        size={220}
+      />
+      <div class="flex w-[220px] flex-col gap-1">
+        <div class="flex items-center justify-between font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+          <span>GH/UID</span>
+          <span class="text-[var(--color-text)]">39765499</span>
+        </div>
+        <div class="flex items-center justify-between font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+          <span>STATUS</span>
+          <span class="flex items-center gap-1.5 text-[var(--color-amber)]">
+            <span class="inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-amber)] shadow-[0_0_6px_var(--color-amber)] animate-pulse"></span>
+            ACTIVE
+          </span>
+        </div>
+        <div class="flex items-center justify-between font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+          <span>NODE</span>
+          <span class="text-[var(--color-text)]">LON · 51.5N</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column: name + tagline + mission -->
+    <div class="flex flex-col justify-center gap-6 md:gap-8">
+      <div>
+        <div class="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+          <span class="h-px w-6 bg-[var(--color-amber)]"></span>
+          <span>IDENTIFIED · CLEARED</span>
+        </div>
+        <h1
+          class="font-display text-5xl font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)] sm:text-6xl md:text-7xl lg:text-[5.5rem]"
+        >
+          Dan
+          <br />
+          Barclay
+        </h1>
+        <div class="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs uppercase tracking-hud text-[var(--color-text)]">
+          <span>ENGINEERING LEAD</span>
+          <span class="text-[var(--color-rule-strong)]">/</span>
+          <span>LONDON</span>
+          <span class="text-[var(--color-rule-strong)]">/</span>
+          <span class="text-[var(--color-amber)]">MMXXVI</span>
+        </div>
+      </div>
+
+      <p class="max-w-xl font-display text-base leading-relaxed text-[var(--color-mute)] sm:text-lg">
+        Building software systems &amp; teams that ship. Currently leading engineering
+        on growth and customer products. Below is a year of signal — every push, every
+        repo, every commit.
+      </p>
+
+      <!-- Stat ribbon -->
+      <div class="grid grid-cols-3 gap-px bg-[var(--color-rule)] sm:max-w-md">
+        <div class="bg-[var(--color-void)] px-3 py-3">
+          <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
+            Y/CONTRIB
+          </div>
+          <div class="font-mono text-2xl font-medium tabular-nums text-[var(--color-amber)]">
+            {fmtNumber(totalContributions)}
+          </div>
+        </div>
+        <div class="bg-[var(--color-void)] px-3 py-3">
+          <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
+            REPOS/SHOWN
+          </div>
+          <div class="font-mono text-2xl font-medium tabular-nums text-[var(--color-text)]">
+            05
+          </div>
+        </div>
+        <div class="bg-[var(--color-void)] px-3 py-3">
+          <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
+            SIG/LAST
+          </div>
+          <div class="font-mono text-2xl font-medium tabular-nums text-[var(--color-text)]">
+            {fetchedAt.toISOString().slice(5, 10).replace("-", ".")}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom telemetry rail -->
+  <div
+    class="mt-12 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-[var(--color-rule)] pt-4 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)] sm:mt-16"
+  >
+    <span class="flex items-center gap-1.5">
+      <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)]"></span>
+      LIVE
+    </span>
+    <TelemetryClock client:idle />
+    <span>LAT 51.5074°N · LON 0.1278°W</span>
+    <span class="ml-auto">PULL {fetchedAtLabel}</span>
+  </div>
+</HudFrame>

@@ -1,0 +1,53 @@
+---
+interface Props {
+  size?: number;
+  thickness?: number;
+  color?: string;
+  inset?: number;
+}
+
+const {
+  size = 14,
+  thickness = 1,
+  color = "var(--color-amber)",
+  inset = 0,
+} = Astro.props;
+---
+
+<span class="bracket bracket-tl" aria-hidden="true"></span>
+<span class="bracket bracket-tr" aria-hidden="true"></span>
+<span class="bracket bracket-bl" aria-hidden="true"></span>
+<span class="bracket bracket-br" aria-hidden="true"></span>
+
+<style define:vars={{ size: `${size}px`, thickness: `${thickness}px`, color, inset: `${inset}px` }}>
+  .bracket {
+    position: absolute;
+    width: var(--size);
+    height: var(--size);
+    pointer-events: none;
+  }
+  .bracket-tl {
+    top: var(--inset);
+    left: var(--inset);
+    border-top: var(--thickness) solid var(--color);
+    border-left: var(--thickness) solid var(--color);
+  }
+  .bracket-tr {
+    top: var(--inset);
+    right: var(--inset);
+    border-top: var(--thickness) solid var(--color);
+    border-right: var(--thickness) solid var(--color);
+  }
+  .bracket-bl {
+    bottom: var(--inset);
+    left: var(--inset);
+    border-bottom: var(--thickness) solid var(--color);
+    border-left: var(--thickness) solid var(--color);
+  }
+  .bracket-br {
+    bottom: var(--inset);
+    right: var(--inset);
+    border-bottom: var(--thickness) solid var(--color);
+    border-right: var(--thickness) solid var(--color);
+  }
+</style>

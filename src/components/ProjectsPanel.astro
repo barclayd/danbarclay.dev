@@ -1,0 +1,118 @@
+---
+import HudFrame from "./HudFrame.astro";
+import CommitChart from "./CommitChart.tsx";
+import projectsRaw from "../data/projects.json";
+import type { Project } from "../lib/types";
+
+const projects = projectsRaw as Project[];
+
+const fmtYearWindow = (created: string, pushed: string) => {
+  const a = created ? new Date(created).getUTCFullYear().toString() : "—";
+  const b = pushed ? new Date(pushed).getUTCFullYear().toString() : "—";
+  return a === b ? a : `${a}–${b.slice(2)}`;
+};
+
+const fmtRecency = (iso: string) => {
+  if (!iso) return "—";
+  const now = Date.now();
+  const then = new Date(iso).getTime();
+  const days = Math.max(0, Math.floor((now - then) / 86_400_000));
+  if (days === 0) return "TODAY";
+  if (days === 1) return "1 DAY AGO";
+  if (days < 30) return `${days} DAYS AGO`;
+  if (days < 365) return `${Math.floor(days / 30)} MONTHS AGO`;
+  return `${Math.floor(days / 365)} YRS AGO`;
+};
+---
+
+<HudFrame
+  label="C/02 // TRANSMISSIONS · 5 SIGNALS"
+  index="OUTBOUND"
+  className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
+>
+  <div class="flex flex-wrap items-baseline justify-between gap-4">
+    <h2 class="font-display text-2xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-3xl">
+      Selected / Work
+    </h2>
+    <div class="font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+      EACH = WEEKLY COMMITS · REPO LIFETIME
+    </div>
+  </div>
+
+  <div class="my-8 h-px w-full bg-[var(--color-rule)]"></div>
+
+  <div class="flex flex-col gap-px bg-[var(--color-rule)]">
+    {
+      projects.map((p, i) => (
+        <article class="bg-[var(--color-void)] px-4 py-6 sm:px-6 sm:py-8 group">
+          <div class="grid gap-6 md:grid-cols-[1fr_minmax(0,1.6fr)] md:items-start">
+            <!-- Left meta column -->
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-hud text-[var(--color-amber)]">
+                <span>C/{String(p.index).padStart(2, "0")}</span>
+                <span class="h-px flex-1 bg-[var(--color-rule)]" aria-hidden="true"></span>
+              </div>
+              <a
+                href={p.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-display text-xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)] sm:text-2xl"
+              >
+                {p.displayName}
+              </a>
+              <p class="max-w-md text-sm leading-relaxed text-[var(--color-mute)]">
+                {p.description}
+              </p>
+              <div class="mt-2 grid grid-cols-3 gap-px border border-[var(--color-rule)] bg-[var(--color-rule)] max-w-md">
+                <div class="bg-[var(--color-void)] px-3 py-2">
+                  <div class="font-mono text-[8px] uppercase tracking-hud text-[var(--color-mute)]">
+                    COMMITS
+                  </div>
+                  <div class="font-mono text-base tabular-nums text-[var(--color-text)]">
+                    {p.totalCommits.toLocaleString("en-GB")}
+                  </div>
+                </div>
+                <div class="bg-[var(--color-void)] px-3 py-2">
+                  <div class="font-mono text-[8px] uppercase tracking-hud text-[var(--color-mute)]">
+                    WINDOW
+                  </div>
+                  <div class="font-mono text-base tabular-nums text-[var(--color-text)]">
+                    {fmtYearWindow(p.createdAt, p.pushedAt)}
+                  </div>
+                </div>
+                <div class="bg-[var(--color-void)] px-3 py-2">
+                  <div class="font-mono text-[8px] uppercase tracking-hud text-[var(--color-mute)]">
+                    LAST
+                  </div>
+                  <div class="font-mono text-[11px] uppercase tabular-nums text-[var(--color-text)]">
+                    {fmtRecency(p.pushedAt)}
+                  </div>
+                </div>
+              </div>
+              <a
+                href={p.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mt-2 inline-flex w-fit items-center gap-2 font-mono text-[11px] uppercase tracking-hud text-[var(--color-mute)] hover:text-[var(--color-amber-glow)]"
+              >
+                <span>↗</span>
+                <span>github.com/barclayd/{p.slug}</span>
+              </a>
+            </div>
+
+            <!-- Right chart column -->
+            <div class="relative">
+              <div class="mb-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
+                <span>CMT/T·WEEKLY</span>
+                <span>{p.language ?? "—"}</span>
+              </div>
+              <div class="relative border border-[var(--color-rule)] bg-[rgba(20,24,28,0.4)] p-3">
+                <CommitChart client:visible weeks={p.weeks} height={170} />
+              </div>
+            </div>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</HudFrame>
