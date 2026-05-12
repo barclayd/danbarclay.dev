@@ -6,7 +6,7 @@ const socials = [
   { code: "GH/barclayd", label: "GITHUB", href: "https://github.com/barclayd" },
   { code: "X/danielbarclay", label: "TWITTER · X", href: "https://x.com/danielbarclay" },
   { code: "LI/barclayd", label: "LINKEDIN", href: "https://www.linkedin.com/in/barclayd/" },
-  { code: "MAIL/barclysd@me.com", label: "EMAIL", href: "mailto:barclysd@me.com" },
+  { code: "MAIL/barclaysd@me.com", label: "EMAIL", href: "mailto:barclaysd@me.com" },
 ];
 
 const buildDate = new Date().toISOString();
@@ -79,6 +79,8 @@ const gitSha = (import.meta as any).env?.GIT_SHA ?? sha;
   >
     <span>BUILD {gitSha}</span>
     <span>DEPLOYED {buildLabel}</span>
-    <span class="sm:ml-auto">DAN BARCLAY</span>
+    <a href="/about/" class="sm:ml-auto hover:text-[var(--color-amber-glow)]">
+      ABOUT DAN BARCLAY <span aria-hidden="true">↗</span>
+    </a>
   </div>
 </HudFrame>

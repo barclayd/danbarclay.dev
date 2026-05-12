@@ -1,0 +1,86 @@
+---
+import Base from "../layouts/Base.astro";
+import HudFrame from "../components/HudFrame.astro";
+
+const title = "404 — Signal lost · danbarclay.dev";
+const description =
+  "This page on Dan Barclay's site couldn't be found. Head back to the homepage or browse the about / work / projects sections.";
+---
+
+<Base title={title} description={description}>
+  <main
+    class="mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col justify-center gap-12 py-10 sm:gap-16 sm:py-14 lg:py-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
+  >
+    <!-- Top system rail -->
+    <header
+      class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]"
+    >
+      <div class="flex items-center gap-2">
+        <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)]"></span>
+        <span>DANBARCLAY.DEV · TERMINAL/404</span>
+      </div>
+      <nav aria-label="Site" class="flex gap-4">
+        <a href="/" class="hover:text-[var(--color-amber-glow)]">HOME</a>
+        <a href="/about/" class="hover:text-[var(--color-amber-glow)]">ABOUT</a>
+        <a href="/work/" class="hover:text-[var(--color-amber-glow)]">WORK</a>
+      </nav>
+      <div>
+        <span class="text-[var(--color-amber)]">STATUS · SIGNAL LOST</span>
+      </div>
+    </header>
+
+    <HudFrame
+      label="C/404 // NOT FOUND"
+      index="STRAY"
+      className="px-6 py-10 sm:px-10 sm:py-14"
+    >
+      <div class="flex flex-col gap-8">
+        <div>
+          <div class="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+            <span class="h-px w-6 bg-[var(--color-amber)]"></span>
+            <span>ERROR · 404</span>
+          </div>
+          <h1
+            class="font-display font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)]"
+            style="font-size: clamp(2.5rem, 11vw, 5.5rem);"
+          >
+            Signal
+            <br />
+            Lost
+          </h1>
+          <p class="mt-6 max-w-xl font-display text-base leading-relaxed text-[var(--color-mute)] sm:text-lg">
+            That page on Dan Barclay's site couldn't be found. The frequency may
+            have drifted, or the transmission was never recorded. The links below
+            will route you back to known coordinates.
+          </p>
+        </div>
+
+        <nav
+          aria-label="Site directory"
+          class="grid grid-cols-1 gap-px bg-[var(--color-rule)] sm:grid-cols-2"
+        >
+          {[
+            { label: "HOME", href: "/", desc: "Dan Barclay — engineering leader, London." },
+            { label: "ABOUT", href: "/about/", desc: "Background, bio, and FAQ." },
+            { label: "WORK", href: "/work/", desc: "Selected projects and shipped work." },
+            { label: "PROMPTLY", href: "/promptly/", desc: "LLM prompt CMS for product teams." },
+            { label: "KEEPFRESH", href: "/keepfresh/", desc: "iOS app — 77K+ downloads." },
+            { label: "GITHUB", href: "https://github.com/barclayd", desc: "Source code and side projects." },
+          ].map((l) => (
+            <a
+              href={l.href}
+              class="group flex flex-col gap-1 bg-[var(--color-void)] px-4 py-5 transition-colors hover:bg-[rgba(232,154,60,0.04)] sm:px-5 sm:py-6"
+            >
+              <span class="font-mono text-[10px] uppercase tracking-hud text-[var(--color-amber)]">
+                {l.label} <span aria-hidden="true">↗</span>
+              </span>
+              <span class="font-display text-sm text-[var(--color-text)] group-hover:text-[var(--color-amber-glow)]">
+                {l.desc}
+              </span>
+            </a>
+          ))}
+        </nav>
+      </div>
+    </HudFrame>
+  </main>
+</Base>

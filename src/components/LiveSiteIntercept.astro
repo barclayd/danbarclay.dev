@@ -1,0 +1,742 @@
+---
+/**
+ * LiveSiteIntercept — a projected HUD that mirrors a live external site.
+ *
+ * Visual reference: Black Mirror — The Entire History of You, taxi
+ * windscreen overlay. Cut-corner polygon frame, pixelated edge dither,
+ * top status chips, right-hand TARIFF column, bottom marquee strip, and
+ * a translucent amber wash + scanlines over the projected feed.
+ *
+ * Used on /promptly and /keepfresh as the "live evidence" hero piece.
+ */
+
+interface Props {
+  src: string;
+  host: string;          // e.g. "PROMPTLYCMS.COM"
+  signal: string;        // e.g. "PROMPTLY · LIVE FEED"
+  ctaLabel?: string;     // e.g. "ENTER LIVE INSTANCE"
+  /** A unique id used to scope SVG defs (must be unique per page). */
+  id: string;
+}
+
+const {
+  src,
+  host,
+  signal,
+  ctaLabel = "ENTER LIVE INSTANCE",
+  id,
+} = Astro.props;
+
+const ditherId = `dither-${id}`;
+const checkerId = `checker-${id}`;
+---
+
+<section
+  class="intercept"
+  aria-label={`Live mirrored feed of ${host}`}
+  data-id={id}
+>
+  {/* Inline SVG defs — pixel dither pattern used in masks below. */}
+  <svg
+    width="0"
+    height="0"
+    aria-hidden="true"
+    class="pointer-events-none absolute"
+    style="position:absolute; left:-9999px; top:-9999px;"
+  >
+    <defs>
+      {/* 4×4 checker tile of 2×2 amber pixels. */}
+      <pattern
+        id={checkerId}
+        x="0"
+        y="0"
+        width="4"
+        height="4"
+        patternUnits="userSpaceOnUse"
+      >
+        <rect x="0" y="0" width="2" height="2" fill="white" />
+        <rect x="2" y="2" width="2" height="2" fill="white" />
+      </pattern>
+      {/* Mask: solid left, fading through a checker gradient on the right. */}
+      <mask id={ditherId} maskUnits="userSpaceOnUse">
+        <rect x="0" y="0" width="100%" height="100%" fill="white" />
+        <rect
+          x="85%"
+          y="0"
+          width="15%"
+          height="100%"
+          fill={`url(#${checkerId})`}
+        />
+      </mask>
+    </defs>
+  </svg>
+
+  {/* Corner brackets — etched into the outer chrome, not the inner panel. */}
+  <span class="cnr cnr-tl" aria-hidden="true"></span>
+  <span class="cnr cnr-tr" aria-hidden="true"></span>
+  <span class="cnr cnr-bl" aria-hidden="true"></span>
+  <span class="cnr cnr-br" aria-hidden="true"></span>
+
+  {/* === TOP STATUS BAR ============================================== */}
+  <div class="status">
+    <div class="status-left">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span class="status-sig">{signal}</span>
+    </div>
+    <div class="status-chips" aria-hidden="true">
+      <span class="chip">
+        <span class="chip-k">HOST</span>
+        <span class="chip-v">{host}</span>
+      </span>
+      <span class="chip chip-sep"></span>
+      <span class="chip">
+        <span class="chip-k">PROTO</span>
+        <span class="chip-v">HTTPS</span>
+      </span>
+      <span class="chip chip-sep"></span>
+      <span class="chip">
+        <span class="chip-k">FRAME</span>
+        <span class="chip-v">02</span>
+      </span>
+      <span class="chip chip-sep"></span>
+      <span class="chip">
+        <span class="chip-k">TLS</span>
+        <span class="chip-v">OK</span>
+      </span>
+    </div>
+  </div>
+
+  {/* === MAIN BODY · viewport + tariff column ========================= */}
+  <div class="body">
+    <div class="viewport">
+      {/* The live iframe — rendered at 2× and scaled 0.5 so the site
+          renders at desktop breakpoint inside a compact preview frame. */}
+      <iframe
+        class="frame"
+        src={src}
+        title={`Live preview of ${host}`}
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+      ></iframe>
+
+      {/* Overlay layers — order matters. */}
+      <span class="amber-wash" aria-hidden="true"></span>
+      <span class="scanlines" aria-hidden="true"></span>
+      <span class="vignette" aria-hidden="true"></span>
+      <span class="noise" aria-hidden="true"></span>
+
+      {/* Tracker reticle — crosshair in top-right corner. */}
+      <span class="reticle" aria-hidden="true">
+        <span class="ret-h"></span>
+        <span class="ret-v"></span>
+        <span class="ret-c"></span>
+      </span>
+
+      {/* HUD glyph labels overlaid on the feed. */}
+      <span class="glyph glyph-tl">PROJECTED · DO NOT INTERACT W/ SURFACE</span>
+      <span class="glyph glyph-br">REC · {new Date().toISOString().slice(11, 19)}Z</span>
+
+      {/* Click-to-open layer — clickable surface that opens the host. */}
+      <a
+        class="enter"
+        href={src}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${ctaLabel} (${host})`}
+      >
+        <span class="enter-inner">
+          <span class="enter-k">↳</span>
+          <span class="enter-v">{ctaLabel}</span>
+        </span>
+      </a>
+    </div>
+
+    {/* TARIFF column — stacked label/value pairs, pixel-dither bottom edge.
+        Visible only on wide screens to preserve the windscreen-HUD aspect. */}
+    <aside class="tariff" aria-hidden="true">
+      <div class="tariff-row">
+        <div class="tariff-k">SIGNAL</div>
+        <div class="tariff-v">LIVE</div>
+      </div>
+      <div class="tariff-row">
+        <div class="tariff-k">LATENCY</div>
+        <div class="tariff-v">~ms</div>
+      </div>
+      <div class="tariff-row">
+        <div class="tariff-k">SOURCE</div>
+        <div class="tariff-v tariff-v-sm">{host}</div>
+      </div>
+      <div class="tariff-row">
+        <div class="tariff-k">MIRROR</div>
+        <div class="tariff-v">02 / 02</div>
+      </div>
+      <div class="tariff-row">
+        <div class="tariff-k">SESSION</div>
+        <div class="tariff-v tariff-v-sm">0xFF8C·{id.slice(0, 4).toUpperCase()}</div>
+      </div>
+      {/* Pixel-dither bottom band — purely decorative. */}
+      <div class="tariff-foot">
+        <div class="px-row">
+          {Array.from({ length: 24 }).map(() => <span class="px"></span>)}
+        </div>
+        <div class="px-row px-row-sparse">
+          {Array.from({ length: 24 }).map(() => <span class="px"></span>)}
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  {/* === BOTTOM MARQUEE ============================================== */}
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span class="marquee-item">LIVE FEED</span>
+      <span class="marquee-sep">◆</span>
+      <span class="marquee-item">MIRRORED FROM {host}</span>
+      <span class="marquee-sep">◆</span>
+      <span class="marquee-item">SESSION ENCRYPTED</span>
+      <span class="marquee-sep">◆</span>
+      <span class="marquee-item">INTERACTIONS FORWARDED TO HOST</span>
+      <span class="marquee-sep">◆</span>
+      <span class="marquee-item">DO NOT INTERACT WITH PROJECTED SURFACE</span>
+      <span class="marquee-sep">◆</span>
+      <span class="marquee-item">TAP TO ENTER</span>
+      <span class="marquee-sep">◆</span>
+      {/* Duplicate set for seamless loop. */}
+      <span class="marquee-item">LIVE FEED</span>
+      <span class="marquee-sep">◆</span>
+      <span class="marquee-item">MIRRORED FROM {host}</span>
+      <span class="marquee-sep">◆</span>
+      <span class="marquee-item">SESSION ENCRYPTED</span>
+      <span class="marquee-sep">◆</span>
+      <span class="marquee-item">INTERACTIONS FORWARDED TO HOST</span>
+      <span class="marquee-sep">◆</span>
+      <span class="marquee-item">DO NOT INTERACT WITH PROJECTED SURFACE</span>
+      <span class="marquee-sep">◆</span>
+      <span class="marquee-item">TAP TO ENTER</span>
+      <span class="marquee-sep">◆</span>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* === Outer chrome ===================================================== */
+  .intercept {
+    --cnr: 18px;
+    position: relative;
+    isolation: isolate;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(20, 24, 28, 0.7) 0%,
+        rgba(14, 17, 20, 0.7) 100%
+      );
+    border: 1px solid var(--color-rule);
+    /* Chamfered top-right + bottom-left corners — windscreen-HUD geometry. */
+    clip-path: polygon(
+      0 0,
+      calc(100% - var(--cnr)) 0,
+      100% var(--cnr),
+      100% 100%,
+      var(--cnr) 100%,
+      0 calc(100% - var(--cnr))
+    );
+    box-shadow:
+      inset 0 0 0 1px rgba(232, 154, 60, 0.04),
+      inset 0 1px 0 rgba(255, 180, 76, 0.06),
+      0 30px 60px -30px rgba(0, 0, 0, 0.75);
+    color: var(--color-text);
+  }
+
+  /* Etched corner brackets — small amber L-shapes inset from the polygon. */
+  .cnr {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    z-index: 4;
+    pointer-events: none;
+  }
+  .cnr-tl {
+    top: 8px;
+    left: 8px;
+    border-top: 1px solid var(--color-amber);
+    border-left: 1px solid var(--color-amber);
+  }
+  .cnr-tr {
+    top: 8px;
+    /* Pulled in past the chamfer cut. */
+    right: calc(var(--cnr) + 4px);
+    border-top: 1px solid var(--color-amber);
+    border-right: 1px solid var(--color-amber);
+  }
+  .cnr-bl {
+    bottom: 8px;
+    left: calc(var(--cnr) + 4px);
+    border-bottom: 1px solid var(--color-amber);
+    border-left: 1px solid var(--color-amber);
+  }
+  .cnr-br {
+    bottom: 8px;
+    right: 8px;
+    border-bottom: 1px solid var(--color-amber);
+    border-right: 1px solid var(--color-amber);
+  }
+
+  /* === Top status bar =================================================== */
+  .status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 22px 12px 22px;
+    border-bottom: 1px solid var(--color-rule);
+    background:
+      linear-gradient(
+        180deg,
+        rgba(232, 154, 60, 0.03) 0%,
+        transparent 100%
+      );
+  }
+  .status-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-amber);
+  }
+  .status-sig {
+    color: var(--color-text-bright);
+    letter-spacing: 0.2em;
+  }
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--color-amber);
+    box-shadow: 0 0 8px var(--color-amber);
+    animation: live-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes live-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.75); }
+  }
+  .status-chips {
+    display: inline-flex;
+    align-items: stretch;
+    gap: 0;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 4px 10px;
+  }
+  .chip-k {
+    color: var(--color-mute);
+  }
+  .chip-v {
+    color: var(--color-text-bright);
+  }
+  .chip-sep {
+    width: 1px;
+    padding: 0;
+    background: var(--color-rule);
+  }
+  @media (max-width: 720px) {
+    /* Strip down to just signal on mobile — chips would crowd the bar. */
+    .status-chips { display: none; }
+    .status { padding: 12px 16px 10px 16px; }
+  }
+
+  /* === Body grid · viewport + tariff column ============================ */
+  .body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 1024px) {
+    .body {
+      grid-template-columns: minmax(0, 1fr) 200px;
+    }
+  }
+
+  /* === Viewport · the projected feed =================================== */
+  .viewport {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--color-void);
+    border-bottom: 1px solid var(--color-rule);
+  }
+  @media (min-width: 1024px) {
+    .viewport {
+      border-right: 1px solid var(--color-rule);
+    }
+  }
+
+  /* Iframe — rendered at 200% and scaled 0.5 so the framed site renders
+     at a desktop breakpoint inside the compact preview. */
+  .frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    border: 0;
+    background: var(--color-void);
+    transform: scale(0.5);
+    transform-origin: 0 0;
+    /* Slight downward shift gives the impression the projection is being
+       drawn line-by-line — visual continuity with the scanline overlay. */
+    filter: saturate(0.7) contrast(1.04);
+    transition: filter 600ms ease;
+    pointer-events: none;
+  }
+  .intercept:hover .frame {
+    filter: saturate(0.95) contrast(1.02);
+  }
+
+  /* Amber tint wash — sells the projected/glass-HUD vibe. */
+  .amber-wash {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        140% 90% at 50% 0%,
+        rgba(232, 154, 60, 0.12) 0%,
+        transparent 60%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(232, 154, 60, 0.06) 0%,
+        rgba(232, 154, 60, 0.02) 40%,
+        rgba(232, 154, 60, 0.04) 100%
+      );
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Horizontal scanlines. */
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(14, 17, 20, 0) 0,
+      rgba(14, 17, 20, 0) 2px,
+      rgba(14, 17, 20, 0.22) 3px,
+      rgba(14, 17, 20, 0) 4px
+    );
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 3;
+    animation: scan-drift 9s linear infinite;
+  }
+  @keyframes scan-drift {
+    0%   { background-position: 0 0; }
+    100% { background-position: 0 12px; }
+  }
+
+  /* Vignette darkening edges. */
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        ellipse at center,
+        transparent 50%,
+        rgba(14, 17, 20, 0.55) 100%
+      );
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  /* Subtle noise overlay — emulates projected grain. */
+  .noise {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1   0 0 0 0 1   0 0 0 0 1   0 0 0 0.7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* Tracker reticle — corner crosshair with a soft pulse. */
+  .reticle {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 26px;
+    height: 26px;
+    z-index: 5;
+    pointer-events: none;
+    animation: reticle-pulse 2.4s ease-in-out infinite;
+  }
+  .ret-h, .ret-v, .ret-c {
+    position: absolute;
+    background: var(--color-amber);
+    box-shadow: 0 0 6px rgba(232, 154, 60, 0.5);
+  }
+  .ret-h {
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    transform: translateY(-50%);
+  }
+  .ret-v {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+  }
+  .ret-c {
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    border: 1px solid var(--color-amber);
+    box-shadow: 0 0 8px rgba(232, 154, 60, 0.6);
+  }
+  @keyframes reticle-pulse {
+    0%, 100% { opacity: 0.85; }
+    50% { opacity: 0.45; }
+  }
+
+  /* HUD glyph labels printed on the projected feed. */
+  .glyph {
+    position: absolute;
+    z-index: 5;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    line-height: 1;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-amber);
+    background: rgba(14, 17, 20, 0.72);
+    border: 1px solid var(--color-rule-strong);
+    padding: 5px 7px;
+    pointer-events: none;
+    white-space: nowrap;
+    backdrop-filter: blur(1px);
+  }
+  .glyph-tl { top: 18px; left: 18px; }
+  .glyph-br { bottom: 18px; right: 18px; }
+
+  /* === Enter overlay — clickable surface =============================== */
+  .enter {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 44px;
+    text-decoration: none;
+    color: inherit;
+    /* The link fills the whole viewport so any tap enters the live site,
+       but the visible chip only appears on hover/focus. */
+    opacity: 0;
+    transition: opacity 280ms ease;
+  }
+  .enter:focus-visible,
+  .viewport:hover .enter {
+    opacity: 1;
+  }
+  .enter-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    background: rgba(14, 17, 20, 0.85);
+    border: 1px solid var(--color-amber);
+    box-shadow:
+      0 0 0 1px rgba(232, 154, 60, 0.18),
+      0 0 24px -4px rgba(232, 154, 60, 0.35);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-amber);
+    backdrop-filter: blur(2px);
+  }
+  .enter-k { color: var(--color-amber-glow); }
+  .enter-v { color: var(--color-text-bright); }
+  .enter:focus-visible .enter-inner {
+    outline: 2px solid var(--color-amber-glow);
+    outline-offset: 2px;
+  }
+
+  /* === Tariff column =================================================== */
+  .tariff {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .tariff {
+      display: flex;
+      flex-direction: column;
+      padding: 6px 18px 14px 18px;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(14, 17, 20, 0.4) 0%,
+          rgba(14, 17, 20, 0.85) 100%
+        );
+    }
+  }
+  .tariff-row {
+    padding: 10px 0 9px 0;
+    border-bottom: 1px solid var(--color-rule);
+  }
+  .tariff-row:last-of-type {
+    border-bottom: 0;
+  }
+  .tariff-k {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .tariff-v {
+    margin-top: 2px;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: var(--color-text-bright);
+    font-variant-numeric: tabular-nums;
+  }
+  .tariff-v-sm {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-amber);
+  }
+  .tariff-foot {
+    margin-top: auto;
+    padding-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .px-row {
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    gap: 1px;
+  }
+  .px-row .px {
+    height: 2px;
+    background: var(--color-amber);
+  }
+  /* Sparse second row — only every third pixel — creates the dither look. */
+  .px-row-sparse .px:nth-child(3n + 1),
+  .px-row-sparse .px:nth-child(3n + 2) {
+    background: transparent;
+  }
+  .px-row-sparse .px:nth-child(3n) {
+    background: var(--color-amber-dim);
+  }
+
+  /* === Bottom marquee ticker ============================================ */
+  .marquee {
+    position: relative;
+    height: 32px;
+    overflow: hidden;
+    border-top: 1px solid var(--color-rule);
+    background:
+      linear-gradient(
+        180deg,
+        rgba(14, 17, 20, 0.6) 0%,
+        rgba(20, 24, 28, 0.85) 100%
+      );
+  }
+  .marquee::before,
+  .marquee::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .marquee::before {
+    left: 0;
+    background: linear-gradient(
+      to right,
+      var(--color-void) 0%,
+      transparent 100%
+    );
+  }
+  .marquee::after {
+    right: 0;
+    background: linear-gradient(
+      to left,
+      var(--color-void) 0%,
+      transparent 100%
+    );
+  }
+  .marquee-track {
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    gap: 22px;
+    white-space: nowrap;
+    padding-left: 100%;
+    animation: marquee-scroll 38s linear infinite;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--color-text-bright);
+  }
+  .marquee-item {
+    /* Subtle amber wash for emphasis on every nth pass. */
+    color: var(--color-text-bright);
+  }
+  .marquee-sep {
+    color: var(--color-amber);
+    font-size: 8px;
+  }
+  @keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* === Reduced motion =================================================== */
+  @media (prefers-reduced-motion: reduce) {
+    .live-dot,
+    .scanlines,
+    .reticle,
+    .marquee-track,
+    .frame {
+      animation: none !important;
+      transition: none !important;
+    }
+    .marquee-track { transform: none; }
+  }
+
+  /* === Mobile polish ==================================================== */
+  @media (max-width: 640px) {
+    .intercept { --cnr: 12px; }
+    .glyph { font-size: 7px; padding: 4px 6px; }
+    .glyph-tl { top: 12px; left: 12px; }
+    .glyph-br { bottom: 12px; right: 12px; }
+    .reticle { top: 12px; right: 12px; width: 20px; height: 20px; }
+    .marquee-track { gap: 16px; font-size: 9px; }
+  }
+</style>
