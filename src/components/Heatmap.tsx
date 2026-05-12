@@ -242,7 +242,7 @@ export default function Heatmap({ data }: Props) {
               {fmtDate(hover.day.date)}
             </div>
             <div className="font-mono text-sm tabular-nums text-[var(--color-amber)] whitespace-nowrap">
-              {hover.day.count} {hover.day.count === 1 ? "PUSH" : "PUSHES"}
+              {hover.day.count} {hover.day.count === 1 ? "CONTRIBUTION" : "CONTRIBUTIONS"}
             </div>
             <div
               className="absolute left-1/2 -bottom-1 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-[var(--color-rule-strong)] bg-[var(--color-void)]"
