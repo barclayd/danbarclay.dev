@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Cloudflare Pages deploy hook
-        if: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK != '' }}
+        env:
+          HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
         run: |
-          curl -X POST "${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}"
+          if [ -z "$HOOK" ]; then
+            echo "CLOUDFLARE_DEPLOY_HOOK secret is not set; nothing to do."
+            exit 0
+          fi
+          curl -fsSL -X POST "$HOOK"
