@@ -43,10 +43,21 @@ const avgPerDay = total / contributions.days.length;
         />
       </p>
     </div>
-    <div class="flex flex-wrap gap-x-6 gap-y-1 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-1 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
       <span>SCALE / 1d</span>
       <span>WINDOW / 12M</span>
-      <span>SRC / GH.barclayd</span>
+      <a
+        href="https://github.com/barclayd"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group inline-flex items-center gap-1 text-[var(--color-amber)] transition-colors hover:text-[var(--color-amber-glow)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-amber-glow)]"
+      >
+        <span>SRC / GH.barclayd</span>
+        <span
+          class="transition-transform group-hover:translate-x-0.5"
+          aria-hidden="true"
+        >↗</span>
+      </a>
     </div>
   </div>
 
@@ -96,4 +107,25 @@ const avgPerDay = total / contributions.days.length;
       </div>
     </div>
   </div>
+
+  <!-- Profile link -->
+  <a
+    href="https://github.com/barclayd"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="group mt-6 flex items-center justify-between gap-4 border border-[var(--color-rule)] bg-[var(--color-void)] px-4 py-3 transition-colors hover:border-[var(--color-amber)] hover:bg-[rgba(232,154,60,0.04)] active:bg-[rgba(232,154,60,0.08)] sm:px-5 sm:py-4"
+  >
+    <div class="flex min-w-0 flex-col">
+      <span class="font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+        SOURCE / GITHUB
+      </span>
+      <span class="mt-1 truncate font-display text-base uppercase tracking-tight text-[var(--color-text-bright)] group-hover:text-[var(--color-amber-glow)] sm:text-lg">
+        github.com/barclayd
+      </span>
+    </div>
+    <span
+      class="shrink-0 font-mono text-xl text-[var(--color-mute)] transition-transform group-hover:translate-x-1 group-hover:text-[var(--color-amber)] sm:text-2xl"
+      aria-hidden="true"
+    >↗</span>
+  </a>
 </HudFrame>
