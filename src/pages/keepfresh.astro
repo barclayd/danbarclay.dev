@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import HudFrame from "../components/HudFrame.astro";
 import SubPageHeader from "../components/SubPageHeader.astro";
 import SubPageFooter from "../components/SubPageFooter.astro";
+import LiveSiteIntercept from "../components/LiveSiteIntercept.astro";
 
 const title =
   "KeepFresh — iOS Grocery Tracker · Built by Dan Barclay";
@@ -72,6 +73,21 @@ const facts = [
         surfaces expiry alerts before things spoil. 77,000+ downloads, used
         daily by hundreds of households.
       </p>
+
+      <div class="my-10 h-px w-full bg-[var(--color-rule)]"></div>
+
+      {/* Live mirrored feed of keepfre.sh — windscreen-HUD intercept. */}
+      <div class="mt-2 mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+        <span class="h-px w-6 bg-[var(--color-amber)]"></span>
+        <span>LIVE · INTERCEPT · PROJECTED FEED</span>
+      </div>
+      <LiveSiteIntercept
+        id="keepfresh"
+        src="https://keepfre.sh"
+        host="KEEPFRE.SH"
+        signal="KEEPFRESH · MIRROR"
+        ctaLabel="ENTER LIVE INSTANCE"
+      />
 
       <div class="my-10 h-px w-full bg-[var(--color-rule)]"></div>
 
