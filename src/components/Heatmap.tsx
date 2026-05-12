@@ -130,6 +130,21 @@ export default function Heatmap({ data }: Props) {
     return () => document.removeEventListener("pointerdown", onDocPointerDown);
   }, [hover]);
 
+  // On mobile, the SVG is wider than the viewport — scroll to the most-recent
+  // week on first paint so users see today, not Jan 2025.
+  useEffect(() => {
+    if (!wrapRef.current) return;
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia("(max-width: 639px)").matches) return;
+    // Wait one frame so layout is settled.
+    const id = window.requestAnimationFrame(() => {
+      if (wrapRef.current) {
+        wrapRef.current.scrollLeft = wrapRef.current.scrollWidth;
+      }
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, []);
+
   const tooltipStyle = useMemo<React.CSSProperties | null>(() => {
     if (!hover || !svgRef.current || !wrapRef.current) return null;
     const svgRect = svgRef.current.getBoundingClientRect();
@@ -149,23 +164,32 @@ export default function Heatmap({ data }: Props) {
   }, [hover, vbWidth]);
 
   return (
-    <div ref={wrapRef} className="relative w-full">
-      <svg
+    <div className="w-full">
+      <div className="relative">
+        <div
+          ref={wrapRef}
+          className="heatmap-scroll relative overflow-x-auto overflow-y-hidden sm:overflow-visible"
+        >
+        <svg
         ref={svgRef}
         viewBox={`0 0 ${vbWidth} ${vbHeight}`}
         preserveAspectRatio="xMinYMid meet"
-        className="block w-full"
-        style={{ touchAction: "pan-y", height: "auto" }}
+        className="block w-[780px] sm:w-full"
+        style={{ touchAction: "pan-x pan-y", height: "auto" }}
         role="grid"
         aria-label={`GitHub contributions, ${data.total} in the past year`}
         onPointerMove={(e) => {
-          // Mouse hover OR active touch drag.
-          if (e.pointerType === "mouse" || e.buttons > 0) {
+          // Mouse hover only — on touch, allow native horizontal scroll instead.
+          if (e.pointerType === "mouse") {
             updateFromPointer(e.clientX, e.clientY);
           }
         }}
         onPointerDown={(e) => {
-          (e.currentTarget as SVGSVGElement).setPointerCapture?.(e.pointerId);
+          // Capture mouse pointers for hover tracking. Skip capture on touch so
+          // the browser can take over for native horizontal scrolling.
+          if (e.pointerType === "mouse") {
+            (e.currentTarget as SVGSVGElement).setPointerCapture?.(e.pointerId);
+          }
           updateFromPointer(e.clientX, e.clientY);
         }}
         onPointerLeave={(e) => {
@@ -231,40 +255,54 @@ export default function Heatmap({ data }: Props) {
         )}
       </svg>
 
+        {hover && tooltipStyle && (
+          <div className="pointer-events-none absolute z-20" style={tooltipStyle}>
+            <div className="relative border border-[var(--color-rule-strong)] bg-[var(--color-void)] px-3 py-2 shadow-[0_0_12px_rgba(0,0,0,0.6)]">
+              <div className="font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)] whitespace-nowrap">
+                {fmtDate(hover.day.date)}
+              </div>
+              <div className="font-mono text-sm tabular-nums text-[var(--color-amber)] whitespace-nowrap">
+                {hover.day.count} {hover.day.count === 1 ? "CONTRIBUTION" : "CONTRIBUTIONS"}
+              </div>
+              <div
+                className="absolute left-1/2 -bottom-1 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-[var(--color-rule-strong)] bg-[var(--color-void)]"
+                aria-hidden="true"
+              ></div>
+            </div>
+          </div>
+        )}
+        </div>
+
+        {/* Right-edge fade — mobile-only affordance signalling that the grid scrolls. Scoped to the heatmap row only. */}
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[var(--color-void)] via-[rgba(14,17,20,0.6)] to-transparent sm:hidden"
+          aria-hidden="true"
+        ></div>
+      </div>
+
       <div className="sr-only" aria-live="polite">
         {hover ? `${fmtDate(hover.day.date)}, ${hover.day.count} contributions` : ""}
       </div>
 
-      {hover && tooltipStyle && (
-        <div className="pointer-events-none absolute z-20" style={tooltipStyle}>
-          <div className="relative border border-[var(--color-rule-strong)] bg-[var(--color-void)] px-3 py-2 shadow-[0_0_12px_rgba(0,0,0,0.6)]">
-            <div className="font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)] whitespace-nowrap">
-              {fmtDate(hover.day.date)}
-            </div>
-            <div className="font-mono text-sm tabular-nums text-[var(--color-amber)] whitespace-nowrap">
-              {hover.day.count} {hover.day.count === 1 ? "CONTRIBUTION" : "CONTRIBUTIONS"}
-            </div>
-            <div
-              className="absolute left-1/2 -bottom-1 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-[var(--color-rule-strong)] bg-[var(--color-void)]"
-              aria-hidden="true"
-            ></div>
+      <div className="mt-4 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)] sm:justify-end">
+        <span className="inline-flex items-center gap-1.5 text-[var(--color-amber)] sm:hidden" aria-hidden="true">
+          <span aria-hidden="true">↔</span>
+          <span>SWIPE</span>
+        </span>
+        <div className="flex items-center gap-2">
+          <span>LOW</span>
+          <div className="flex gap-1">
+            {[0, 1, 2, 3, 4].map((l) => (
+              <span
+                key={l}
+                className="block h-3 w-3"
+                style={{ background: cellColor(l as 0 | 1 | 2 | 3 | 4) }}
+                aria-hidden="true"
+              ></span>
+            ))}
           </div>
+          <span>HIGH</span>
         </div>
-      )}
-
-      <div className="mt-4 flex items-center justify-end gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
-        <span>LOW</span>
-        <div className="flex gap-1">
-          {[0, 1, 2, 3, 4].map((l) => (
-            <span
-              key={l}
-              className="block h-3 w-3"
-              style={{ background: cellColor(l as 0 | 1 | 2 | 3 | 4) }}
-              aria-hidden="true"
-            ></span>
-          ))}
-        </div>
-        <span>HIGH</span>
       </div>
     </div>
   );

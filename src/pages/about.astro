@@ -1,0 +1,252 @@
+---
+import Base from "../layouts/Base.astro";
+import HudFrame from "../components/HudFrame.astro";
+import DuotoneAvatar from "../components/DuotoneAvatar.astro";
+import SubPageHeader from "../components/SubPageHeader.astro";
+import SubPageFooter from "../components/SubPageFooter.astro";
+
+const title =
+  "About Dan Barclay — Engineering Leader, Founder of Promptly & KeepFresh, London";
+const description =
+  "Dan Barclay is an engineering leader, full-stack product engineer and founder based in London. 10+ years building product and AI experiences for millions of users. Founder of Promptly (LLM prompt CMS) and KeepFresh (iOS app, 77K+ downloads).";
+
+const faqs = [
+  {
+    q: "Who is Dan Barclay?",
+    a: "Dan Barclay is an engineering leader and founder based in London, UK. He is a full-stack product engineer with 10+ years of experience building and scaling software to millions of users. He is the founder of Promptly, a B2B SaaS CMS for LLM prompts used by 100+ companies, and KeepFresh, an iOS app with 77,000+ downloads that helps households track grocery inventory and reduce food waste.",
+  },
+  {
+    q: "Where is Dan Barclay based?",
+    a: "Dan Barclay is based in London, United Kingdom.",
+  },
+  {
+    q: "What does Dan Barclay work on?",
+    a: "Dan Barclay is focused on building two products: Promptly (promptlycms.com), the CMS powering the next wave of AI development — used in production by 100+ companies to author, version and ship LLM prompts without a code deploy — and KeepFresh (keepfre.sh), an iOS app working to end food waste for good, with 77,000+ downloads. His technical work spans TypeScript, React, Node, Python, Rust, Swift, and AI tooling including LLMs and the Model Context Protocol.",
+  },
+  {
+    q: "Is Dan Barclay the same person as the BMO Capital Markets executive?",
+    a: "No. This Dan Barclay is a software engineer and founder based in London, UK. He is unrelated to Dan Barclay, the retired CEO of BMO Capital Markets in Toronto, Canada. They share a name and nothing else.",
+  },
+  {
+    q: "How can I contact Dan Barclay?",
+    a: "Email barclaysd@me.com, or reach out via GitHub (@barclayd), X (@danielbarclay), or LinkedIn (/in/barclayd). Response window is typically 24–72 hours.",
+  },
+  {
+    q: "What is Promptly?",
+    a: "Promptly is a B2B SaaS CMS founded by Dan Barclay that lets non-engineers — product managers, domain experts, marketers — author, version and ship the LLM prompts that power production AI features, without going through a code deploy. It is used in production by 100+ companies. Learn more at promptlycms.com.",
+  },
+  {
+    q: "What is KeepFresh?",
+    a: "KeepFresh is an iOS app built by Dan Barclay that helps households end food waste by tracking grocery inventory and surfacing expiry alerts. It has 77,000+ downloads and is used daily by hundreds of households. The backend runs on Hono.js on Cloudflare Workers with D1 storage. Learn more at keepfre.sh.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://danbarclay.dev/about/#faq",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+  about: { "@id": "https://danbarclay.dev/#person" },
+};
+---
+
+<Base
+  title={title}
+  description={description}
+  pageType="AboutPage"
+  jsonLd={faqJsonLd}
+>
+  <main
+    class="mx-auto flex w-full max-w-[1100px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
+  >
+    <SubPageHeader terminal="TERMINAL/ABOUT" current="about" />
+
+    <HudFrame
+      label="C/ABOUT // OPERATOR · BIOGRAPHY"
+      index="REC. 39765499"
+      className="px-6 py-10 sm:px-10 sm:py-14"
+    >
+      <div class="grid gap-10 md:grid-cols-[220px_1fr] md:gap-14">
+        <!-- Left rail: avatar + meta -->
+        <div class="flex flex-col items-start gap-4">
+          <DuotoneAvatar
+            src="/dan-barclay.webp"
+            alt="Dan Barclay — engineering leader and founder, London"
+            class="w-40 sm:w-52 md:w-[200px]"
+          />
+          <div class="flex w-40 sm:w-52 md:w-[200px] flex-col gap-1 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+            <div class="flex items-center justify-between">
+              <span>NAME</span><span class="text-[var(--color-text)]">DAN BARCLAY</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span>ROLE</span><span class="text-[var(--color-text)]">ENG LEAD</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span>NODE</span><span class="text-[var(--color-text)]">LON · UK</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span>YRS</span><span class="text-[var(--color-amber)]">10+</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column: biography -->
+        <div class="flex flex-col gap-8">
+          <div>
+            <div class="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+              <span class="h-px w-6 bg-[var(--color-amber)]"></span>
+              <span>BIOGRAPHY · DAN BARCLAY</span>
+            </div>
+            <h1
+              class="font-display font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)]"
+              style="font-size: clamp(2.25rem, 7.5vw, 4rem);"
+            >
+              About<br />Dan Barclay
+            </h1>
+          </div>
+
+          <div class="space-y-5 font-display text-base leading-relaxed text-[var(--color-text)] sm:text-[1.0625rem]">
+            <p>
+              <strong class="text-[var(--color-text-bright)]">Dan Barclay</strong>
+              is an engineering leader, full-stack product engineer and founder
+              based in London, United Kingdom. He has spent 10+ years building
+              and scaling software for millions of users — across consumer
+              marketplaces, B2B SaaS, mobile apps and AI tooling.
+            </p>
+            <p>
+              Today, Dan is focused on building two products of his own:
+            </p>
+            <ul class="ml-1 space-y-3 text-[var(--color-mute)]">
+              <li class="border-l border-[var(--color-amber-dim)] pl-4">
+                <a href="/promptly/" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">Promptly</a>
+                — <strong class="text-[var(--color-text-bright)]">the CMS
+                powering the next wave of AI development.</strong> A B2B SaaS
+                that hands LLM prompts back to the domain experts who write
+                them, used in production by 100+ companies. Built in TypeScript
+                on a typed prompt-fetching SDK.
+              </li>
+              <li class="border-l border-[var(--color-amber-dim)] pl-4">
+                <a href="/keepfresh/" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">KeepFresh</a>
+                — <strong class="text-[var(--color-text-bright)]">a Swift-built
+                iOS app working to end food waste for good.</strong> Tracks
+                grocery inventory and surfaces expiry alerts before things
+                spoil. 77,000+ downloads, used daily by hundreds of households.
+                The async backend runs on Hono.js on Cloudflare Workers with
+                D1 storage.
+              </li>
+            </ul>
+            <p>
+              His stack of choice runs the gamut: <strong class="text-[var(--color-text-bright)]">TypeScript,
+              React, Node, Python, Rust, Swift</strong>, plus a deep working
+              focus on <strong class="text-[var(--color-text-bright)]">Large Language Models,
+              the Model Context Protocol (MCP)</strong>, and the engineering
+              practices needed to ship AI features safely into production.
+            </p>
+            <p>
+              Dan is most motivated by hard problems and the people driven to
+              solve them — work where technical vision and product judgement
+              have to align with business outcomes to ship something
+              mission-critical.
+            </p>
+          </div>
+
+          <!--
+            Disambiguation note — kept in source order for LLMs and Google to
+            extract, but hidden visually via .sr-only-seo (no on-screen impact).
+            Mirrors the FAQ Q&A so the entity disambiguation reads consistently
+            across rendered FAQ + visually-hidden plain prose.
+          -->
+          <aside class="sr-only-seo">
+            Note — disambiguation: This Dan Barclay is a London-based software
+            engineer and founder. He is unrelated to Dan Barclay, the retired
+            CEO of BMO Capital Markets in Toronto, Canada. They share a name
+            and nothing else.
+          </aside>
+        </div>
+      </div>
+    </HudFrame>
+
+    <!-- Profile graph: every property Dan controls, cross-linked. -->
+    <HudFrame
+      label="C/ABOUT // IDENTITY GRAPH"
+      index="SAMEAS"
+      className="px-6 py-10 sm:px-10 sm:py-14"
+    >
+      <h2 class="font-display text-2xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-3xl">
+        Where to find Dan Barclay
+      </h2>
+      <p class="mt-2 max-w-xl font-mono text-[11px] uppercase tracking-hud text-[var(--color-mute)]">
+        Every profile below belongs to the same Dan Barclay — engineering leader, London.
+      </p>
+
+      <div class="my-8 h-px w-full bg-[var(--color-rule)]"></div>
+
+      <ul class="grid grid-cols-1 gap-px bg-[var(--color-rule)] sm:grid-cols-2">
+        {[
+          { label: "GITHUB", code: "github.com/barclayd", href: "https://github.com/barclayd", desc: "Source code and side projects." },
+          { label: "TWITTER · X", code: "x.com/danielbarclay", href: "https://x.com/danielbarclay", desc: "Notes, links and updates." },
+          { label: "LINKEDIN", code: "linkedin.com/in/barclayd", href: "https://www.linkedin.com/in/barclayd/", desc: "Career history and credentials." },
+          { label: "EMAIL", code: "barclaysd@me.com", href: "mailto:barclaysd@me.com", desc: "Direct contact." },
+          { label: "PROMPTLY", code: "promptlycms.com", href: "https://promptlycms.com", desc: "Company / SaaS founded by Dan Barclay." },
+          { label: "KEEPFRESH", code: "keepfre.sh", href: "https://keepfre.sh", desc: "iOS app built by Dan Barclay." },
+        ].map((l) => (
+          <li>
+            <a
+              href={l.href}
+              rel={l.href.startsWith("http") ? "noopener noreferrer me" : "me"}
+              target={l.href.startsWith("http") ? "_blank" : undefined}
+              class="group flex min-h-[80px] items-center justify-between gap-4 bg-[var(--color-void)] px-4 py-5 transition-colors hover:bg-[rgba(232,154,60,0.04)] sm:px-5 sm:py-6"
+            >
+              <div class="flex min-w-0 flex-col">
+                <span class="font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+                  {l.label}
+                </span>
+                <span class="mt-1 truncate font-display text-base uppercase tracking-tight text-[var(--color-text-bright)] group-hover:text-[var(--color-amber-glow)] sm:text-lg">
+                  {l.code}
+                </span>
+                <span class="mt-0.5 font-display text-xs text-[var(--color-mute)]">{l.desc}</span>
+              </div>
+              <span aria-hidden="true" class="shrink-0 font-mono text-xl text-[var(--color-mute)] transition-transform group-hover:translate-x-1 group-hover:text-[var(--color-amber)]">↗</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </HudFrame>
+
+    <!-- FAQ — pure-prose Q&A, mirrored in FAQPage JSON-LD for AI overviews. -->
+    <HudFrame
+      label="C/ABOUT // FREQUENTLY ASKED"
+      index="FAQ"
+      className="px-6 py-10 sm:px-10 sm:py-14"
+    >
+      <h2 class="font-display text-2xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-3xl">
+        Dan Barclay — FAQ
+      </h2>
+
+      <div class="my-8 h-px w-full bg-[var(--color-rule)]"></div>
+
+      <div class="flex flex-col gap-px bg-[var(--color-rule)]">
+        {faqs.map((f, i) => (
+          <article class="bg-[var(--color-void)] px-4 py-6 sm:px-6 sm:py-8">
+            <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-hud text-[var(--color-amber)]">
+              <span>Q/{String(i + 1).padStart(2, "0")}</span>
+              <span class="h-px flex-1 bg-[var(--color-rule)]" aria-hidden="true" />
+            </div>
+            <h3 class="mt-3 font-display text-lg font-semibold text-[var(--color-text-bright)] sm:text-xl">
+              {f.q}
+            </h3>
+            <p class="mt-3 max-w-3xl font-display text-base leading-relaxed text-[var(--color-mute)]">
+              {f.a}
+            </p>
+          </article>
+        ))}
+      </div>
+    </HudFrame>
+
+    <SubPageFooter />
+  </main>
+</Base>

@@ -1,0 +1,586 @@
+---
+import Base from "../layouts/Base.astro";
+import HudFrame from "../components/HudFrame.astro";
+import SubPageHeader from "../components/SubPageHeader.astro";
+import SubPageFooter from "../components/SubPageFooter.astro";
+import CommitChart from "../components/CommitChart.tsx";
+import projectsRaw from "../data/projects.json";
+import type { Project } from "../lib/types";
+
+const projects = projectsRaw as Project[];
+
+const title = "Work — Dan Barclay · Selected projects shipped publicly";
+const description =
+  "Selected work by Dan Barclay — engineering leader in London. Including Promptly (LLM prompt CMS, 100+ companies), KeepFresh (iOS app, 77K+ downloads) and open-source side projects.";
+
+const PERSON_ID = "https://danbarclay.dev/#person";
+
+// Per-project schema — each is a SoftwareApplication / MobileApplication whose
+// creator and author are the Person entity declared on the home page.
+const workSchema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "@id": "https://danbarclay.dev/promptly/#app",
+    name: "Promptly",
+    alternateName: "Promptly CMS",
+    url: "https://promptlycms.com",
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "Web",
+    description:
+      "A B2B SaaS CMS for LLM prompts. Hands prompt authoring back to the domain experts who write them — versioning, releasing and shipping prompts without a code deploy. Used in production by 100+ companies.",
+    creator: { "@id": PERSON_ID },
+    author: { "@id": PERSON_ID },
+    publisher: { "@id": PERSON_ID },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "MobileApplication",
+    "@id": "https://danbarclay.dev/keepfresh/#app",
+    name: "KeepFresh",
+    url: "https://keepfre.sh",
+    applicationCategory: "LifestyleApplication",
+    operatingSystem: "iOS",
+    description:
+      "An iOS app that helps households end food waste by tracking grocery inventory and surfacing expiry alerts. 77,000+ downloads, used daily by hundreds of households.",
+    creator: { "@id": PERSON_ID },
+    author: { "@id": PERSON_ID },
+    publisher: { "@id": PERSON_ID },
+  },
+];
+
+const fmtYearWindow = (created: string, pushed: string) => {
+  const a = created ? new Date(created).getUTCFullYear().toString() : "—";
+  const b = pushed ? new Date(pushed).getUTCFullYear().toString() : "—";
+  return a === b ? a : `${a}–${b.slice(2)}`;
+};
+---
+
+<Base
+  title={title}
+  description={description}
+  pageType="CollectionPage"
+  jsonLd={workSchema}
+>
+  <main
+    class="mx-auto flex w-full max-w-[1300px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
+  >
+    <SubPageHeader terminal="TERMINAL/WORK" current="work" />
+
+    {/* Inline SVG filter chain used to duotone the captured OG frames into
+        the site's amber-on-void palette. Black maps to --color-void, white
+        maps to --color-amber. Defined once and referenced from CSS below. */}
+    <svg
+      width="0"
+      height="0"
+      aria-hidden="true"
+      class="pointer-events-none absolute"
+      style="position:absolute; left:-9999px; top:-9999px;"
+    >
+      <defs>
+        <filter id="duotone-amber" color-interpolation-filters="sRGB">
+          {/* 1. Desaturate to luminance. */}
+          <feColorMatrix
+            type="matrix"
+            values="0.2126 0.7152 0.0722 0 0
+                    0.2126 0.7152 0.0722 0 0
+                    0.2126 0.7152 0.0722 0 0
+                    0      0      0      1 0"
+          />
+          {/* 2. Remap black (0) -> void, white (1) -> amber. */}
+          <feComponentTransfer>
+            <feFuncR type="table" tableValues="0.055 0.910" />
+            <feFuncG type="table" tableValues="0.067 0.604" />
+            <feFuncB type="table" tableValues="0.078 0.235" />
+          </feComponentTransfer>
+        </filter>
+      </defs>
+    </svg>
+
+    <HudFrame
+      label="C/WORK · FEATURED // FLAGSHIP TRANSMISSIONS"
+      index="LIVE × 2"
+      className="px-6 py-10 sm:px-10 sm:py-14"
+    >
+      <div class="mb-8 flex flex-wrap items-baseline justify-between gap-4">
+        <div>
+          <div class="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+            <span class="h-px w-6 bg-[var(--color-amber)]"></span>
+            <span>FLAGSHIP · CURRENT FOCUS</span>
+          </div>
+          <h2
+            class="font-display font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)]"
+            style="font-size: clamp(1.75rem, 4.5vw, 2.5rem);"
+          >
+            Captured / Frames
+          </h2>
+          <p class="mt-3 max-w-xl font-mono text-[11px] uppercase tracking-hud text-[var(--color-mute)]">
+            TWO PRODUCTS · DUOTONE INTERCEPT · SIGNALS HOT
+          </p>
+        </div>
+        <div class="flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+          <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)] pulse-dot"></span>
+          <span>FEED · STABLE</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-px bg-[var(--color-rule)] md:grid-cols-2">
+        {/* PROMPTLY */}
+        <a
+          href="/promptly/"
+          class="og-card group relative flex flex-col gap-0 bg-[var(--color-void)] p-4 transition-colors hover:bg-[rgba(232,154,60,0.025)] sm:p-6"
+        >
+          <div class="mb-3 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-hud">
+            <div class="flex items-center gap-3 text-[var(--color-amber)]">
+              <span>FRAME · 01/02</span>
+              <span class="h-px w-4 bg-[var(--color-rule)]" aria-hidden="true"></span>
+              <span class="text-[var(--color-mute)]">SIG · PROMPTLY</span>
+            </div>
+            <span class="inline-flex items-center gap-1.5 text-[var(--color-mute)]">
+              <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)] pulse-dot"></span>
+              <span>LIVE</span>
+            </span>
+          </div>
+
+          <div class="og-frame relative aspect-[16/10] overflow-hidden border border-[var(--color-rule)] bg-[var(--color-void)]">
+            <img
+              src="https://images.keepfre.sh/app/images/og-image.png"
+              alt="Promptly — the CMS powering the next wave of AI development"
+              loading="lazy"
+              decoding="async"
+              width="1200"
+              height="630"
+              class="og-img absolute inset-0 h-full w-full object-cover"
+            />
+            {/* Scanlines + tint + vignette + scan-line sweep are CSS overlays. */}
+            {/* Corner reticles. */}
+            <span class="reticle reticle-tl" aria-hidden="true"></span>
+            <span class="reticle reticle-tr" aria-hidden="true"></span>
+            <span class="reticle reticle-bl" aria-hidden="true"></span>
+            <span class="reticle reticle-br" aria-hidden="true"></span>
+            {/* HUD overlay labels. */}
+            <span class="hud-tag hud-tag-tl">1200 × 630 · OG</span>
+            <span class="hud-tag hud-tag-br">PROMPTLYCMS.COM</span>
+          </div>
+
+          <div class="mt-4 flex items-baseline justify-between gap-3">
+            <div class="font-display text-xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] group-hover:text-[var(--color-amber-glow)] sm:text-2xl">
+              Promptly
+            </div>
+            <div class="font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+              CMS · LLM
+            </div>
+          </div>
+          <p class="mt-2 text-sm leading-relaxed text-[var(--color-mute)]">
+            The CMS powering the next wave of AI development. Domain experts
+            author, version and ship prompts — without a code deploy.
+          </p>
+          <div class="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-rule)] pt-3 font-mono text-[10px] uppercase tracking-hud">
+            <span class="text-[var(--color-mute)]">B2B SAAS · 100+ COMPANIES</span>
+            <span class="inline-flex items-center gap-1.5 text-[var(--color-amber)] group-hover:text-[var(--color-amber-glow)]">
+              <span>OPEN DOSSIER</span>
+              <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">↳</span>
+            </span>
+          </div>
+        </a>
+
+        {/* KEEPFRESH */}
+        <a
+          href="/keepfresh/"
+          class="og-card group relative flex flex-col gap-0 bg-[var(--color-void)] p-4 transition-colors hover:bg-[rgba(232,154,60,0.025)] sm:p-6"
+        >
+          <div class="mb-3 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-hud">
+            <div class="flex items-center gap-3 text-[var(--color-amber)]">
+              <span>FRAME · 02/02</span>
+              <span class="h-px w-4 bg-[var(--color-rule)]" aria-hidden="true"></span>
+              <span class="text-[var(--color-mute)]">SIG · KEEPFRESH</span>
+            </div>
+            <span class="inline-flex items-center gap-1.5 text-[var(--color-mute)]">
+              <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)] pulse-dot"></span>
+              <span>LIVE</span>
+            </span>
+          </div>
+
+          <div class="og-frame relative aspect-[16/10] overflow-hidden border border-[var(--color-rule)] bg-[var(--color-void)]">
+            <img
+              src="https://images.keepfre.sh/app/icons/app-icon-background.webp"
+              alt="KeepFresh — iOS app working to end food waste"
+              loading="lazy"
+              decoding="async"
+              width="1024"
+              height="1024"
+              class="og-img absolute inset-0 h-full w-full object-cover"
+            />
+            <span class="reticle reticle-tl" aria-hidden="true"></span>
+            <span class="reticle reticle-tr" aria-hidden="true"></span>
+            <span class="reticle reticle-bl" aria-hidden="true"></span>
+            <span class="reticle reticle-br" aria-hidden="true"></span>
+            <span class="hud-tag hud-tag-tl">1024 × 1024 · ICON</span>
+            <span class="hud-tag hud-tag-br">KEEPFRE.SH</span>
+          </div>
+
+          <div class="mt-4 flex items-baseline justify-between gap-3">
+            <div class="font-display text-xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] group-hover:text-[var(--color-amber-glow)] sm:text-2xl">
+              KeepFresh
+            </div>
+            <div class="font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+              iOS · LIFESTYLE
+            </div>
+          </div>
+          <p class="mt-2 text-sm leading-relaxed text-[var(--color-mute)]">
+            An iOS app working to end food waste for good. Households track
+            groceries and catch what's about to expire — used daily.
+          </p>
+          <div class="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-rule)] pt-3 font-mono text-[10px] uppercase tracking-hud">
+            <span class="text-[var(--color-mute)]">77,000+ DOWNLOADS</span>
+            <span class="inline-flex items-center gap-1.5 text-[var(--color-amber)] group-hover:text-[var(--color-amber-glow)]">
+              <span>OPEN DOSSIER</span>
+              <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">↳</span>
+            </span>
+          </div>
+        </a>
+      </div>
+    </HudFrame>
+
+    <HudFrame
+      label="C/WORK // SELECTED · TRANSMISSIONS"
+      index="OUTBOUND"
+      className="px-6 py-10 sm:px-10 sm:py-14"
+    >
+      <div class="mb-8">
+        <div class="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+          <span class="h-px w-6 bg-[var(--color-amber)]"></span>
+          <span>WORK · DAN BARCLAY</span>
+        </div>
+        <h1
+          class="font-display font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)]"
+          style="font-size: clamp(2.25rem, 7.5vw, 4rem);"
+        >
+          Selected<br />Work
+        </h1>
+        <p class="mt-6 max-w-2xl font-display text-base leading-relaxed text-[var(--color-mute)] sm:text-lg">
+          Side projects, products and experiments that <strong class="text-[var(--color-text-bright)]">Dan
+          Barclay</strong> has shipped publicly. Two are flagship products
+          built and operated end-to-end; the rest are supporting libraries,
+          backends and yearly traditions.
+        </p>
+      </div>
+
+      <div class="my-8 h-px w-full bg-[var(--color-rule)]"></div>
+
+      <div class="flex flex-col gap-px bg-[var(--color-rule)]">
+        {projects.map((p) => {
+          const internalHref =
+            p.slug === "promptly" || p.slug === "promptly-package"
+              ? "/promptly/"
+              : p.slug === "keepfresh-ios" || p.slug === "keepfresh-api"
+                ? "/keepfresh/"
+                : null;
+          return (
+            <article class="bg-[var(--color-void)] px-4 py-6 sm:px-6 sm:py-8 group transition-colors hover:bg-[rgba(232,154,60,0.025)]">
+              <div class="grid gap-6 grid-cols-[minmax(0,1fr)] md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-start">
+                <div class="flex flex-col gap-3">
+                  <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-hud text-[var(--color-amber)]">
+                    <span>C/{String(p.index).padStart(2, "0")}</span>
+                    <span class="h-px flex-1 bg-[var(--color-rule)]" aria-hidden="true" />
+                    <span>{p.language ?? "—"}</span>
+                  </div>
+                  <a
+                    href={internalHref ?? p.url}
+                    target={internalHref ? undefined : "_blank"}
+                    rel={internalHref ? undefined : "noopener noreferrer"}
+                    class="font-display text-xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)] sm:text-2xl"
+                  >
+                    {p.displayName}
+                  </a>
+                  <p class="max-w-md text-sm leading-relaxed text-[var(--color-mute)]">
+                    {p.description}
+                  </p>
+                  <div class="mt-2 grid grid-cols-3 gap-px border border-[var(--color-rule)] bg-[var(--color-rule)] max-w-md">
+                    <div class="bg-[var(--color-void)] px-3 py-2">
+                      <div class="font-mono text-[8px] uppercase tracking-hud text-[var(--color-mute)]">COMMITS</div>
+                      <div class="font-mono text-base text-[var(--color-text)]">{p.totalCommits}</div>
+                    </div>
+                    <div class="bg-[var(--color-void)] px-3 py-2">
+                      <div class="font-mono text-[8px] uppercase tracking-hud text-[var(--color-mute)]">WINDOW</div>
+                      <div class="font-mono text-base tabular-nums text-[var(--color-text)]">{fmtYearWindow(p.createdAt, p.pushedAt)}</div>
+                    </div>
+                    <div class="bg-[var(--color-void)] px-3 py-2">
+                      <div class="font-mono text-[8px] uppercase tracking-hud text-[var(--color-mute)]">AUTHOR</div>
+                      <div class="font-mono text-[11px] uppercase tabular-nums text-[var(--color-amber)]">BARCLAY</div>
+                    </div>
+                  </div>
+                  <div class="mt-2 flex flex-wrap gap-3">
+                    {internalHref && (
+                      <a
+                        href={internalHref}
+                        class="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-hud text-[var(--color-amber)] transition-colors hover:text-[var(--color-amber-glow)]"
+                      >
+                        <span>↳</span><span>READ MORE</span>
+                      </a>
+                    )}
+                    <a
+                      href={p.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-hud text-[var(--color-mute)] transition-colors hover:text-[var(--color-amber-glow)]"
+                    >
+                      <span class="transition-transform group-hover:translate-x-0.5">↗</span>
+                      <span>github.com/barclayd/{p.slug}</span>
+                    </a>
+                  </div>
+                </div>
+                <div class="relative min-w-0">
+                  <div class="mb-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
+                    <span>CMT/T·WEEKLY</span>
+                    <span>BY DAN BARCLAY</span>
+                  </div>
+                  <div class="relative border border-[var(--color-rule)] bg-[rgba(20,24,28,0.4)] p-3">
+                    <CommitChart client:visible weeks={p.weeks} height={150} />
+                  </div>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </HudFrame>
+
+    <SubPageFooter />
+  </main>
+</Base>
+
+<style>
+  /* === Captured-frame OG cards ============================================ */
+
+  .og-frame {
+    isolation: isolate;
+    box-shadow:
+      inset 0 0 0 1px rgba(232, 154, 60, 0.06),
+      0 0 24px -8px rgba(0, 0, 0, 0.6);
+  }
+
+  /* True duotone via SVG filter chain (defined in markup above). */
+  .og-img {
+    filter: url(#duotone-amber) contrast(1.05) brightness(0.95);
+    transform: scale(1.01);
+    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 400ms ease;
+  }
+
+  .og-card:hover .og-img {
+    transform: scale(1.04);
+    filter: url(#duotone-amber) contrast(1.1) brightness(1.02);
+  }
+
+  /* Horizontal scanlines — Black Mirror CRT trace. */
+  .og-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(14, 17, 20, 0) 0,
+      rgba(14, 17, 20, 0) 2px,
+      rgba(14, 17, 20, 0.35) 3px,
+      rgba(14, 17, 20, 0) 4px
+    );
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Vignette + amber tint wash. */
+  .og-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        ellipse at center,
+        transparent 55%,
+        rgba(14, 17, 20, 0.55) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(232, 154, 60, 0.05) 0%,
+        transparent 30%,
+        transparent 70%,
+        rgba(232, 154, 60, 0.04) 100%
+      );
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  /* === Corner reticles ==================================================== */
+  .reticle {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    z-index: 5;
+    pointer-events: none;
+  }
+  .reticle-tl {
+    top: 6px;
+    left: 6px;
+    border-top: 1px solid var(--color-amber);
+    border-left: 1px solid var(--color-amber);
+  }
+  .reticle-tr {
+    top: 6px;
+    right: 6px;
+    border-top: 1px solid var(--color-amber);
+    border-right: 1px solid var(--color-amber);
+  }
+  .reticle-bl {
+    bottom: 6px;
+    left: 6px;
+    border-bottom: 1px solid var(--color-amber);
+    border-left: 1px solid var(--color-amber);
+  }
+  .reticle-br {
+    bottom: 6px;
+    right: 6px;
+    border-bottom: 1px solid var(--color-amber);
+    border-right: 1px solid var(--color-amber);
+  }
+
+  /* === HUD overlay labels ================================================= */
+  .hud-tag {
+    position: absolute;
+    z-index: 6;
+    pointer-events: none;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-amber);
+    background: rgba(14, 17, 20, 0.78);
+    border: 1px solid var(--color-rule-strong);
+    padding: 4px 6px;
+    white-space: nowrap;
+    backdrop-filter: blur(2px);
+  }
+  .hud-tag-tl {
+    top: 22px;
+    left: 22px;
+  }
+  .hud-tag-br {
+    bottom: 22px;
+    right: 22px;
+  }
+
+  /* === Scan-line sweep on hover =========================================== */
+  .og-frame .scan-sweep,
+  .og-card .og-frame::after {
+    /* placeholder for stack order — scan sweep uses a dedicated layer below */
+  }
+
+  .og-card .og-frame {
+    position: relative;
+  }
+
+  /* Animated horizontal scan sweep — fires on hover. */
+  .og-card::before {
+    content: none;
+  }
+
+  .og-card .og-frame > .og-img + .reticle-tl::before,
+  .og-card .og-frame > .og-img + .reticle-tl::after {
+    content: none;
+  }
+
+  /* Dedicated sweep element via ::before on the frame itself, layered above
+     scanlines but below reticles/tags. */
+  .og-frame > .og-img {
+    z-index: 1;
+  }
+
+  .og-card:hover .og-frame {
+    box-shadow:
+      inset 0 0 0 1px rgba(232, 154, 60, 0.18),
+      0 0 32px -6px rgba(232, 154, 60, 0.18),
+      0 0 24px -8px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Sweep band — implemented as an extra positioned element on hover via
+     :hover with a pseudo-element layered above the image, below the
+     scanlines. We use the og-card hover state to trigger a translateY
+     animation on a dedicated band. */
+  .og-card:hover .og-frame::before {
+    background-image:
+      repeating-linear-gradient(
+        to bottom,
+        rgba(14, 17, 20, 0) 0,
+        rgba(14, 17, 20, 0) 2px,
+        rgba(14, 17, 20, 0.25) 3px,
+        rgba(14, 17, 20, 0) 4px
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        transparent 45%,
+        rgba(232, 154, 60, 0.16) 49%,
+        rgba(232, 154, 60, 0.28) 50%,
+        rgba(232, 154, 60, 0.16) 51%,
+        transparent 55%,
+        transparent 100%
+      );
+    background-size: 100% 100%, 100% 200%;
+    background-repeat: repeat, no-repeat;
+    background-position: 0 0, 0 -100%;
+    animation: og-scan 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes og-scan {
+    0% {
+      background-position: 0 0, 0 -100%;
+    }
+    100% {
+      background-position: 0 0, 0 100%;
+    }
+  }
+
+  /* === Pulse dot ========================================================== */
+  .pulse-dot {
+    animation: pulse-dot 1.8s ease-in-out infinite;
+    box-shadow: 0 0 6px var(--color-amber);
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(0.85); }
+  }
+
+  /* === Reduced motion ===================================================== */
+  @media (prefers-reduced-motion: reduce) {
+    .og-img,
+    .og-card:hover .og-img {
+      transition: none;
+      transform: none;
+    }
+    .og-card:hover .og-frame::before {
+      animation: none;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        rgba(14, 17, 20, 0) 0,
+        rgba(14, 17, 20, 0) 2px,
+        rgba(14, 17, 20, 0.35) 3px,
+        rgba(14, 17, 20, 0) 4px
+      );
+    }
+    .pulse-dot {
+      animation: none;
+    }
+  }
+
+  /* === Small-screen polish ================================================ */
+  @media (max-width: 640px) {
+    .hud-tag {
+      font-size: 8px;
+      padding: 3px 5px;
+    }
+    .hud-tag-tl { top: 18px; left: 18px; }
+    .hud-tag-br { bottom: 18px; right: 18px; }
+  }
+</style>

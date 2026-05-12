@@ -1,0 +1,164 @@
+---
+import Base from "../layouts/Base.astro";
+import HudFrame from "../components/HudFrame.astro";
+import SubPageHeader from "../components/SubPageHeader.astro";
+import SubPageFooter from "../components/SubPageFooter.astro";
+
+const title =
+  "Promptly — LLM Prompt CMS · Built by Dan Barclay";
+const description =
+  "Promptly is a B2B SaaS CMS for LLM prompts, founded by Dan Barclay (engineering leader, London). Used in production by 100+ companies to let domain experts author, version and ship prompts without a code deploy.";
+
+const PERSON_ID = "https://danbarclay.dev/#person";
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "@id": "https://danbarclay.dev/promptly/#app",
+    name: "Promptly",
+    alternateName: "Promptly CMS",
+    url: "https://promptlycms.com",
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "Web",
+    description:
+      "A B2B SaaS CMS for LLM prompts. Hands prompt authoring back to the domain experts who write them — versioning, releasing and shipping prompts without a code deploy. Used in production by 100+ companies.",
+    creator: { "@id": PERSON_ID },
+    author: { "@id": PERSON_ID },
+    founder: { "@id": PERSON_ID },
+    publisher: { "@id": PERSON_ID },
+    offers: { "@type": "Offer", category: "SaaS" },
+  },
+];
+
+const facts = [
+  { k: "TYPE", v: "B2B SaaS · LLM PROMPT CMS" },
+  { k: "FOUNDER", v: "DAN BARCLAY" },
+  { k: "STACK", v: "TYPESCRIPT · NEXT · TYPED SDK" },
+  { k: "USERS", v: "100+ COMPANIES IN PRODUCTION" },
+  { k: "WEB", v: "PROMPTLYCMS.COM" },
+];
+---
+
+<Base
+  title={title}
+  description={description}
+  pageType="WebPage"
+  jsonLd={schema}
+>
+  <main
+    class="mx-auto flex w-full max-w-[1100px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
+  >
+    <SubPageHeader terminal="TERMINAL/PROMPTLY" current="promptly" />
+
+    <HudFrame
+      label="C/PRJ · 01 // PROMPTLY"
+      index="OPERATIONAL"
+      className="px-6 py-10 sm:px-10 sm:py-14"
+    >
+      <div class="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+        <span class="h-px w-6 bg-[var(--color-amber)]"></span>
+        <span>PROJECT · 01 · BY DAN BARCLAY</span>
+      </div>
+      <h1
+        class="font-display font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)]"
+        style="font-size: clamp(2.5rem, 9vw, 5rem);"
+      >
+        Promptly
+      </h1>
+      <p class="mt-6 max-w-2xl font-display text-base leading-relaxed text-[var(--color-mute)] sm:text-lg">
+        <strong class="text-[var(--color-text-bright)]">Promptly</strong> is a
+        B2B SaaS CMS for LLM prompts — founded and built by
+        <a href="/about/" class="text-[var(--color-amber)] hover:text-[var(--color-amber-glow)]">Dan Barclay</a>.
+        It exists on a simple thesis: your prompts don't belong in your codebase.
+        They belong with the domain experts who actually know how to write them.
+      </p>
+
+      <div class="my-10 h-px w-full bg-[var(--color-rule)]"></div>
+
+      <div class="grid grid-cols-2 gap-px bg-[var(--color-rule)] sm:grid-cols-5">
+        {facts.map((f) => (
+          <div class="bg-[var(--color-void)] px-3 py-3">
+            <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">{f.k}</div>
+            <div class="mt-1 font-mono text-[11px] uppercase text-[var(--color-text)]">{f.v}</div>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-12 grid gap-10 md:grid-cols-2">
+        <div>
+          <h2 class="font-display text-xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-2xl">
+            Problem
+          </h2>
+          <p class="mt-4 font-display text-base leading-relaxed text-[var(--color-mute)]">
+            AI features ship with prompts hard-coded in application repositories.
+            Every tweak to wording, tone or behaviour is gated on an engineer,
+            a code review and a deploy. Meanwhile the people who actually know
+            the domain — support leads, marketers, legal, product — can't touch
+            the prompt that defines how the AI represents the company.
+          </p>
+        </div>
+        <div>
+          <h2 class="font-display text-xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-2xl">
+            Solution
+          </h2>
+          <p class="mt-4 font-display text-base leading-relaxed text-[var(--color-mute)]">
+            A CMS purpose-built for prompts. Versioned, environment-scoped,
+            type-safe at runtime via the Promptly SDK. Domain experts write and
+            release prompts in the dashboard. Engineers consume them with a
+            single typed function call. Used in production by 100+ companies.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-12 grid gap-10 md:grid-cols-2">
+        <div>
+          <h2 class="font-display text-xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-2xl">
+            Stack
+          </h2>
+          <ul class="mt-4 space-y-2 font-display text-base leading-relaxed text-[var(--color-mute)]">
+            <li>· TypeScript end-to-end</li>
+            <li>· Typed prompt-fetching SDK with caching</li>
+            <li>· Hosted at promptlycms.com</li>
+            <li>· Zero-config integration for product teams</li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="font-display text-xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-2xl">
+            Author
+          </h2>
+          <p class="mt-4 font-display text-base leading-relaxed text-[var(--color-mute)]">
+            <a href="/about/" class="text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">Dan Barclay</a>
+            is an engineering leader and full-stack product engineer based in
+            London. Promptly — the CMS powering the next wave of AI
+            development — is one of two products he is focused on building.
+            The other is
+            <a href="/keepfresh/" class="text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">KeepFresh</a>,
+            an iOS app working to end food waste for good.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-12 flex flex-wrap gap-3">
+        <a
+          href="https://promptlycms.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 border border-[var(--color-amber-dim)] bg-[rgba(232,154,60,0.06)] px-5 py-3 font-mono text-xs uppercase tracking-hud text-[var(--color-amber)] hover:bg-[rgba(232,154,60,0.12)] hover:text-[var(--color-amber-glow)]"
+        >
+          <span>VISIT PROMPTLYCMS.COM</span><span aria-hidden="true">↗</span>
+        </a>
+        <a
+          href="https://github.com/barclayd/promptly"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 border border-[var(--color-rule-strong)] px-5 py-3 font-mono text-xs uppercase tracking-hud text-[var(--color-mute)] hover:text-[var(--color-amber-glow)]"
+        >
+          <span>GITHUB</span><span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </HudFrame>
+
+    <SubPageFooter />
+  </main>
+</Base>

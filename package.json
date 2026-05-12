@@ -7,8 +7,9 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "bun run fetch && astro build",
+    "build": "bun run fetch && bun run og && astro build",
     "fetch": "bun scripts/fetch-github.mjs",
+    "og": "bun scripts/generate-og.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -27,10 +28,13 @@
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
+    "@astrojs/sitemap": "^3.7.2",
     "@types/d3-scale": "^4.0.9",
     "@types/d3-shape": "^3.1.8",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "astro-robots-txt": "^1.0.0",
+    "sharp": "^0.34.5",
     "typescript": "^6.0.3"
   }
 }

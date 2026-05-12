@@ -4,12 +4,133 @@ import "../styles/global.css";
 interface Props {
   title?: string;
   description?: string;
+  ogImage?: string;
+  pageType?: "ProfilePage" | "AboutPage" | "CollectionPage" | "WebPage";
+  noPersonGraph?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
+const SITE_URL = "https://danbarclay.dev";
+
 const {
-  title = "Dan Barclay — Engineering Leader",
-  description = "Dan Barclay. Engineering leader in London. A decade shipping product and AI experiences to millions — selected work, signals and side projects.",
+  title = "Dan Barclay — Engineering Leader, Founder, London",
+  description = "Dan Barclay is an engineering leader and founder based in London, focused on building Promptly — the CMS powering the next wave of AI development — and KeepFresh — an iOS app working to end food waste for good. 10+ years shipping product and AI experiences to millions.",
+  ogImage = "/og.png",
+  pageType = "WebPage",
+  noPersonGraph = false,
+  jsonLd,
 } = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, SITE_URL).toString();
+const ogImageUrl = new URL(ogImage, SITE_URL).toString();
+const profileImageUrl = new URL("/dan-barclay.webp", SITE_URL).toString();
+
+// Core knowledge-graph object: ProfilePage + Person + WebSite.
+// Sub-pages (about/work/projects) can pass `noPersonGraph: true` to avoid
+// duplicating the Person node, and instead reference @id "https://danbarclay.dev/#person"
+// from their own page-level JSON-LD via the `jsonLd` prop.
+const personGraph = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": pageType,
+      "@id": canonicalUrl + "#page",
+      url: canonicalUrl,
+      name: title,
+      description,
+      inLanguage: "en-GB",
+      isPartOf: { "@id": SITE_URL + "/#website" },
+      ...(pageType === "ProfilePage"
+        ? { mainEntity: { "@id": SITE_URL + "/#person" } }
+        : { about: { "@id": SITE_URL + "/#person" } }),
+      primaryImageOfPage: { "@id": SITE_URL + "/#og-image" },
+    },
+    {
+      "@type": "ImageObject",
+      "@id": SITE_URL + "/#og-image",
+      url: ogImageUrl,
+      contentUrl: ogImageUrl,
+      width: 1200,
+      height: 630,
+      caption: "Dan Barclay — Engineering Leader",
+    },
+    {
+      "@type": "WebSite",
+      "@id": SITE_URL + "/#website",
+      url: SITE_URL + "/",
+      name: "Dan Barclay",
+      description: "Personal site of Dan Barclay — engineering leader and founder in London.",
+      inLanguage: "en-GB",
+      publisher: { "@id": SITE_URL + "/#person" },
+      author: { "@id": SITE_URL + "/#person" },
+    },
+    {
+      "@type": "Person",
+      "@id": SITE_URL + "/#person",
+      name: "Dan Barclay",
+      givenName: "Dan",
+      familyName: "Barclay",
+      alternateName: ["Daniel Barclay", "barclayd"],
+      jobTitle: "Engineering Lead",
+      description:
+        "Engineering leader, full-stack product engineer and founder with 10+ years building software for millions of users. Focused on building Promptly — the CMS powering the next wave of AI development — and KeepFresh, an iOS app working to end food waste for good. Based in London, UK.",
+      url: SITE_URL + "/",
+      mainEntityOfPage: { "@id": SITE_URL + "/#page" },
+      image: {
+        "@type": "ImageObject",
+        url: profileImageUrl,
+        contentUrl: profileImageUrl,
+        caption: "Dan Barclay",
+      },
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "London",
+        addressCountry: "GB",
+      },
+      nationality: { "@type": "Country", name: "United Kingdom" },
+      knowsAbout: [
+        "Software Engineering",
+        "Engineering Leadership",
+        "Product Engineering",
+        "TypeScript",
+        "React",
+        "Node.js",
+        "Python",
+        "Rust",
+        "Swift",
+        "iOS Development",
+        "Large Language Models",
+        "Model Context Protocol",
+        "AI Product Design",
+        "B2B SaaS",
+      ],
+      sameAs: [
+        "https://github.com/barclayd",
+        "https://x.com/danielbarclay",
+        "https://www.linkedin.com/in/barclayd/",
+        "https://promptlycms.com",
+        "https://keepfre.sh",
+      ],
+      founder: [
+        {
+          "@type": "SoftwareApplication",
+          name: "Promptly",
+          url: "https://promptlycms.com",
+          applicationCategory: "DeveloperApplication",
+        },
+        {
+          "@type": "MobileApplication",
+          name: "KeepFresh",
+          url: "https://keepfre.sh",
+          applicationCategory: "LifestyleApplication",
+        },
+      ],
+    },
+  ],
+};
+
+const extraJsonLd = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
+const graphsToEmit = noPersonGraph ? extraJsonLd : [personGraph, ...extraJsonLd];
 ---
 
 <!doctype html>
@@ -17,17 +138,64 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Primary -->
+    <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="author" content="Dan Barclay" />
+    <meta name="creator" content="Dan Barclay" />
+    <meta name="publisher" content="Dan Barclay" />
     <meta name="theme-color" content="#0E1114" />
     <meta name="color-scheme" content="dark" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title}</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={pageType === "ProfilePage" ? "profile" : "website"} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="Dan Barclay" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:secure_url" content={ogImageUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Dan Barclay — Engineering Leader, Founder, London" />
+    {pageType === "ProfilePage" && (
+      <>
+        <meta property="profile:first_name" content="Dan" />
+        <meta property="profile:last_name" content="Barclay" />
+        <meta property="profile:username" content="barclayd" />
+      </>
+    )}
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content="Dan Barclay — Engineering Leader, Founder, London" />
+    <meta name="twitter:site" content="@danielbarclay" />
+    <meta name="twitter:creator" content="@danielbarclay" />
+
+    <!-- IndieWeb rel=me — links this site to other profiles in the identity graph. -->
+    <link rel="me" href="https://github.com/barclayd" />
+    <link rel="me" href="https://x.com/danielbarclay" />
+    <link rel="me" href="https://www.linkedin.com/in/barclayd/" />
+    <link rel="me" href="mailto:barclaysd@me.com" />
+
+    <!-- Robots: maximise indexing + snippet richness for AI overviews. -->
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large" />
+
+    <!-- Structured data — the heart of the LLM/Knowledge-Graph signal. -->
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(graphsToEmit.length === 1 ? graphsToEmit[0] : graphsToEmit)}
+    />
   </head>
   <body>
     <div class="boot-scanline" aria-hidden="true"></div>
