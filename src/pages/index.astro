@@ -4,6 +4,7 @@ import IdentityPanel from "../components/IdentityPanel.astro";
 import HeatmapPanel from "../components/HeatmapPanel.astro";
 import ProjectsPanel from "../components/ProjectsPanel.astro";
 import CommsPanel from "../components/CommsPanel.astro";
+import SiteNav from "../components/SiteNav.astro";
 ---
 
 <Base pageType="ProfilePage">
@@ -25,39 +26,7 @@ import CommsPanel from "../components/CommsPanel.astro";
     class="mx-auto flex w-full max-w-[1400px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
   >
     <!-- Top system rail -->
-    <header
-      class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]"
-    >
-      <div class="flex items-center gap-2">
-        <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)]"></span>
-        <span>DANBARCLAY.DEV<span class="hidden sm:inline"> · TERMINAL/00</span></span>
-      </div>
-      <!-- Compact mobile site nav -->
-      <nav
-        aria-label="Site"
-        class="flex items-center gap-2 sm:hidden"
-      >
-        <a
-          href="/about/"
-          class="rounded-sm px-1 py-0.5 hover:text-[var(--color-amber-glow)]"
-        >ABOUT</a>
-        <span class="text-[var(--color-rule-strong)]">·</span>
-        <a
-          href="/work/"
-          class="rounded-sm px-1 py-0.5 hover:text-[var(--color-amber-glow)]"
-        >WORK</a>
-      </nav>
-      <!-- Full site nav -->
-      <nav aria-label="Site" class="hidden gap-4 sm:flex">
-        <a href="/about/" class="hover:text-[var(--color-amber-glow)]">ABOUT</a>
-        <a href="/work/" class="hover:text-[var(--color-amber-glow)]">WORK</a>
-        <a href="/promptly/" class="hover:text-[var(--color-amber-glow)]">PROMPTLY</a>
-        <a href="/keepfresh/" class="hover:text-[var(--color-amber-glow)]">KEEPFRESH</a>
-      </nav>
-      <div>
-        <span>STATUS · NOMINAL</span>
-      </div>
-    </header>
+    <SiteNav terminal="TERMINAL/00" current="home" />
 
     <section id="identity"><IdentityPanel /></section>
     <section id="signal"><HeatmapPanel /></section>
