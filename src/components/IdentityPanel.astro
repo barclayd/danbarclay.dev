@@ -1,0 +1,214 @@
+---
+import HudFrame from "./HudFrame.astro";
+import DuotoneAvatar from "./DuotoneAvatar.astro";
+import TelemetryClock from "./TelemetryClock.tsx";
+import Counter from "./Counter.tsx";
+import contributions from "../data/contributions.json";
+
+const AVATAR_URL = "https://images.keepfre.sh/app/images/dan.webp";
+
+const totalContributions = contributions.total;
+const fetchedAt = new Date(contributions.fetchedAt);
+const fetchedAtLabel =
+  fetchedAt.toISOString().slice(0, 10).replace(/-/g, ".") +
+  " " +
+  fetchedAt.toISOString().slice(11, 16) +
+  " UTC";
+
+// Years coding from 2016
+const yearsCoding = new Date().getUTCFullYear() - 2016;
+
+const stack = [
+  "TypeScript",
+  "React",
+  "Node",
+  "Python",
+  "Rust",
+  "Swift",
+  "LLMs",
+  "MCP",
+];
+---
+
+<HudFrame
+  label="C/00 // SUBJECT"
+  index="REC. 39765499"
+  className="px-6 py-8 sm:px-10 sm:py-12 md:px-14 md:py-16"
+>
+  <div class="grid gap-8 md:grid-cols-[260px_1fr] md:gap-16 boot-stagger">
+    <!-- Left column: avatar block -->
+    <div class="flex flex-col items-start gap-4">
+      <DuotoneAvatar
+        src={AVATAR_URL}
+        alt="Dan Barclay"
+        class="w-40 sm:w-52 md:w-[220px]"
+      />
+      <div class="flex w-40 sm:w-52 md:w-[220px] flex-col gap-1">
+        <div class="flex items-center justify-between font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+          <span>GH/UID</span>
+          <span class="text-[var(--color-text)]">39765499</span>
+        </div>
+        <div class="flex items-center justify-between font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+          <span>STATUS</span>
+          <span class="flex items-center gap-1.5 text-[var(--color-amber)]">
+            <span class="inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-amber)] shadow-[0_0_6px_var(--color-amber)] animate-pulse"></span>
+            ACTIVE
+          </span>
+        </div>
+        <div class="flex items-center justify-between font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+          <span>NODE</span>
+          <span class="text-[var(--color-text)]">LON · 51.5N</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column: name + tagline + mission -->
+    <div class="flex flex-col justify-center gap-6 md:gap-8">
+      <div>
+        <div class="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+          <span class="h-px w-6 bg-[var(--color-amber)]"></span>
+          <span>PROFILE · CLEARED</span>
+        </div>
+        <h1
+          class="font-display font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)] reveal-name"
+          style="font-size: clamp(2.5rem, 11vw, 5.5rem);"
+        >
+          Dan
+          <br />
+          Barclay
+        </h1>
+        <div class="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs uppercase tracking-hud text-[var(--color-text)]">
+          <span>ENGINEERING LEAD</span>
+          <span class="text-[var(--color-rule-strong)]">/</span>
+          <span>LONDON</span>
+        </div>
+      </div>
+
+      <p class="max-w-xl font-display text-base leading-relaxed text-[var(--color-mute)] sm:text-lg">
+        Engineering leader, full-stack product engineer and founder with 10+
+        years of experience crafting software that delivers magical user
+        experiences. Proven expertise in building and scaling applications to
+        millions of users globally. Adept at aligning technical vision with
+        business objectives to drive innovation and growth for mission-critical
+        projects.
+      </p>
+
+      <!-- Tech stack ticker -->
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+        <span class="text-[var(--color-amber)]">STACK /</span>
+        {
+          stack.map((s, i) => (
+            <>
+              <span class="text-[var(--color-text)]">{s}</span>
+              {i < stack.length - 1 && (
+                <span class="text-[var(--color-rule-strong)]">·</span>
+              )}
+            </>
+          ))
+        }
+      </div>
+
+      <!-- Biographical stat ribbon -->
+      <div class="grid grid-cols-2 gap-px bg-[var(--color-rule)] sm:max-w-2xl sm:grid-cols-4">
+        <div class="bg-[var(--color-void)] px-3 py-3">
+          <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
+            YRS / CODING
+          </div>
+          <div class="font-mono text-xl font-medium text-[var(--color-amber)] sm:text-2xl">
+            <Counter
+              client:load
+              value={yearsCoding}
+              suffix="+"
+              delay={200}
+              whenVisible={false}
+            />
+          </div>
+        </div>
+        <div class="bg-[var(--color-void)] px-3 py-3">
+          <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
+            USERS / REACHED
+          </div>
+          <div class="font-mono text-xl font-medium text-[var(--color-text)] sm:text-2xl">
+            <Counter
+              client:load
+              value={40_000_000}
+              delay={350}
+              whenVisible={false}
+              format={{ notation: "compact", maximumFractionDigits: 0 }}
+            />
+            <span class="text-[var(--color-amber)]">+</span>
+          </div>
+        </div>
+        <div class="bg-[var(--color-void)] px-3 py-3">
+          <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
+            GH / CONTRIB · 12M
+          </div>
+          <div class="font-mono text-xl font-medium text-[var(--color-text)] sm:text-2xl">
+            <Counter
+              client:load
+              value={totalContributions}
+              delay={500}
+              whenVisible={false}
+            />
+          </div>
+        </div>
+        <div class="bg-[var(--color-void)] px-3 py-3">
+          <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
+            APP DOWNLOADS
+          </div>
+          <div class="font-mono text-xl font-medium text-[var(--color-text)] sm:text-2xl">
+            <Counter
+              client:load
+              value={77_000}
+              delay={650}
+              whenVisible={false}
+              format={{ notation: "compact", maximumFractionDigits: 0 }}
+            />
+            <span class="text-[var(--color-amber)]">+</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom telemetry rail -->
+  <div
+    class="mt-12 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-[var(--color-rule)] pt-4 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)] sm:mt-16 sm:gap-x-6"
+  >
+    <span class="flex items-center gap-1.5">
+      <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)]"></span>
+      LIVE
+    </span>
+    <TelemetryClock client:idle />
+    <span class="whitespace-nowrap">LAT 51.5074°N · LON 0.1278°W</span>
+    <span class="hidden sm:inline sm:ml-auto">PULL {fetchedAtLabel}</span>
+  </div>
+</HudFrame>
+
+<style>
+  /* Glitch-fade reveal on the name on first paint */
+  @keyframes name-reveal {
+    0% {
+      opacity: 0;
+      transform: translateY(8px);
+      letter-spacing: 0.04em;
+    }
+    40% {
+      opacity: 0.85;
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+      letter-spacing: -0.01em;
+    }
+  }
+  .reveal-name {
+    animation: name-reveal 1000ms var(--ease-hud) both;
+    animation-delay: 280ms;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-name {
+      animation: none;
+    }
+  }
+</style>

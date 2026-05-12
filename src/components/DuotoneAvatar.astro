@@ -1,0 +1,132 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  size?: number;
+  class?: string;
+}
+
+const { src, alt, size, class: className = "" } = Astro.props;
+const inlineStyle =
+  size !== undefined ? `width:${size}px;height:${size}px` : undefined;
+---
+
+<div class:list={["avatar-wrap", className]} style={inlineStyle}>
+  <svg width="0" height="0" aria-hidden="true" class="absolute">
+    <defs>
+      <filter id="duotone-charcoal-cream">
+        <feColorMatrix
+          type="matrix"
+          values="0.33 0.33 0.33 0 0
+                  0.33 0.33 0.33 0 0
+                  0.33 0.33 0.33 0 0
+                  0    0    0    1 0"
+        ></feColorMatrix>
+        <feComponentTransfer>
+          <feFuncR
+            type="table"
+            tableValues="0.054 0.094 0.155 0.27 0.45 0.65 0.78 0.86 0.92"
+          ></feFuncR>
+          <feFuncG
+            type="table"
+            tableValues="0.066 0.105 0.166 0.27 0.45 0.65 0.79 0.86 0.92"
+          ></feFuncG>
+          <feFuncB
+            type="table"
+            tableValues="0.078 0.117 0.18 0.28 0.44 0.62 0.74 0.82 0.88"
+          ></feFuncB>
+        </feComponentTransfer>
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="checker-frame">
+    <div class="inner-frame">
+      <img
+        src={src}
+        alt={alt}
+        loading="eager"
+        decoding="sync"
+        class="avatar-img"
+      />
+      <div class="scan-overlay" aria-hidden="true"></div>
+      <div class="corner-ticks" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .avatar-wrap {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    max-width: 100%;
+  }
+  .checker-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 6px;
+    background-image:
+      linear-gradient(45deg, var(--color-rule-strong) 25%, transparent 25%),
+      linear-gradient(-45deg, var(--color-rule-strong) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--color-rule-strong) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--color-rule-strong) 75%);
+    background-size: 6px 6px;
+    background-position:
+      0 0,
+      0 3px,
+      3px -3px,
+      -3px 0px;
+  }
+  .inner-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: var(--color-panel);
+    overflow: hidden;
+  }
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: url(#duotone-charcoal-cream) contrast(1.05) brightness(0.95);
+    image-rendering: auto;
+  }
+  .scan-overlay {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(232, 154, 60, 0.04) 0,
+      rgba(232, 154, 60, 0.04) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+  .corner-ticks span {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: var(--color-amber);
+  }
+  .corner-ticks span:nth-child(1) {
+    top: 0;
+    left: 0;
+  }
+  .corner-ticks span:nth-child(2) {
+    top: 0;
+    right: 0;
+  }
+  .corner-ticks span:nth-child(3) {
+    bottom: 0;
+    left: 0;
+  }
+  .corner-ticks span:nth-child(4) {
+    bottom: 0;
+    right: 0;
+  }
+</style>

@@ -1,0 +1,51 @@
+---
+import Base from "../layouts/Base.astro";
+import IdentityPanel from "../components/IdentityPanel.astro";
+import HeatmapPanel from "../components/HeatmapPanel.astro";
+import ProjectsPanel from "../components/ProjectsPanel.astro";
+import CommsPanel from "../components/CommsPanel.astro";
+---
+
+<Base>
+  <main
+    class="mx-auto flex w-full max-w-[1400px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
+  >
+    <!-- Top system rail -->
+    <header
+      class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]"
+    >
+      <div class="flex items-center gap-2">
+        <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)]"></span>
+        <span>DANBARCLAY.DEV<span class="hidden sm:inline"> · TERMINAL/00</span></span>
+      </div>
+      <!-- Compact mobile channel nav: indices only -->
+      <nav
+        aria-label="Channel navigation"
+        class="flex items-center gap-2 md:hidden"
+      >
+        <a href="#identity" class="rounded-sm px-1 py-0.5 hover:text-[var(--color-amber-glow)]">00</a>
+        <span class="text-[var(--color-rule-strong)]">·</span>
+        <a href="#signal" class="rounded-sm px-1 py-0.5 hover:text-[var(--color-amber-glow)]">01</a>
+        <span class="text-[var(--color-rule-strong)]">·</span>
+        <a href="#trans" class="rounded-sm px-1 py-0.5 hover:text-[var(--color-amber-glow)]">02</a>
+        <span class="text-[var(--color-rule-strong)]">·</span>
+        <a href="#comms" class="rounded-sm px-1 py-0.5 hover:text-[var(--color-amber-glow)]">03</a>
+      </nav>
+      <!-- Full desktop channel nav -->
+      <nav aria-label="Channel navigation" class="hidden gap-4 md:flex">
+        <a href="#identity" class="hover:text-[var(--color-amber-glow)]">CH/00 IDENTITY</a>
+        <a href="#signal" class="hover:text-[var(--color-amber-glow)]">CH/01 SIGNAL</a>
+        <a href="#trans" class="hover:text-[var(--color-amber-glow)]">CH/02 TRANSMISSIONS</a>
+        <a href="#comms" class="hover:text-[var(--color-amber-glow)]">CH/03 COMMS</a>
+      </nav>
+      <div>
+        <span>STATUS · NOMINAL</span>
+      </div>
+    </header>
+
+    <section id="identity"><IdentityPanel /></section>
+    <section id="signal"><HeatmapPanel /></section>
+    <section id="trans"><ProjectsPanel /></section>
+    <section id="comms"><CommsPanel /></section>
+  </main>
+</Base>

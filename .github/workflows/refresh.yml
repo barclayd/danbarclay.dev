@@ -1,0 +1,16 @@
+name: refresh
+
+# Daily redeploy to pick up new commit data baked at build time.
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Cloudflare Pages deploy hook
+        if: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK != '' }}
+        run: |
+          curl -X POST "${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}"

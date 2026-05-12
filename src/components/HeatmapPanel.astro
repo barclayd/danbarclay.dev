@@ -1,0 +1,99 @@
+---
+import HudFrame from "./HudFrame.astro";
+import Heatmap from "./Heatmap.tsx";
+import Counter from "./Counter.tsx";
+import ScrambleText from "./ScrambleText.tsx";
+import contributionsRaw from "../data/contributions.json";
+import type { ContributionsData } from "../lib/types";
+
+const contributions = contributionsRaw as ContributionsData;
+const total = contributions.total;
+const streak = (() => {
+  // Trailing-day streak (consecutive days with >=1 contribution from the end).
+  let s = 0;
+  for (let i = contributions.days.length - 1; i >= 0; i--) {
+    if (contributions.days[i].count > 0) s++;
+    else break;
+  }
+  return s;
+})();
+const busiestDay = contributions.days.reduce(
+  (best, d) => (d.count > best.count ? d : best),
+  { date: "", count: 0, level: 0 as 0 }
+);
+const avgPerDay = total / contributions.days.length;
+---
+
+<HudFrame
+  label="C/01 // SIGNAL · LAST 12M"
+  index={`${total.toLocaleString("en-GB")} EVENTS`}
+  className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
+>
+  <div class="flex flex-wrap items-baseline justify-between gap-4">
+    <div>
+      <h2 class="font-display text-2xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-3xl">
+        <ScrambleText client:visible text="ACTIVITY / TRACE" duration={900} />
+      </h2>
+      <p class="mt-2 max-w-xl font-mono text-[11px] uppercase tracking-hud text-[var(--color-mute)]">
+        <ScrambleText
+          client:visible
+          text="A LIVE RHYTHM OF HOW I WORK — PULLED DIRECTLY FROM GITHUB."
+          duration={1100}
+          delay={180}
+        />
+      </p>
+    </div>
+    <div class="flex flex-wrap gap-x-6 gap-y-1 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+      <span>SCALE / 1d</span>
+      <span>WINDOW / 12M</span>
+      <span>SRC / GH.barclayd</span>
+    </div>
+  </div>
+
+  <div class="my-8 h-px w-full bg-[var(--color-rule)] rule-draw"></div>
+
+  <div class="pb-2">
+    <Heatmap client:visible data={contributions} />
+  </div>
+
+  <!-- Bottom stats ribbon -->
+  <div class="mt-8 grid grid-cols-2 gap-px bg-[var(--color-rule)] sm:grid-cols-4 cascade-children">
+    <div class="bg-[var(--color-void)] px-4 py-3">
+      <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
+        TOTAL · 12M
+      </div>
+      <div class="font-mono text-xl font-medium text-[var(--color-text)]">
+        <Counter client:visible value={total} delay={120} />
+      </div>
+    </div>
+    <div class="bg-[var(--color-void)] px-4 py-3">
+      <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
+        AVG · DAY
+      </div>
+      <div class="font-mono text-xl font-medium text-[var(--color-text)]">
+        <Counter
+          client:visible
+          value={Number(avgPerDay.toFixed(1))}
+          delay={220}
+          format={{ minimumFractionDigits: 1, maximumFractionDigits: 1 }}
+        />
+      </div>
+    </div>
+    <div class="bg-[var(--color-void)] px-4 py-3">
+      <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
+        PEAK · 1d
+      </div>
+      <div class="font-mono text-xl font-medium text-[var(--color-amber)]">
+        <Counter client:visible value={busiestDay.count} delay={320} />
+      </div>
+    </div>
+    <div class="bg-[var(--color-void)] px-4 py-3">
+      <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
+        STREAK · TRAIL
+      </div>
+      <div class="font-mono text-xl font-medium text-[var(--color-text)]">
+        <Counter client:visible value={streak} suffix="d" delay={420} />
+      </div>
+    </div>
+  </div>
+</HudFrame>

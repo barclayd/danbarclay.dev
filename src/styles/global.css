@@ -1,0 +1,588 @@
+@import "tailwindcss";
+@import "@fontsource/chakra-petch/400.css";
+@import "@fontsource/chakra-petch/500.css";
+@import "@fontsource/chakra-petch/600.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+
+@theme {
+  /* Surfaces */
+  --color-void: #0e1114;
+  --color-panel: #14181c;
+  --color-rule: #1f2429;
+  --color-rule-strong: #2b3138;
+
+  /* Ink */
+  --color-text: #d6d8da;
+  --color-text-bright: #ecedee;
+  --color-mute: #6a6d72;
+  --color-faint: #2e343a;
+
+  /* Accents */
+  --color-amber: #e89a3c;
+  --color-amber-dim: #8c5e24;
+  --color-amber-glow: #ffb44c;
+  --color-amber-faint: #4a3920;
+
+  /* Heatmap intensities */
+  --color-cell-0: #181c20;
+  --color-cell-1: #4a3920;
+  --color-cell-2: #8c5e24;
+  --color-cell-3: #c0822f;
+  --color-cell-4: #ffb44c;
+
+  /* Typography */
+  --font-display: "Chakra Petch", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Easing */
+  --ease-hud: cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+
+/* ====== Base reset ====== */
+* {
+  border-color: var(--color-rule);
+}
+
+html {
+  background: var(--color-void);
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-feature-settings: "ss01", "ss02", "tnum";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+  scrollbar-color: var(--color-rule-strong) var(--color-void);
+  scrollbar-width: thin;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-void);
+  color: var(--color-text);
+  min-height: 100dvh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-amber);
+  color: var(--color-void);
+}
+
+/* ====== Global atmospheric overlays ====== */
+/* Scanline texture — very subtle 2px repeating gradient over everything. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.012) 0px,
+    rgba(255, 255, 255, 0.012) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+/* Vignette — focuses the eye, very subtle. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 59;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+}
+
+/* Touch-device overlays: dial back the screen texture for clarity on small screens. */
+@media (pointer: coarse) {
+  body::before {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.008) 0px,
+      rgba(255, 255, 255, 0.008) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  }
+  body::after {
+    background: radial-gradient(
+      ellipse at center,
+      transparent 60%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
+  }
+}
+
+
+/* ====== HUD utilities ====== */
+.font-display {
+  font-family: var(--font-display);
+}
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.tracking-hud {
+  letter-spacing: 0.18em;
+}
+
+.tracking-hud-tight {
+  letter-spacing: 0.08em;
+}
+
+/* Checkered border edges — used on avatar frame and tagged panels. */
+.checker-edge {
+  --c: var(--color-rule-strong);
+  background-image:
+    linear-gradient(45deg, var(--c) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--c) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--c) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--c) 75%);
+  background-size: 4px 4px;
+  background-position:
+    0 0,
+    0 2px,
+    2px -2px,
+    -2px 0px;
+}
+
+/* Pixelated mask gradient used for ticker/edge fade. */
+.fade-mask-r {
+  mask-image: linear-gradient(to right, black 80%, transparent 100%);
+}
+
+/* ====== Scroll progress bar ====== */
+.scroll-progress {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--color-amber-dim) 0%,
+    var(--color-amber) 50%,
+    var(--color-amber-glow) 100%
+  );
+  box-shadow: 0 0 8px rgba(232, 154, 60, 0.45);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  z-index: 80;
+  pointer-events: none;
+  transition: transform 80ms linear;
+}
+
+/* ====== Cursor radial glow (desktop, fine pointer only) ====== */
+.cursor-glow {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 50;
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 240ms var(--ease-hud);
+  background: radial-gradient(
+    circle,
+    rgba(232, 154, 60, 0.08) 0%,
+    rgba(232, 154, 60, 0.04) 28%,
+    rgba(232, 154, 60, 0) 65%
+  );
+  filter: blur(2px);
+  will-change: transform;
+}
+@media (pointer: coarse) {
+  .cursor-glow {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cursor-glow {
+    display: none;
+  }
+}
+
+/* ====== Number-flow tuning ====== */
+number-flow-react,
+number-flow {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  --number-flow-mask-height: 0.18em;
+  --number-flow-mask-width: 0.4em;
+}
+
+/* ====== Boot scanline ====== */
+@keyframes scanline-sweep {
+  0% {
+    transform: translateY(-2px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100dvh);
+    opacity: 0;
+  }
+}
+
+.boot-scanline {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--color-amber) 20%,
+    var(--color-amber-glow) 50%,
+    var(--color-amber) 80%,
+    transparent 100%
+  );
+  box-shadow: 0 0 14px 1px var(--color-amber);
+  z-index: 100;
+  pointer-events: none;
+  animation: scanline-sweep 900ms var(--ease-hud) forwards;
+}
+
+@keyframes boot-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.boot-stagger > * {
+  opacity: 0;
+  animation: boot-fade-in 600ms var(--ease-hud) forwards;
+}
+
+.boot-stagger > *:nth-child(1) {
+  animation-delay: 180ms;
+}
+.boot-stagger > *:nth-child(2) {
+  animation-delay: 260ms;
+}
+.boot-stagger > *:nth-child(3) {
+  animation-delay: 340ms;
+}
+.boot-stagger > *:nth-child(4) {
+  animation-delay: 420ms;
+}
+.boot-stagger > *:nth-child(5) {
+  animation-delay: 500ms;
+}
+.boot-stagger > *:nth-child(6) {
+  animation-delay: 580ms;
+}
+
+/* ====== Scroll-driven reveals (CSS scroll-driven animations) ====== */
+@keyframes panel-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(28px);
+    filter: blur(6px) saturate(0.6);
+  }
+  60% {
+    filter: blur(0) saturate(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0) saturate(1);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .panel-reveal {
+    animation: panel-reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 30%;
+  }
+}
+
+/* Rule line — draws left to right as it enters view. */
+@keyframes rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@supports (animation-timeline: view()) {
+  .rule-draw {
+    transform-origin: left center;
+    animation: rule-draw linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 20%;
+  }
+}
+
+/* Cascaded stagger for children of a container (stat blocks, project rows, etc.). */
+@keyframes cascade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+@supports (animation-timeline: view()) {
+  .cascade-children > * {
+    animation: cascade-up linear both;
+    animation-timeline: view();
+  }
+  .cascade-children > *:nth-child(1) {
+    animation-range: entry 0% cover 14%;
+  }
+  .cascade-children > *:nth-child(2) {
+    animation-range: entry 3% cover 17%;
+  }
+  .cascade-children > *:nth-child(3) {
+    animation-range: entry 6% cover 20%;
+  }
+  .cascade-children > *:nth-child(4) {
+    animation-range: entry 9% cover 23%;
+  }
+  .cascade-children > *:nth-child(5) {
+    animation-range: entry 12% cover 26%;
+  }
+  .cascade-children > *:nth-child(6) {
+    animation-range: entry 15% cover 29%;
+  }
+  .cascade-children > *:nth-child(7) {
+    animation-range: entry 18% cover 32%;
+  }
+  .cascade-children > *:nth-child(8) {
+    animation-range: entry 21% cover 35%;
+  }
+}
+
+/* Panel scan-sweep — a thin amber light sweeps across each hud-frame as it
+   enters view, suggesting the panel is being decoded line-by-line.
+   Uses background-position so the stripe stays clipped to the element box
+   without affecting the parent's overflow (preserves floating labels). */
+@keyframes panel-sweep {
+  0% {
+    background-position: 100% 0;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    background-position: 0% 0;
+    opacity: 0;
+  }
+}
+@supports (animation-timeline: view()) {
+  .panel-reveal::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 44%,
+      rgba(232, 154, 60, 0.14) 49%,
+      rgba(255, 180, 76, 0.28) 50%,
+      rgba(232, 154, 60, 0.14) 51%,
+      transparent 56%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    background-position: 100% 0;
+    mix-blend-mode: screen;
+    animation: panel-sweep linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 35%;
+  }
+}
+
+/* Heatmap cell reveal — column-based stagger. */
+@keyframes cell-reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .heatmap-cell {
+    opacity: 0;
+    animation: cell-reveal 400ms var(--ease-hud) both;
+    animation-timeline: view();
+    animation-range: entry 5% cover 40%;
+    animation-delay: calc(var(--col-index, 0) * 8ms);
+  }
+}
+
+/* Chart path draw-in via stroke-dashoffset. pathLength=100 normalises the path. */
+@keyframes chart-draw {
+  0% {
+    stroke-dashoffset: 100;
+    filter: drop-shadow(0 0 6px rgba(232, 154, 60, 0.55));
+  }
+  85% {
+    stroke-dashoffset: 0;
+    filter: drop-shadow(0 0 6px rgba(232, 154, 60, 0.55));
+  }
+  100% {
+    stroke-dashoffset: 0;
+    filter: drop-shadow(0 0 0 rgba(232, 154, 60, 0));
+  }
+}
+
+@keyframes chart-fill {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .chart-line {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: chart-draw linear both;
+    animation-timeline: view();
+    /* Scrub the line left→right across the full time the chart is visible. */
+    animation-range: cover 0% cover 100%;
+  }
+  .chart-area {
+    opacity: 0;
+    animation: chart-fill linear both;
+    animation-timeline: view();
+    animation-range: cover 10% cover 85%;
+  }
+}
+
+/* Fallback when animation-timeline is unsupported: render fully drawn. */
+@supports not (animation-timeline: view()) {
+  .heatmap-cell,
+  .chart-line,
+  .chart-area,
+  .cascade-children > * {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .rule-draw {
+    transform: none;
+  }
+  .chart-line {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ====== Reduced motion ====== */
+@media (prefers-reduced-motion: reduce) {
+  .boot-scanline {
+    animation: none;
+    display: none;
+  }
+  .boot-stagger > * {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .panel-reveal,
+  .panel-reveal::after,
+  .heatmap-cell,
+  .chart-line,
+  .chart-area,
+  .rule-draw,
+  .cascade-children > * {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    stroke-dashoffset: 0 !important;
+    stroke-dasharray: none !important;
+  }
+  .panel-reveal::after {
+    display: none;
+  }
+}
+
+/* ====== Links ====== */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 120ms var(--ease-hud);
+}
+
+a:hover,
+a:focus-visible {
+  color: var(--color-amber-glow);
+}
+
+a:focus-visible {
+  outline: 1px solid var(--color-amber);
+  outline-offset: 4px;
+}
+
+/* Focusable cells (heatmap) */
+.hud-cell {
+  transition:
+    fill 120ms var(--ease-hud),
+    stroke 120ms var(--ease-hud);
+}
+.hud-cell:hover,
+.hud-cell:focus-visible {
+  stroke: var(--color-amber-glow);
+  stroke-width: 1;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-void);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-rule-strong);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-amber-dim);
+}
