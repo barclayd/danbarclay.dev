@@ -335,7 +335,7 @@
     "displayName": "PROMPTLY",
     "description": "This template demonstrates React Server Components with React Router.",
     "createdAt": "2025-10-14T17:49:09Z",
-    "pushedAt": "2026-05-03T19:19:57Z",
+    "pushedAt": "2026-05-12T21:22:38Z",
     "language": "TypeScript",
     "url": "https://github.com/barclayd/promptly",
     "weeks": [
@@ -461,10 +461,10 @@
       },
       {
         "weekStart": "2026-05-10",
-        "count": 0
+        "count": 2
       }
     ],
-    "totalCommits": 492,
+    "totalCommits": 494,
     "index": 2
   },
   {

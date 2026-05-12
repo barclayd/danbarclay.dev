@@ -1,4 +1,6 @@
 ---
+import SiteNav from "./SiteNav.astro";
+
 interface Props {
   terminal: string;
   status?: string;
@@ -6,38 +8,6 @@ interface Props {
 }
 
 const { terminal, status = "STATUS · NOMINAL", current } = Astro.props;
-
-const navItems = [
-  { key: "home", label: "HOME", href: "/" },
-  { key: "about", label: "ABOUT", href: "/about/" },
-  { key: "work", label: "WORK", href: "/work/" },
-  { key: "promptly", label: "PROMPTLY", href: "/promptly/" },
-  { key: "keepfresh", label: "KEEPFRESH", href: "/keepfresh/" },
-];
 ---
 
-<header
-  class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]"
->
-  <div class="flex items-center gap-2">
-    <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)]"></span>
-    <span>DANBARCLAY.DEV<span class="hidden sm:inline"> · {terminal}</span></span>
-  </div>
-  <nav aria-label="Site" class="flex flex-wrap gap-x-3 gap-y-1 sm:gap-x-4">
-    {navItems.map((item) => (
-      <a
-        href={item.href}
-        class:list={[
-          "hover:text-[var(--color-amber-glow)]",
-          current === item.key && "text-[var(--color-amber)]",
-        ]}
-        aria-current={current === item.key ? "page" : undefined}
-      >
-        {item.label}
-      </a>
-    ))}
-  </nav>
-  <div>
-    <span>{status}</span>
-  </div>
-</header>
+<SiteNav terminal={terminal} status={status} current={current} />

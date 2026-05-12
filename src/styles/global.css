@@ -56,6 +56,11 @@ html {
   scrollbar-width: thin;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Clip horizontal overflow on the root so nothing — overlays, marquees,
+     iframe mirrors — can ever introduce a horizontal scrollbar on mobile.
+     `clip` is preferable to `hidden` because it does not establish a new
+     scroll container, so `position: sticky` etc. still work normally. */
+  overflow-x: clip;
 }
 
 body {
@@ -63,7 +68,7 @@ body {
   color: var(--color-text);
   min-height: 100dvh;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 ::selection {

@@ -1,0 +1,481 @@
+---
+/**
+ * SiteNav — site-wide navigation rail.
+ *
+ * On desktop (≥sm) the bar shows: [● DANBARCLAY.DEV · TERMINAL/X] [nav items] [STATUS]
+ *
+ * On mobile (<sm) the bar collapses to a single line:
+ *   [● DANBARCLAY.DEV] ............................ [MENU +]
+ * Tapping the toggle opens a HUD drawer below the bar with the
+ * full nav list as a terminal readout, staggered reveal, and a
+ * status/terminal footer line.
+ *
+ * Used on the homepage and from SubPageHeader.
+ */
+
+interface Props {
+  terminal: string;
+  status?: string;
+  current?: "about" | "work" | "promptly" | "keepfresh" | "home";
+}
+
+const { terminal, status = "STATUS · NOMINAL", current } = Astro.props;
+
+const navItems = [
+  { key: "home", label: "HOME", href: "/", desc: "ROOT" },
+  { key: "about", label: "ABOUT", href: "/about/", desc: "BIO" },
+  { key: "work", label: "WORK", href: "/work/", desc: "PROJECTS" },
+  { key: "promptly", label: "PROMPTLY", href: "/promptly/", desc: "AI · CMS" },
+  { key: "keepfresh", label: "KEEPFRESH", href: "/keepfresh/", desc: "iOS" },
+] as const;
+---
+
+<header
+  class="site-nav relative font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]"
+>
+  {/* Top row */}
+  <div class="site-nav-row flex items-center justify-between gap-3 sm:gap-4">
+    <div class="flex min-w-0 items-center gap-2">
+      <span
+        class="inline-block h-1.5 w-1.5 shrink-0 bg-[var(--color-amber)] pulse-amber"
+        aria-hidden="true"
+      ></span>
+      <span class="truncate">
+        DANBARCLAY.DEV<span class="hidden sm:inline"> · {terminal}</span>
+      </span>
+    </div>
+
+    {/* Desktop full nav */}
+    <nav aria-label="Site" class="hidden items-center gap-4 sm:flex">
+      {
+        navItems
+          .filter((item) => item.key !== "home" || current !== "home")
+          .map((item) => (
+            <a
+              href={item.href}
+              class:list={[
+                "hover:text-[var(--color-amber-glow)]",
+                current === item.key && "text-[var(--color-amber)]",
+              ]}
+              aria-current={current === item.key ? "page" : undefined}
+            >
+              {item.label}
+            </a>
+          ))
+      }
+    </nav>
+
+    {/* Desktop status */}
+    <div class="hidden sm:block">
+      <span>{status}</span>
+    </div>
+
+    {/* Mobile toggle */}
+    <button
+      type="button"
+      class="nav-toggle"
+      aria-expanded="false"
+      aria-controls="site-nav-panel"
+      aria-label="Open navigation menu"
+      data-nav-toggle
+    >
+      <span class="nav-toggle-label" data-toggle-label>MENU</span>
+      <span class="nav-toggle-icon" aria-hidden="true">
+        <span class="nav-toggle-bar nav-toggle-bar-h"></span>
+        <span class="nav-toggle-bar nav-toggle-bar-v"></span>
+      </span>
+    </button>
+  </div>
+
+  {/* Mobile drawer */}
+  <div
+    id="site-nav-panel"
+    class="nav-panel"
+    data-nav-panel
+    inert
+  >
+    <div class="nav-panel-inner">
+      <div class="nav-panel-rule" aria-hidden="true"></div>
+      <ul role="list" class="nav-list">
+        {
+          navItems.map((item, i) => (
+            <li class="nav-list-item" style={`--i: ${i};`}>
+              <a
+                href={item.href}
+                class:list={[
+                  "nav-list-link",
+                  current === item.key && "is-current",
+                ]}
+                aria-current={current === item.key ? "page" : undefined}
+              >
+                <span class="nav-list-marker" aria-hidden="true">
+                  C/{String(i).padStart(2, "0")}
+                </span>
+                <span class="nav-list-label">{item.label}</span>
+                <span class="nav-list-desc">{item.desc}</span>
+                <span class="nav-list-arrow" aria-hidden="true">
+                  {current === item.key ? "■" : "↗"}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="nav-panel-rule" aria-hidden="true"></div>
+      <div class="nav-panel-foot">
+        <span class="nav-panel-foot-status">{status}</span>
+        <span class="nav-panel-foot-sig">{terminal}</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* Containment — the drawer must never push body width. */
+  .site-nav {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .pulse-amber {
+    box-shadow: 0 0 6px var(--color-amber);
+    animation: pulse-amber 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse-amber {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+
+  /* === Mobile toggle button === */
+  /* Mobile-only — hidden on ≥640px. */
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: rgba(14, 17, 20, 0.6);
+    border: 1px solid var(--color-rule-strong);
+    color: var(--color-amber);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      border-color 200ms ease,
+      background-color 200ms ease,
+      color 200ms ease;
+  }
+  @media (min-width: 640px) {
+    .nav-toggle {
+      display: none;
+    }
+  }
+  .nav-toggle:hover,
+  .nav-toggle:focus-visible {
+    border-color: var(--color-amber);
+    color: var(--color-amber-glow);
+    background: rgba(232, 154, 60, 0.08);
+  }
+  .nav-toggle:focus-visible {
+    outline: 1px solid var(--color-amber-glow);
+    outline-offset: 2px;
+  }
+  .nav-toggle[aria-expanded="true"] {
+    border-color: var(--color-amber);
+    background: rgba(232, 154, 60, 0.12);
+    color: var(--color-amber-glow);
+  }
+
+  .nav-toggle-icon {
+    position: relative;
+    width: 9px;
+    height: 9px;
+  }
+  .nav-toggle-bar {
+    position: absolute;
+    background: currentColor;
+    transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-toggle-bar-h {
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    transform: translateY(-50%);
+  }
+  .nav-toggle-bar-v {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+  }
+  .nav-toggle[aria-expanded="true"] .nav-toggle-bar-v {
+    transform: translateX(-50%) scaleY(0);
+  }
+  .nav-toggle[aria-expanded="true"] .nav-toggle-bar-h {
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  /* === Mobile drawer === */
+  /* CSS grid-rows animation: animate from 0fr (collapsed) to 1fr (expanded). */
+  .nav-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-panel[data-open="true"] {
+    grid-template-rows: 1fr;
+  }
+  /* Mobile-only drawer — never render on desktop. */
+  @media (min-width: 640px) {
+    .nav-panel {
+      display: none;
+    }
+  }
+  .nav-panel-inner {
+    min-height: 0;
+    overflow: hidden;
+    padding-top: 12px;
+  }
+  .nav-panel-rule {
+    height: 1px;
+    background: var(--color-rule);
+  }
+
+  .nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Staggered reveal: each row gets a delayed fade-up keyed off --i. */
+  .nav-list-item {
+    border-bottom: 1px solid var(--color-rule);
+    opacity: 0;
+    transform: translateY(-6px);
+    transition:
+      opacity 240ms ease,
+      transform 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-list-item:last-child {
+    border-bottom: 0;
+  }
+  .nav-panel[data-open="true"] .nav-list-item {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: calc(var(--i, 0) * 40ms + 60ms);
+  }
+
+  .nav-list-link {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: baseline;
+    gap: 12px;
+    padding: 14px 2px;
+    color: var(--color-text);
+    text-decoration: none;
+    transition:
+      color 180ms ease,
+      background-color 180ms ease,
+      padding-left 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+  .nav-list-link::before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--color-amber);
+    transform: scaleY(0);
+    transform-origin: center;
+    transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-list-link:hover,
+  .nav-list-link:focus-visible {
+    background: linear-gradient(
+      90deg,
+      rgba(232, 154, 60, 0.06),
+      transparent 70%
+    );
+    padding-left: 8px;
+  }
+  .nav-list-link:hover::before,
+  .nav-list-link:focus-visible::before {
+    transform: scaleY(0.6);
+  }
+  .nav-list-link:focus-visible {
+    outline: 1px solid var(--color-amber);
+    outline-offset: -1px;
+  }
+  .nav-list-link.is-current {
+    background: linear-gradient(
+      90deg,
+      rgba(232, 154, 60, 0.08),
+      transparent 80%
+    );
+    padding-left: 8px;
+  }
+  .nav-list-link.is-current::before {
+    transform: scaleY(0.8);
+  }
+
+  .nav-list-marker {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--color-amber);
+    font-variant-numeric: tabular-nums;
+  }
+  .nav-list-label {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    color: var(--color-text-bright);
+    text-transform: uppercase;
+  }
+  .nav-list-link.is-current .nav-list-label {
+    color: var(--color-amber);
+  }
+  .nav-list-desc {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.22em;
+    color: var(--color-mute);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .nav-list-arrow {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1;
+    color: var(--color-mute);
+    transition:
+      transform 200ms ease,
+      color 200ms ease;
+  }
+  .nav-list-link:hover .nav-list-arrow,
+  .nav-list-link:focus-visible .nav-list-arrow {
+    transform: translateX(4px);
+    color: var(--color-amber-glow);
+  }
+  .nav-list-link.is-current .nav-list-arrow {
+    color: var(--color-amber);
+    transform: none;
+  }
+
+  .nav-panel-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 2px 4px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .nav-panel-foot-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-panel-foot-sig {
+    color: var(--color-amber);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 60%;
+    text-align: right;
+  }
+
+  /* Reduced motion — keep the structure but kill the choreography. */
+  @media (prefers-reduced-motion: reduce) {
+    .pulse-amber,
+    .nav-panel,
+    .nav-list-item,
+    .nav-toggle,
+    .nav-toggle-bar,
+    .nav-list-link,
+    .nav-list-link::before,
+    .nav-list-arrow {
+      transition: none !important;
+      animation: none !important;
+    }
+    .nav-panel[data-open="true"] .nav-list-item {
+      transition-delay: 0ms !important;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
+    const panel = document.querySelector<HTMLDivElement>("[data-nav-panel]");
+    const label = document.querySelector<HTMLSpanElement>("[data-toggle-label]");
+    if (!toggle || !panel) return;
+
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute("aria-expanded", String(open));
+      if (open) {
+        panel.dataset.open = "true";
+        panel.removeAttribute("inert");
+        if (label) label.textContent = "CLOSE";
+      } else {
+        delete panel.dataset.open;
+        panel.setAttribute("inert", "");
+        if (label) label.textContent = "MENU";
+      }
+    };
+
+    toggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = toggle.getAttribute("aria-expanded") !== "true";
+      setOpen(open);
+    });
+
+    // Tapping any link inside the panel closes it (then native navigation).
+    panel.addEventListener("click", (e) => {
+      const target = e.target as Element | null;
+      if (target && target.closest("a")) setOpen(false);
+    });
+
+    // Click outside closes.
+    document.addEventListener("click", (e) => {
+      if (toggle.getAttribute("aria-expanded") !== "true") return;
+      const target = e.target as Node;
+      if (panel.contains(target) || toggle.contains(target)) return;
+      setOpen(false);
+    });
+
+    // Escape closes and returns focus.
+    document.addEventListener("keydown", (e) => {
+      if (
+        e.key === "Escape" &&
+        toggle.getAttribute("aria-expanded") === "true"
+      ) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    // If the viewport grows past mobile while the drawer is open, close it.
+    const mq = window.matchMedia("(min-width: 640px)");
+    const onChange = () => {
+      if (mq.matches && toggle.getAttribute("aria-expanded") === "true") {
+        setOpen(false);
+      }
+    };
+    if (mq.addEventListener) mq.addEventListener("change", onChange);
+    else mq.addListener(onChange); // fallback for older Safari
+  })();
+</script>
