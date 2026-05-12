@@ -1,6 +1,7 @@
 ---
 interface Props {
   size?: number;
+  sizeMobile?: number;
   thickness?: number;
   color?: string;
   inset?: number;
@@ -8,6 +9,7 @@ interface Props {
 
 const {
   size = 14,
+  sizeMobile = 10,
   thickness = 1,
   color = "var(--color-amber)",
   inset = 0,
@@ -19,12 +21,18 @@ const {
 <span class="bracket bracket-bl" aria-hidden="true"></span>
 <span class="bracket bracket-br" aria-hidden="true"></span>
 
-<style define:vars={{ size: `${size}px`, thickness: `${thickness}px`, color, inset: `${inset}px` }}>
+<style define:vars={{ size: `${size}px`, sizeMobile: `${sizeMobile}px`, thickness: `${thickness}px`, color, inset: `${inset}px` }}>
   .bracket {
     position: absolute;
-    width: var(--size);
-    height: var(--size);
+    width: var(--sizeMobile);
+    height: var(--sizeMobile);
     pointer-events: none;
+  }
+  @media (min-width: 640px) {
+    .bracket {
+      width: var(--size);
+      height: var(--size);
+    }
   }
   .bracket-tl {
     top: var(--inset);

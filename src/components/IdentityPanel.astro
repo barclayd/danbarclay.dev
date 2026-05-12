@@ -2,12 +2,10 @@
 import HudFrame from "./HudFrame.astro";
 import DuotoneAvatar from "./DuotoneAvatar.astro";
 import TelemetryClock from "./TelemetryClock.tsx";
+import Counter from "./Counter.tsx";
 import contributions from "../data/contributions.json";
 
-const AVATAR_URL = "https://avatars.githubusercontent.com/u/39765499?v=4";
-
-const fmtNumber = (n: number) =>
-  n.toLocaleString("en-GB").replace(/,/g, ",");
+const AVATAR_URL = "https://images.keepfre.sh/app/images/dan.webp";
 
 const totalContributions = contributions.total;
 const fetchedAt = new Date(contributions.fetchedAt);
@@ -16,6 +14,20 @@ const fetchedAtLabel =
   " " +
   fetchedAt.toISOString().slice(11, 16) +
   " UTC";
+
+// Years coding from 2016
+const yearsCoding = new Date().getUTCFullYear() - 2016;
+
+const stack = [
+  "TypeScript",
+  "React",
+  "Node",
+  "Python",
+  "Rust",
+  "Swift",
+  "LLMs",
+  "MCP",
+];
 ---
 
 <HudFrame
@@ -23,15 +35,15 @@ const fetchedAtLabel =
   index="REC. 39765499"
   className="px-6 py-8 sm:px-10 sm:py-12 md:px-14 md:py-16"
 >
-  <div class="grid gap-10 md:grid-cols-[260px_1fr] md:gap-16 boot-stagger">
+  <div class="grid gap-8 md:grid-cols-[260px_1fr] md:gap-16 boot-stagger">
     <!-- Left column: avatar block -->
     <div class="flex flex-col items-start gap-4">
       <DuotoneAvatar
         src={AVATAR_URL}
         alt="Dan Barclay"
-        size={220}
+        class="w-40 sm:w-52 md:w-[220px]"
       />
-      <div class="flex w-[220px] flex-col gap-1">
+      <div class="flex w-40 sm:w-52 md:w-[220px] flex-col gap-1">
         <div class="flex items-center justify-between font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
           <span>GH/UID</span>
           <span class="text-[var(--color-text)]">39765499</span>
@@ -55,10 +67,11 @@ const fetchedAtLabel =
       <div>
         <div class="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
           <span class="h-px w-6 bg-[var(--color-amber)]"></span>
-          <span>IDENTIFIED · CLEARED</span>
+          <span>PROFILE · CLEARED</span>
         </div>
         <h1
-          class="font-display text-5xl font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)] sm:text-6xl md:text-7xl lg:text-[5.5rem]"
+          class="font-display font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)] reveal-name"
+          style="font-size: clamp(2.5rem, 11vw, 5.5rem);"
         >
           Dan
           <br />
@@ -68,41 +81,90 @@ const fetchedAtLabel =
           <span>ENGINEERING LEAD</span>
           <span class="text-[var(--color-rule-strong)]">/</span>
           <span>LONDON</span>
-          <span class="text-[var(--color-rule-strong)]">/</span>
-          <span class="text-[var(--color-amber)]">MMXXVI</span>
         </div>
       </div>
 
       <p class="max-w-xl font-display text-base leading-relaxed text-[var(--color-mute)] sm:text-lg">
-        Building software systems &amp; teams that ship. Currently leading engineering
-        on growth and customer products. Below is a year of signal — every push, every
-        repo, every commit.
+        Engineering leader, full-stack product engineer and founder with 10+
+        years of experience crafting software that delivers magical user
+        experiences. Proven expertise in building and scaling applications to
+        millions of users globally. Adept at aligning technical vision with
+        business objectives to drive innovation and growth for mission-critical
+        projects.
       </p>
 
-      <!-- Stat ribbon -->
-      <div class="grid grid-cols-3 gap-px bg-[var(--color-rule)] sm:max-w-md">
+      <!-- Tech stack ticker -->
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+        <span class="text-[var(--color-amber)]">STACK /</span>
+        {
+          stack.map((s, i) => (
+            <>
+              <span class="text-[var(--color-text)]">{s}</span>
+              {i < stack.length - 1 && (
+                <span class="text-[var(--color-rule-strong)]">·</span>
+              )}
+            </>
+          ))
+        }
+      </div>
+
+      <!-- Biographical stat ribbon -->
+      <div class="grid grid-cols-2 gap-px bg-[var(--color-rule)] sm:max-w-2xl sm:grid-cols-4">
         <div class="bg-[var(--color-void)] px-3 py-3">
           <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
-            Y/CONTRIB
+            YRS / CODING
           </div>
-          <div class="font-mono text-2xl font-medium tabular-nums text-[var(--color-amber)]">
-            {fmtNumber(totalContributions)}
+          <div class="font-mono text-xl font-medium text-[var(--color-amber)] sm:text-2xl">
+            <Counter
+              client:load
+              value={yearsCoding}
+              suffix="+"
+              delay={200}
+              whenVisible={false}
+            />
           </div>
         </div>
         <div class="bg-[var(--color-void)] px-3 py-3">
           <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
-            REPOS/SHOWN
+            USERS / REACHED
           </div>
-          <div class="font-mono text-2xl font-medium tabular-nums text-[var(--color-text)]">
-            05
+          <div class="font-mono text-xl font-medium text-[var(--color-text)] sm:text-2xl">
+            <Counter
+              client:load
+              value={40_000_000}
+              delay={350}
+              whenVisible={false}
+              format={{ notation: "compact", maximumFractionDigits: 0 }}
+            />
+            <span class="text-[var(--color-amber)]">+</span>
           </div>
         </div>
         <div class="bg-[var(--color-void)] px-3 py-3">
           <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
-            SIG/LAST
+            GH / CONTRIB · 12M
           </div>
-          <div class="font-mono text-2xl font-medium tabular-nums text-[var(--color-text)]">
-            {fetchedAt.toISOString().slice(5, 10).replace("-", ".")}
+          <div class="font-mono text-xl font-medium text-[var(--color-text)] sm:text-2xl">
+            <Counter
+              client:load
+              value={totalContributions}
+              delay={500}
+              whenVisible={false}
+            />
+          </div>
+        </div>
+        <div class="bg-[var(--color-void)] px-3 py-3">
+          <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
+            APP DOWNLOADS
+          </div>
+          <div class="font-mono text-xl font-medium text-[var(--color-text)] sm:text-2xl">
+            <Counter
+              client:load
+              value={77_000}
+              delay={650}
+              whenVisible={false}
+              format={{ notation: "compact", maximumFractionDigits: 0 }}
+            />
+            <span class="text-[var(--color-amber)]">+</span>
           </div>
         </div>
       </div>
@@ -111,14 +173,42 @@ const fetchedAtLabel =
 
   <!-- Bottom telemetry rail -->
   <div
-    class="mt-12 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-[var(--color-rule)] pt-4 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)] sm:mt-16"
+    class="mt-12 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-[var(--color-rule)] pt-4 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)] sm:mt-16 sm:gap-x-6"
   >
     <span class="flex items-center gap-1.5">
       <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)]"></span>
       LIVE
     </span>
     <TelemetryClock client:idle />
-    <span>LAT 51.5074°N · LON 0.1278°W</span>
-    <span class="ml-auto">PULL {fetchedAtLabel}</span>
+    <span class="whitespace-nowrap">LAT 51.5074°N · LON 0.1278°W</span>
+    <span class="hidden sm:inline sm:ml-auto">PULL {fetchedAtLabel}</span>
   </div>
 </HudFrame>
+
+<style>
+  /* Glitch-fade reveal on the name on first paint */
+  @keyframes name-reveal {
+    0% {
+      opacity: 0;
+      transform: translateY(8px);
+      letter-spacing: 0.04em;
+    }
+    40% {
+      opacity: 0.85;
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+      letter-spacing: -0.01em;
+    }
+  }
+  .reveal-name {
+    animation: name-reveal 1000ms var(--ease-hud) both;
+    animation-delay: 280ms;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-name {
+      animation: none;
+    }
+  }
+</style>

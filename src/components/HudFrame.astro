@@ -24,14 +24,14 @@ const {
   <CornerBrackets size={bracketSize} color={bracketColor} />
   {
     (label || index) && (
-      <div class="absolute -top-2 left-6 right-6 flex items-center justify-between gap-3 pointer-events-none z-10">
+      <div class="absolute -top-2 left-3 right-3 sm:left-6 sm:right-6 flex items-center justify-between gap-2 sm:gap-3 pointer-events-none z-10 max-w-full">
         {label && (
-          <span class="bg-[var(--color-void)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+          <span class="truncate bg-[var(--color-void)] px-2 py-0.5 font-mono text-[9px] sm:text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
             {label}
           </span>
         )}
         {index && (
-          <span class="bg-[var(--color-void)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-hud text-[var(--color-amber)]">
+          <span class="shrink-0 bg-[var(--color-void)] px-2 py-0.5 font-mono text-[9px] sm:text-[10px] uppercase tracking-hud text-[var(--color-amber)]">
             {index}
           </span>
         )}

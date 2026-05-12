@@ -6,12 +6,20 @@ import type { WeekPoint } from "../lib/types";
 type Props = {
   weeks: WeekPoint[];
   height?: number;
+  mobileHeight?: number;
+  mobileBreakpoint?: number;
 };
 
-export default function CommitChart({ weeks, height = 160 }: Props) {
+export default function CommitChart({
+  weeks,
+  height: heightProp = 160,
+  mobileHeight = 130,
+  mobileBreakpoint = 640,
+}: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const [width, setWidth] = useState(640);
+  const [width, setWidth] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const [hover, setHover] = useState<null | {
     week: WeekPoint;
     x: number;
@@ -20,20 +28,45 @@ export default function CommitChart({ weeks, height = 160 }: Props) {
 
   useEffect(() => {
     if (!wrapRef.current) return;
-    const obs = new ResizeObserver((entries) => {
-      for (const e of entries) {
-        setWidth(Math.max(280, Math.floor(e.contentRect.width)));
-      }
-    });
+    const measure = () => {
+      const el = wrapRef.current;
+      if (!el) return;
+      setWidth(Math.max(0, Math.floor(el.getBoundingClientRect().width)));
+    };
+    measure();
+    const obs = new ResizeObserver(() => measure());
     obs.observe(wrapRef.current);
     return () => obs.disconnect();
   }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${mobileBreakpoint - 1}px)`);
+    const sync = () => setIsMobile(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, [mobileBreakpoint]);
+
+  const height = isMobile ? mobileHeight : heightProp;
+
+  // Dismiss tooltip on tap outside (touch persistence).
+  useEffect(() => {
+    if (!hover) return;
+    const onDocPointerDown = (e: PointerEvent) => {
+      if (!wrapRef.current) return;
+      if (!wrapRef.current.contains(e.target as Node)) {
+        setHover(null);
+      }
+    };
+    document.addEventListener("pointerdown", onDocPointerDown);
+    return () => document.removeEventListener("pointerdown", onDocPointerDown);
+  }, [hover]);
 
   const margin = { top: 14, right: 14, bottom: 22, left: 36 };
   const innerW = Math.max(0, width - margin.left - margin.right);
   const innerH = Math.max(0, height - margin.top - margin.bottom);
 
-  const { x, y, linePath, areaPath, maxY, ticks, lineLength } = useMemo(() => {
+  const { x, y, linePath, areaPath, maxY, ticks } = useMemo(() => {
     if (weeks.length === 0) {
       return {
         x: null as null | ReturnType<typeof scaleTime<number, number>>,
@@ -42,7 +75,6 @@ export default function CommitChart({ weeks, height = 160 }: Props) {
         areaPath: "",
         maxY: 0,
         ticks: [] as { x: number; label: string }[],
-        lineLength: 0,
       };
     }
     const points = weeks.map((w) => ({
@@ -90,21 +122,13 @@ export default function CommitChart({ weeks, height = 160 }: Props) {
     const linePath = lineGen(points) || "";
     const areaPath = areaGen(points) || "";
 
-    // Estimate path length for stroke-dasharray (rough: sum of segments).
-    let lineLen = 0;
-    for (let i = 1; i < points.length; i++) {
-      const dx = xs(points[i].date) - xs(points[i - 1].date);
-      const dy = ys(points[i].count) - ys(points[i - 1].count);
-      lineLen += Math.abs(dx) + Math.abs(dy);
-    }
-
-    return { x: xs, y: ys, linePath, areaPath, maxY: max, ticks: tickList, lineLength: Math.ceil(lineLen) };
+    return { x: xs, y: ys, linePath, areaPath, maxY: max, ticks: tickList };
   }, [weeks, innerW, innerH]);
 
-  function handleMove(evt: React.MouseEvent<SVGSVGElement>) {
+  function updateHover(clientX: number) {
     if (!x || !svgRef.current || weeks.length === 0) return;
     const rect = svgRef.current.getBoundingClientRect();
-    const px = evt.clientX - rect.left - margin.left;
+    const px = clientX - rect.left - margin.left;
     if (px < 0 || px > innerW) {
       setHover(null);
       return;
@@ -113,7 +137,9 @@ export default function CommitChart({ weeks, height = 160 }: Props) {
     let nearestIdx = 0;
     let nearestDelta = Infinity;
     for (let i = 0; i < weeks.length; i++) {
-      const d = Math.abs(new Date(weeks[i].weekStart + "T00:00:00Z").getTime() - ms);
+      const d = Math.abs(
+        new Date(weeks[i].weekStart + "T00:00:00Z").getTime() - ms
+      );
       if (d < nearestDelta) {
         nearestDelta = d;
         nearestIdx = i;
@@ -132,14 +158,26 @@ export default function CommitChart({ weeks, height = 160 }: Props) {
   }
 
   return (
-    <div ref={wrapRef} className="relative w-full">
+    <div ref={wrapRef} className="relative w-full" style={{ overflow: "clip" }}>
       <svg
         ref={svgRef}
-        width={width}
+        width={width || 0}
         height={height}
         className="block"
-        onMouseMove={handleMove}
-        onMouseLeave={() => setHover(null)}
+        style={{ touchAction: "pan-y", maxWidth: "100%" }}
+        onPointerMove={(e) => {
+          if (e.pointerType === "mouse" || e.buttons > 0) {
+            updateHover(e.clientX);
+          }
+        }}
+        onPointerDown={(e) => {
+          (e.currentTarget as SVGSVGElement).setPointerCapture?.(e.pointerId);
+          updateHover(e.clientX);
+        }}
+        onPointerLeave={(e) => {
+          if (e.pointerType === "mouse") setHover(null);
+        }}
+        onPointerCancel={() => setHover(null)}
       >
         <defs>
           <linearGradient id="chart-fill" x1="0" x2="0" y1="0" y2="1">
@@ -242,8 +280,8 @@ export default function CommitChart({ weeks, height = 160 }: Props) {
             stroke="var(--color-amber)"
             strokeWidth={1.5}
             strokeLinejoin="miter"
+            pathLength={100}
             className="chart-line"
-            style={{ ["--path-len" as string]: lineLength.toString() }}
           />
         </g>
 

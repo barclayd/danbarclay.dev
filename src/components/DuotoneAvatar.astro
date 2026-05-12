@@ -3,12 +3,15 @@ interface Props {
   src: string;
   alt: string;
   size?: number;
+  class?: string;
 }
 
-const { src, alt, size = 220 } = Astro.props;
+const { src, alt, size, class: className = "" } = Astro.props;
+const inlineStyle =
+  size !== undefined ? `width:${size}px;height:${size}px` : undefined;
 ---
 
-<div class="avatar-wrap" style={`width:${size}px;height:${size}px`}>
+<div class:list={["avatar-wrap", className]} style={inlineStyle}>
   <svg width="0" height="0" aria-hidden="true" class="absolute">
     <defs>
       <filter id="duotone-charcoal-cream">
@@ -42,8 +45,6 @@ const { src, alt, size = 220 } = Astro.props;
       <img
         src={src}
         alt={alt}
-        width={size}
-        height={size}
         loading="eager"
         decoding="sync"
         class="avatar-img"
@@ -59,6 +60,8 @@ const { src, alt, size = 220 } = Astro.props;
 <style>
   .avatar-wrap {
     position: relative;
+    aspect-ratio: 1 / 1;
+    max-width: 100%;
   }
   .checker-frame {
     position: relative;

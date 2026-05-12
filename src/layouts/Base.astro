@@ -7,8 +7,8 @@ interface Props {
 }
 
 const {
-  title = "Dan Barclay — Engineering Lead",
-  description = "Dan Barclay. Engineering lead, London. Selected work and signals from the past year.",
+  title = "Dan Barclay — Engineering Leader",
+  description = "Dan Barclay. Engineering leader in London. A decade shipping product and AI experiences to millions — selected work, signals and side projects.",
 } = Astro.props;
 ---
 
@@ -31,6 +31,73 @@ const {
   </head>
   <body>
     <div class="boot-scanline" aria-hidden="true"></div>
+    <div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
+    <div id="cursor-glow" class="cursor-glow" aria-hidden="true"></div>
     <slot />
+
+    <script is:inline>
+      // Scroll progress bar — fixed 1px amber line at the top of the viewport.
+      (function () {
+        const bar = document.getElementById("scroll-progress");
+        if (!bar) return;
+        let ticking = false;
+        function update() {
+          const doc = document.documentElement;
+          const max = Math.max(1, doc.scrollHeight - doc.clientHeight);
+          const pct = Math.min(1, Math.max(0, window.scrollY / max));
+          bar.style.transform = "scaleX(" + pct + ")";
+          ticking = false;
+        }
+        window.addEventListener(
+          "scroll",
+          function () {
+            if (!ticking) {
+              window.requestAnimationFrame(update);
+              ticking = true;
+            }
+          },
+          { passive: true }
+        );
+        update();
+      })();
+
+      // Cursor radial glow — pointer-tracked amber spotlight (mouse only).
+      (function () {
+        const glow = document.getElementById("cursor-glow");
+        if (!glow) return;
+        if (window.matchMedia("(pointer: coarse)").matches) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        let x = -9999,
+          y = -9999,
+          tx = -9999,
+          ty = -9999,
+          raf = 0;
+        function tick() {
+          x += (tx - x) * 0.18;
+          y += (ty - y) * 0.18;
+          glow.style.transform =
+            "translate3d(" + x + "px," + y + "px,0) translate(-50%,-50%)";
+          raf = requestAnimationFrame(tick);
+        }
+        window.addEventListener(
+          "pointermove",
+          function (e) {
+            if (e.pointerType && e.pointerType !== "mouse") return;
+            tx = e.clientX;
+            ty = e.clientY;
+            if (!raf) {
+              x = tx;
+              y = ty;
+              glow.style.opacity = "1";
+              raf = requestAnimationFrame(tick);
+            }
+          },
+          { passive: true }
+        );
+        window.addEventListener("pointerleave", function () {
+          glow.style.opacity = "0";
+        });
+      })();
+    </script>
   </body>
 </html>

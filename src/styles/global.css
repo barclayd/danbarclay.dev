@@ -54,6 +54,8 @@ html {
   text-rendering: geometricPrecision;
   scrollbar-color: var(--color-rule-strong) var(--color-void);
   scrollbar-width: thin;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -101,6 +103,27 @@ body::after {
   );
 }
 
+/* Touch-device overlays: dial back the screen texture for clarity on small screens. */
+@media (pointer: coarse) {
+  body::before {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.008) 0px,
+      rgba(255, 255, 255, 0.008) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  }
+  body::after {
+    background: radial-gradient(
+      ellipse at center,
+      transparent 60%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
+  }
+}
+
+
 /* ====== HUD utilities ====== */
 .font-display {
   font-family: var(--font-display);
@@ -136,6 +159,69 @@ body::after {
 /* Pixelated mask gradient used for ticker/edge fade. */
 .fade-mask-r {
   mask-image: linear-gradient(to right, black 80%, transparent 100%);
+}
+
+/* ====== Scroll progress bar ====== */
+.scroll-progress {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--color-amber-dim) 0%,
+    var(--color-amber) 50%,
+    var(--color-amber-glow) 100%
+  );
+  box-shadow: 0 0 8px rgba(232, 154, 60, 0.45);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  z-index: 80;
+  pointer-events: none;
+  transition: transform 80ms linear;
+}
+
+/* ====== Cursor radial glow (desktop, fine pointer only) ====== */
+.cursor-glow {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 50;
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 240ms var(--ease-hud);
+  background: radial-gradient(
+    circle,
+    rgba(232, 154, 60, 0.08) 0%,
+    rgba(232, 154, 60, 0.04) 28%,
+    rgba(232, 154, 60, 0) 65%
+  );
+  filter: blur(2px);
+  will-change: transform;
+}
+@media (pointer: coarse) {
+  .cursor-glow {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cursor-glow {
+    display: none;
+  }
+}
+
+/* ====== Number-flow tuning ====== */
+number-flow-react,
+number-flow {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  --number-flow-mask-height: 0.18em;
+  --number-flow-mask-width: 0.4em;
 }
 
 /* ====== Boot scanline ====== */
@@ -212,13 +298,18 @@ body::after {
 
 /* ====== Scroll-driven reveals (CSS scroll-driven animations) ====== */
 @keyframes panel-reveal {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(28px);
+    filter: blur(6px) saturate(0.6);
   }
-  to {
+  60% {
+    filter: blur(0) saturate(1);
+  }
+  100% {
     opacity: 1;
     transform: translateY(0);
+    filter: blur(0) saturate(1);
   }
 }
 
@@ -227,6 +318,115 @@ body::after {
     animation: panel-reveal linear both;
     animation-timeline: view();
     animation-range: entry 0% cover 30%;
+  }
+}
+
+/* Rule line — draws left to right as it enters view. */
+@keyframes rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@supports (animation-timeline: view()) {
+  .rule-draw {
+    transform-origin: left center;
+    animation: rule-draw linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 20%;
+  }
+}
+
+/* Cascaded stagger for children of a container (stat blocks, project rows, etc.). */
+@keyframes cascade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+@supports (animation-timeline: view()) {
+  .cascade-children > * {
+    animation: cascade-up linear both;
+    animation-timeline: view();
+  }
+  .cascade-children > *:nth-child(1) {
+    animation-range: entry 0% cover 14%;
+  }
+  .cascade-children > *:nth-child(2) {
+    animation-range: entry 3% cover 17%;
+  }
+  .cascade-children > *:nth-child(3) {
+    animation-range: entry 6% cover 20%;
+  }
+  .cascade-children > *:nth-child(4) {
+    animation-range: entry 9% cover 23%;
+  }
+  .cascade-children > *:nth-child(5) {
+    animation-range: entry 12% cover 26%;
+  }
+  .cascade-children > *:nth-child(6) {
+    animation-range: entry 15% cover 29%;
+  }
+  .cascade-children > *:nth-child(7) {
+    animation-range: entry 18% cover 32%;
+  }
+  .cascade-children > *:nth-child(8) {
+    animation-range: entry 21% cover 35%;
+  }
+}
+
+/* Panel scan-sweep — a thin amber light sweeps across each hud-frame as it
+   enters view, suggesting the panel is being decoded line-by-line.
+   Uses background-position so the stripe stays clipped to the element box
+   without affecting the parent's overflow (preserves floating labels). */
+@keyframes panel-sweep {
+  0% {
+    background-position: 100% 0;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    background-position: 0% 0;
+    opacity: 0;
+  }
+}
+@supports (animation-timeline: view()) {
+  .panel-reveal::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 44%,
+      rgba(232, 154, 60, 0.14) 49%,
+      rgba(255, 180, 76, 0.28) 50%,
+      rgba(232, 154, 60, 0.14) 51%,
+      transparent 56%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    background-position: 100% 0;
+    mix-blend-mode: screen;
+    animation: panel-sweep linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 35%;
   }
 }
 
@@ -252,13 +452,19 @@ body::after {
   }
 }
 
-/* Chart path draw-in via stroke-dashoffset. */
+/* Chart path draw-in via stroke-dashoffset. pathLength=100 normalises the path. */
 @keyframes chart-draw {
-  from {
-    stroke-dashoffset: var(--path-len, 1000);
+  0% {
+    stroke-dashoffset: 100;
+    filter: drop-shadow(0 0 6px rgba(232, 154, 60, 0.55));
   }
-  to {
+  85% {
     stroke-dashoffset: 0;
+    filter: drop-shadow(0 0 6px rgba(232, 154, 60, 0.55));
+  }
+  100% {
+    stroke-dashoffset: 0;
+    filter: drop-shadow(0 0 0 rgba(232, 154, 60, 0));
   }
 }
 
@@ -273,17 +479,18 @@ body::after {
 
 @supports (animation-timeline: view()) {
   .chart-line {
-    stroke-dasharray: var(--path-len, 1000);
-    stroke-dashoffset: var(--path-len, 1000);
-    animation: chart-draw linear forwards;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: chart-draw linear both;
     animation-timeline: view();
-    animation-range: entry 10% cover 60%;
+    /* Scrub the line left→right across the full time the chart is visible. */
+    animation-range: cover 0% cover 100%;
   }
   .chart-area {
     opacity: 0;
-    animation: chart-fill linear forwards;
+    animation: chart-fill linear both;
     animation-timeline: view();
-    animation-range: entry 30% cover 80%;
+    animation-range: cover 10% cover 85%;
   }
 }
 
@@ -291,8 +498,14 @@ body::after {
 @supports not (animation-timeline: view()) {
   .heatmap-cell,
   .chart-line,
-  .chart-area {
+  .chart-area,
+  .cascade-children > * {
     opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .rule-draw {
+    transform: none;
   }
   .chart-line {
     stroke-dasharray: none;
@@ -312,14 +525,21 @@ body::after {
     transform: none;
   }
   .panel-reveal,
+  .panel-reveal::after,
   .heatmap-cell,
   .chart-line,
-  .chart-area {
+  .chart-area,
+  .rule-draw,
+  .cascade-children > * {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+    filter: none !important;
     stroke-dashoffset: 0 !important;
     stroke-dasharray: none !important;
+  }
+  .panel-reveal::after {
+    display: none;
   }
 }
 
