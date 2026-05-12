@@ -18,25 +18,39 @@ import CommsPanel from "../components/CommsPanel.astro";
         <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)]"></span>
         <span>DANBARCLAY.DEV<span class="hidden sm:inline"> · TERMINAL/00</span></span>
       </div>
-      <!-- Compact mobile channel nav: indices only -->
+      <!-- Compact mobile product nav -->
       <nav
-        aria-label="Channel navigation"
-        class="flex items-center gap-2 md:hidden"
+        aria-label="External products"
+        class="flex items-center gap-2 sm:hidden"
       >
-        <a href="#identity" class="rounded-sm px-1 py-0.5 hover:text-[var(--color-amber-glow)]">00</a>
+        <a
+          href="https://promptlycms.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="rounded-sm px-1 py-0.5 hover:text-[var(--color-amber-glow)]"
+        >PROMPTLY <span aria-hidden="true">↗</span></a>
         <span class="text-[var(--color-rule-strong)]">·</span>
-        <a href="#signal" class="rounded-sm px-1 py-0.5 hover:text-[var(--color-amber-glow)]">01</a>
-        <span class="text-[var(--color-rule-strong)]">·</span>
-        <a href="#trans" class="rounded-sm px-1 py-0.5 hover:text-[var(--color-amber-glow)]">02</a>
-        <span class="text-[var(--color-rule-strong)]">·</span>
-        <a href="#comms" class="rounded-sm px-1 py-0.5 hover:text-[var(--color-amber-glow)]">03</a>
+        <a
+          href="https://keepfre.sh"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="rounded-sm px-1 py-0.5 hover:text-[var(--color-amber-glow)]"
+        >KEEPFRESH <span aria-hidden="true">↗</span></a>
       </nav>
-      <!-- Full desktop channel nav -->
-      <nav aria-label="Channel navigation" class="hidden gap-4 md:flex">
-        <a href="#identity" class="hover:text-[var(--color-amber-glow)]">CH/00 IDENTITY</a>
-        <a href="#signal" class="hover:text-[var(--color-amber-glow)]">CH/01 SIGNAL</a>
-        <a href="#trans" class="hover:text-[var(--color-amber-glow)]">CH/02 TRANSMISSIONS</a>
-        <a href="#comms" class="hover:text-[var(--color-amber-glow)]">CH/03 COMMS</a>
+      <!-- Full product nav -->
+      <nav aria-label="External products" class="hidden gap-4 sm:flex">
+        <a
+          href="https://promptlycms.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hover:text-[var(--color-amber-glow)]"
+        >PROMPTLYCMS <span aria-hidden="true">↗</span></a>
+        <a
+          href="https://keepfre.sh"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hover:text-[var(--color-amber-glow)]"
+        >KEEPFRESH <span aria-hidden="true">↗</span></a>
       </nav>
       <div>
         <span>STATUS · NOMINAL</span>
