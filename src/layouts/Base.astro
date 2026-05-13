@@ -8,6 +8,7 @@ interface Props {
   pageType?: "ProfilePage" | "AboutPage" | "CollectionPage" | "WebPage";
   noPersonGraph?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  breadcrumbs?: Array<{ name: string; url?: string }>;
 }
 
 const SITE_URL = "https://danbarclay.dev";
@@ -19,6 +20,7 @@ const {
   pageType = "WebPage",
   noPersonGraph = false,
   jsonLd,
+  breadcrumbs,
 } = Astro.props;
 
 const canonicalUrl = new URL(Astro.url.pathname, SITE_URL).toString();
@@ -129,8 +131,30 @@ const personGraph = {
   ],
 };
 
+// BreadcrumbList — emitted only when the page declares a trail. The final
+// item omits `item` per Google guidance, so the trail terminator isn't a
+// self-link to the current page.
+const breadcrumbJsonLd =
+  breadcrumbs && breadcrumbs.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "@id": canonicalUrl + "#breadcrumbs",
+        itemListElement: breadcrumbs.map((b, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: b.name,
+          ...(b.url ? { item: new URL(b.url, SITE_URL).toString() } : {}),
+        })),
+      }
+    : null;
+
 const extraJsonLd = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
-const graphsToEmit = noPersonGraph ? extraJsonLd : [personGraph, ...extraJsonLd];
+const graphsToEmit = [
+  ...(noPersonGraph ? [] : [personGraph]),
+  ...(breadcrumbJsonLd ? [breadcrumbJsonLd] : []),
+  ...extraJsonLd,
+];
 ---
 
 <!doctype html>
