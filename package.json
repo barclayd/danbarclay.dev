@@ -14,12 +14,12 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/react": "^5.0.4",
+    "@astrojs/react": "^5.0.5",
     "@fontsource/chakra-petch": "^5.2.7",
     "@fontsource/jetbrains-mono": "^5.2.8",
     "@number-flow/react": "^0.6.0",
     "@tailwindcss/vite": "^4.3.0",
-    "astro": "^6.3.1",
+    "astro": "^6.3.3",
     "d3-scale": "^4.0.2",
     "d3-shape": "^3.2.0",
     "motion": "^12.38.0",

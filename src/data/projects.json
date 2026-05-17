@@ -324,6 +324,10 @@
       {
         "weekStart": "2026-05-10",
         "count": 0
+      },
+      {
+        "weekStart": "2026-05-17",
+        "count": 0
       }
     ],
     "totalCommits": 459,
@@ -462,6 +466,10 @@
       {
         "weekStart": "2026-05-10",
         "count": 2
+      },
+      {
+        "weekStart": "2026-05-17",
+        "count": 0
       }
     ],
     "totalCommits": 494,
@@ -788,6 +796,10 @@
       {
         "weekStart": "2026-05-10",
         "count": 0
+      },
+      {
+        "weekStart": "2026-05-17",
+        "count": 0
       }
     ],
     "totalCommits": 262,
@@ -857,6 +869,10 @@
       },
       {
         "weekStart": "2026-05-10",
+        "count": 0
+      },
+      {
+        "weekStart": "2026-05-17",
         "count": 0
       }
     ],
@@ -967,6 +983,10 @@
       },
       {
         "weekStart": "2026-05-10",
+        "count": 0
+      },
+      {
+        "weekStart": "2026-05-17",
         "count": 0
       }
     ],
