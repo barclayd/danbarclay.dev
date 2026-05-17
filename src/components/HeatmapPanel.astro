@@ -9,13 +9,17 @@ import type { ContributionsData } from "../lib/types";
 const contributions = contributionsRaw as ContributionsData;
 const total = contributions.total;
 const streak = (() => {
-  // Trailing-day streak (consecutive days with >=1 contribution from the end).
-  let s = 0;
-  for (let i = contributions.days.length - 1; i >= 0; i--) {
-    if (contributions.days[i].count > 0) s++;
-    else break;
+  let best = 0;
+  let run = 0;
+  for (const day of contributions.days) {
+    if (day.count > 0) {
+      run++;
+      if (run > best) best = run;
+    } else {
+      run = 0;
+    }
   }
-  return s;
+  return best;
 })();
 const busiestDay = contributions.days.reduce(
   (best, d) => (d.count > best.count ? d : best),
@@ -100,7 +104,7 @@ const avgPerDay = total / contributions.days.length;
     </div>
     <div class="bg-[var(--color-void)] px-4 py-3">
       <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
-        STREAK · TRAIL
+        STREAK · MAX
       </div>
       <div class="font-mono text-xl font-medium text-[var(--color-text)]">
         <Counter client:visible value={streak} suffix="d" delay={420} />
