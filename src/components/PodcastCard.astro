@@ -1,0 +1,1129 @@
+---
+/**
+ * PodcastCard — captured-transmission card for a single podcast episode.
+ *
+ * Two variants:
+ *   - "hero" — full-width composition with side-by-side artwork + metadata,
+ *     a waveform decoration, and the Spotify embed expanded by default.
+ *   - "row"  — compact stacked row with thumbnail, metadata and a
+ *     click-to-expand Spotify embed.
+ *
+ * Reuses the site-wide #duotone-amber SVG filter declared on the page.
+ *
+ * The Spotify iframe is loaded lazily — `data-src` is swapped to `src`
+ * on first open (or immediately, for the hero variant).
+ */
+import type { Podcast } from "../lib/types";
+
+interface Props {
+  podcast: Podcast;
+  variant?: "hero" | "row";
+}
+
+const { podcast, variant = "row" } = Astro.props;
+const isHero = variant === "hero";
+
+const id = `pod-${podcast.slug}`;
+const idxLabel = String(podcast.index).padStart(2, "0");
+
+const fmtDuration = (s: number) => {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return h > 0 ? `${pad(h)}:${pad(m)}:${pad(sec)}` : `${pad(m)}:${pad(sec)}`;
+};
+
+const fmtDate = (iso: string) => {
+  const d = new Date(`${iso}T00:00:00Z`);
+  return d
+    .toLocaleDateString("en-GB", {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      timeZone: "UTC",
+    })
+    .toUpperCase()
+    .replace(/,/g, "");
+};
+
+const duration = fmtDuration(podcast.durationSeconds);
+const date = fmtDate(podcast.publishedAt);
+---
+
+{
+  isHero ? (
+    /* ============================ HERO VARIANT ============================ */
+    <article
+      class="pod pod-hero"
+      data-pod
+      data-open="true"
+      data-id={id}
+    >
+      {/* Status strip */}
+      <header class="pod-status">
+        <div class="pod-status-left">
+          <span class="onair-dot" aria-hidden="true" />
+          <span>ON-AIR · VOICE INTERCEPT</span>
+        </div>
+        <div class="pod-status-chips" aria-hidden="true">
+          <span class="chip"><span class="chip-k">EP</span><span class="chip-v">{idxLabel}</span></span>
+          <span class="chip chip-sep" />
+          <span class="chip"><span class="chip-k">DATE</span><span class="chip-v">{date}</span></span>
+          <span class="chip chip-sep" />
+          <span class="chip"><span class="chip-k">DUR</span><span class="chip-v">{duration}</span></span>
+          <span class="chip chip-sep" />
+          <span class="chip"><span class="chip-k">ROLE</span><span class="chip-v">{podcast.role.toUpperCase()}</span></span>
+        </div>
+      </header>
+
+      <div class="pod-body">
+        {/* Left — artwork */}
+        <div class="pod-art-wrap">
+          <div class="pod-art" aria-hidden="false">
+            <img
+              src={podcast.artworkUrl}
+              alt={`${podcast.show} — episode artwork`}
+              loading="lazy"
+              decoding="async"
+              width="300"
+              height="300"
+            />
+            <span class="reticle reticle-tl" aria-hidden="true" />
+            <span class="reticle reticle-tr" aria-hidden="true" />
+            <span class="reticle reticle-bl" aria-hidden="true" />
+            <span class="reticle reticle-br" aria-hidden="true" />
+            <span class="art-tag art-tag-tl">FRAME · {idxLabel}</span>
+            <span class="art-tag art-tag-br">{podcast.show.toUpperCase()}</span>
+          </div>
+          <div class="pod-art-spec">
+            <div>
+              <span class="k">SHOW</span>
+              <span class="v">{podcast.show.toUpperCase()}</span>
+            </div>
+            <div>
+              <span class="k">HOST</span>
+              <span class="v">{podcast.showHost.toUpperCase()}</span>
+            </div>
+            <div>
+              <span class="k">RUNTIME</span>
+              <span class="v">{duration}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right — metadata */}
+        <div class="pod-meta">
+          <div class="pod-marker">
+            <span>EP/{idxLabel}</span>
+            <span class="rule" aria-hidden="true" />
+            <span>BY DAN BARCLAY · {podcast.role.toUpperCase()}</span>
+          </div>
+
+          <h2 class="pod-title">{podcast.title}</h2>
+
+          <dl class="pod-attrib">
+            <div>
+              <dt>WITH</dt>
+              <dd>{podcast.showHost}</dd>
+            </div>
+            <div>
+              <dt>ON</dt>
+              <dd>
+                {podcast.showUrl ? (
+                  <a href={podcast.showUrl} target="_blank" rel="noopener noreferrer">
+                    {podcast.show}
+                  </a>
+                ) : (
+                  podcast.show
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt>FILED</dt>
+              <dd>{date}</dd>
+            </div>
+          </dl>
+
+          <p class="pod-desc">{podcast.description}</p>
+
+          {podcast.topics.length > 0 && (
+            <ul class="pod-topics" aria-label="Topics">
+              {podcast.topics.map((t) => (
+                <li>
+                  <span aria-hidden="true">/</span>
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      {/* Waveform decoration */}
+      <div class="pod-wave" aria-hidden="true">
+        <div class="pod-wave-rail">
+          {Array.from({ length: 56 }).map((_, i) => (
+            <span style={`--i:${i}; --h:${0.18 + ((i * 37) % 100) / 110}`} />
+          ))}
+        </div>
+        <div class="pod-wave-label">
+          <span>SIG / FFT · LIVE TRACE</span>
+          <span>02 · CH-A</span>
+        </div>
+      </div>
+
+      {/* Player — always open for the hero */}
+      <div class="pod-player">
+        <div class="pod-player-hud" aria-hidden="true">
+          <span class="hud-tag">PLAYER · SPOTIFY</span>
+          <span class="hud-tag amber">SRC · OPEN.SPOTIFY.COM</span>
+        </div>
+        <div class="pod-player-frame">
+          <iframe
+            src={podcast.embedUrl}
+            title={`Spotify player — ${podcast.title}`}
+            loading="lazy"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            allowfullscreen
+            data-loaded="true"
+          />
+        </div>
+      </div>
+
+      {/* Footer CTAs */}
+      <div class="pod-foot">
+        <a class="cta cta-amber" href={podcast.spotifyUrl} target="_blank" rel="noopener noreferrer">
+          <span>LISTEN ON SPOTIFY</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+        {podcast.showUrl && (
+          <a class="cta" href={podcast.showUrl} target="_blank" rel="noopener noreferrer">
+            <span>SHOW · {podcast.show.toUpperCase()}</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        )}
+        <button class="cta cta-copy" type="button" data-copy={podcast.spotifyUrl}>
+          <span data-copy-label>COPY EPISODE LINK</span>
+          <span aria-hidden="true">⌗</span>
+        </button>
+      </div>
+    </article>
+  ) : (
+    /* ============================ ROW VARIANT ============================= */
+    <article class="pod pod-row" data-pod data-id={id}>
+      <button
+        class="pod-row-head"
+        type="button"
+        aria-expanded="false"
+        aria-controls={`${id}-player`}
+        data-pod-toggle
+      >
+        <div class="pod-row-marker">
+          <span>C/{idxLabel}</span>
+          <span class="rule" aria-hidden="true" />
+        </div>
+
+        <div class="pod-row-thumb">
+          <img
+            src={podcast.artworkUrl}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            width="72"
+            height="72"
+            aria-hidden="true"
+          />
+          <span class="reticle reticle-tl" aria-hidden="true" />
+          <span class="reticle reticle-br" aria-hidden="true" />
+        </div>
+
+        <div class="pod-row-text">
+          <div class="pod-row-eyebrow">
+            <span class="onair-dot" aria-hidden="true" />
+            <span>{podcast.show.toUpperCase()}</span>
+            <span class="dot">·</span>
+            <span>{podcast.showHost.toUpperCase()}</span>
+            <span class="dot">·</span>
+            <span>{date}</span>
+          </div>
+          <div class="pod-row-title">{podcast.title}</div>
+        </div>
+
+        <div class="pod-row-aside">
+          <span class="pod-row-dur" aria-hidden="true">{duration}</span>
+          <span class="pod-row-cta">
+            <span class="pod-row-cta-label" data-pod-label>PLAY</span>
+            <span class="pod-row-cta-icon" aria-hidden="true">▶</span>
+          </span>
+        </div>
+      </button>
+
+      <div class="pod-row-shell" data-pod-shell id={`${id}-player`}>
+        <div class="pod-row-inner">
+          <div class="pod-row-player">
+            <iframe
+              data-src={podcast.embedUrl}
+              title={`Spotify player — ${podcast.title}`}
+              loading="lazy"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              allowfullscreen
+              data-lazy="true"
+            />
+          </div>
+          <div class="pod-row-links">
+            <a class="cta cta-amber" href={podcast.spotifyUrl} target="_blank" rel="noopener noreferrer">
+              <span>OPEN ON SPOTIFY</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            {podcast.showUrl && (
+              <a class="cta" href={podcast.showUrl} target="_blank" rel="noopener noreferrer">
+                <span>SHOW PAGE</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </article>
+  )
+}
+
+<style>
+  /* =========================================================================
+     SHARED — chrome, chips, CTAs, waveform.
+     ========================================================================= */
+  .pod {
+    --pod-pad-x: 1.25rem;
+    --pod-pad-y: 1.25rem;
+    position: relative;
+    background: var(--color-void);
+  }
+
+  @media (min-width: 640px) {
+    .pod {
+      --pod-pad-x: 1.75rem;
+      --pod-pad-y: 1.5rem;
+    }
+  }
+
+  /* Live amber dot, calmer than the site nav's pulse — a steady ON-AIR signal. */
+  .onair-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--color-amber);
+    box-shadow: 0 0 0 1px rgba(232, 154, 60, 0.35),
+      0 0 10px rgba(232, 154, 60, 0.55);
+    animation: onair 1.6s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes onair {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(0.78); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .onair-dot { animation: none; }
+  }
+
+  /* Reticles — small amber tick marks at the four corners of any framed image. */
+  .reticle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .reticle::before,
+  .reticle::after {
+    content: "";
+    position: absolute;
+    background: var(--color-amber);
+  }
+  .reticle::before { width: 100%; height: 1px; }
+  .reticle::after  { width: 1px; height: 100%; }
+  .reticle-tl { top: -1px; left: -1px; }
+  .reticle-tl::before { top: 0; left: 0; }
+  .reticle-tl::after  { top: 0; left: 0; }
+  .reticle-tr { top: -1px; right: -1px; }
+  .reticle-tr::before { top: 0; right: 0; }
+  .reticle-tr::after  { top: 0; right: 0; }
+  .reticle-bl { bottom: -1px; left: -1px; }
+  .reticle-bl::before { bottom: 0; left: 0; }
+  .reticle-bl::after  { bottom: 0; left: 0; }
+  .reticle-br { bottom: -1px; right: -1px; }
+  .reticle-br::before { bottom: 0; right: 0; }
+  .reticle-br::after  { bottom: 0; right: 0; }
+
+  /* Floating HUD tags inside the artwork. */
+  .art-tag,
+  .hud-tag {
+    position: absolute;
+    background: rgba(14, 17, 20, 0.85);
+    padding: 3px 6px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+    z-index: 4;
+    pointer-events: none;
+  }
+  .art-tag-tl { top: 6px; left: 6px; color: var(--color-amber); }
+  .art-tag-br { bottom: 6px; right: 6px; }
+
+  /* CTAs — same shape as the rest of the site. */
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+    background: rgba(14, 17, 20, 0.5);
+    border: 1px solid var(--color-rule-strong);
+    cursor: pointer;
+    transition:
+      color 200ms var(--ease-hud),
+      background-color 200ms var(--ease-hud),
+      border-color 200ms var(--ease-hud),
+      transform 200ms var(--ease-hud);
+  }
+  .cta:hover,
+  .cta:focus-visible {
+    color: var(--color-amber-glow);
+    border-color: var(--color-amber-dim);
+    background: rgba(232, 154, 60, 0.06);
+  }
+  .cta:focus-visible {
+    outline: 1px solid var(--color-amber);
+    outline-offset: 2px;
+  }
+  .cta-amber {
+    color: var(--color-amber);
+    border-color: var(--color-amber-dim);
+    background: rgba(232, 154, 60, 0.06);
+  }
+  .cta-amber:hover {
+    background: rgba(232, 154, 60, 0.12);
+    border-color: var(--color-amber);
+  }
+  .cta-copy[data-state="copied"] {
+    color: var(--color-amber-glow);
+    border-color: var(--color-amber);
+    background: rgba(232, 154, 60, 0.14);
+  }
+
+  /* =========================================================================
+     HERO VARIANT
+     ========================================================================= */
+  .pod-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: var(--pod-pad-y) var(--pod-pad-x);
+  }
+
+  /* Top status strip */
+  .pod-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--color-rule);
+    padding-bottom: 12px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .pod-status-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-amber);
+  }
+  .pod-status-chips {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .pod-status-chips .chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 0 10px;
+  }
+  .pod-status-chips .chip:first-child { padding-left: 0; }
+  .pod-status-chips .chip-sep {
+    padding: 0;
+    width: 1px;
+    height: 10px;
+    background: var(--color-rule-strong);
+  }
+  .pod-status-chips .chip-k { color: var(--color-mute); }
+  .pod-status-chips .chip-v { color: var(--color-text-bright); }
+
+  /* Body grid — artwork left, metadata right */
+  .pod-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  @media (min-width: 768px) {
+    .pod-body {
+      grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+      gap: 40px;
+      align-items: start;
+    }
+  }
+
+  .pod-art-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+  .pod-art {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    background: var(--color-void);
+    border: 1px solid var(--color-rule);
+    overflow: hidden;
+    isolation: isolate;
+    box-shadow:
+      inset 0 0 0 1px rgba(232, 154, 60, 0.06),
+      0 0 28px -10px rgba(0, 0, 0, 0.7);
+  }
+  .pod-art img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: url(#duotone-amber) contrast(1.06) brightness(0.92);
+    transform: scale(1.01);
+    transition: transform 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 400ms ease;
+  }
+  .pod-hero:hover .pod-art img {
+    transform: scale(1.035);
+    filter: url(#duotone-amber) contrast(1.12) brightness(1);
+  }
+  /* CRT scanlines */
+  .pod-art::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(14, 17, 20, 0) 0,
+      rgba(14, 17, 20, 0) 2px,
+      rgba(14, 17, 20, 0.4) 3px,
+      rgba(14, 17, 20, 0) 4px
+    );
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+  /* Inner amber tint + vignette */
+  .pod-art::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.55) 100%),
+      linear-gradient(180deg, rgba(232, 154, 60, 0.06), rgba(232, 154, 60, 0));
+    mix-blend-mode: normal;
+  }
+
+  /* Lateral spec strip beneath the artwork — keeps the "operator dossier" feel. */
+  .pod-art-spec {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--color-rule);
+    border: 1px solid var(--color-rule);
+  }
+  .pod-art-spec > div {
+    background: var(--color-void);
+    padding: 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .pod-art-spec .k {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .pod-art-spec .v {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text);
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Right column */
+  .pod-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+  }
+  .pod-marker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-amber);
+  }
+  .pod-marker .rule {
+    height: 1px;
+    background: var(--color-rule);
+    flex: 0 0 28px;
+  }
+
+  .pod-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 0.95;
+    color: var(--color-text-bright);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  /* Show/host/date dossier list */
+  .pod-attrib {
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1px;
+    background: var(--color-rule);
+    border: 1px solid var(--color-rule);
+  }
+  @media (min-width: 480px) {
+    .pod-attrib {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .pod-attrib > div {
+    background: var(--color-void);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .pod-attrib dt {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .pod-attrib dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: 0;
+    color: var(--color-text-bright);
+    line-height: 1.2;
+  }
+  .pod-attrib dd a {
+    color: var(--color-amber);
+    border-bottom: 1px solid transparent;
+    transition: color 200ms var(--ease-hud), border-color 200ms var(--ease-hud);
+  }
+  .pod-attrib dd a:hover {
+    color: var(--color-amber-glow);
+    border-bottom-color: var(--color-amber-dim);
+  }
+
+  .pod-desc {
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--color-mute);
+    margin: 0;
+    text-wrap: pretty;
+  }
+  .pod-desc::first-letter {
+    color: var(--color-text-bright);
+  }
+
+  .pod-topics {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    border-top: 1px solid var(--color-rule);
+    padding-top: 14px;
+  }
+  .pod-topics li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-text);
+    padding-right: 12px;
+    margin-right: 12px;
+    border-right: 1px solid var(--color-rule);
+  }
+  .pod-topics li:last-child {
+    border-right: 0;
+    margin-right: 0;
+    padding-right: 0;
+  }
+  .pod-topics li span:first-child {
+    color: var(--color-amber);
+  }
+
+  /* Waveform — bouncing amber FFT bars + label rail. */
+  .pod-wave {
+    position: relative;
+    border-top: 1px solid var(--color-rule);
+    border-bottom: 1px solid var(--color-rule);
+    padding: 14px 0 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .pod-wave-rail {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 32px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .pod-wave-rail span {
+    flex: 1 1 0;
+    min-width: 2px;
+    max-width: 6px;
+    height: calc(var(--h, 0.5) * 100%);
+    background: linear-gradient(
+      180deg,
+      var(--color-amber-glow) 0%,
+      var(--color-amber) 55%,
+      var(--color-amber-dim) 100%
+    );
+    transform-origin: center;
+    transform: scaleY(0.5);
+    animation: wave-bar 1800ms ease-in-out infinite;
+    animation-delay: calc(var(--i) * -73ms);
+    will-change: transform, opacity;
+    opacity: 0.7;
+  }
+  @keyframes wave-bar {
+    0%, 100% { transform: scaleY(0.25); opacity: 0.55; }
+    20%      { transform: scaleY(0.95); opacity: 1; }
+    45%      { transform: scaleY(0.35); opacity: 0.7; }
+    70%      { transform: scaleY(0.7);  opacity: 0.9; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pod-wave-rail span { animation: none; transform: scaleY(0.5); }
+  }
+  .pod-wave-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+
+  /* Player */
+  .pod-player {
+    position: relative;
+  }
+  .pod-player-hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+    margin-bottom: 8px;
+  }
+  .pod-player-hud .hud-tag {
+    position: static;
+    padding: 0;
+    background: transparent;
+  }
+  .pod-player-hud .hud-tag.amber { color: var(--color-amber); }
+  .pod-player-frame {
+    position: relative;
+    border: 1px solid var(--color-rule);
+    background: rgba(20, 24, 28, 0.4);
+    padding: 10px;
+    /* The thin amber lid + tape-loader detail. */
+  }
+  .pod-player-frame::before,
+  .pod-player-frame::after {
+    content: "";
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--color-amber-dim) 20%,
+      var(--color-amber) 50%,
+      var(--color-amber-dim) 80%,
+      transparent 100%
+    );
+    left: 6%;
+    right: 6%;
+    opacity: 0.45;
+  }
+  .pod-player-frame::before { top: -1px; }
+  .pod-player-frame::after  { bottom: -1px; }
+
+  .pod-player-frame iframe {
+    display: block;
+    width: 100%;
+    height: 232px;
+    border: 0;
+    border-radius: 0;
+    background: var(--color-void);
+  }
+  @media (min-width: 640px) {
+    .pod-player-frame iframe {
+      height: 232px;
+    }
+  }
+
+  /* Foot CTAs */
+  .pod-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* =========================================================================
+     ROW VARIANT
+     ========================================================================= */
+  .pod-row {
+    background: var(--color-void);
+  }
+
+  .pod-row-head {
+    all: unset;
+    display: grid;
+    grid-template-columns: auto 64px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
+    padding: var(--pod-pad-y) var(--pod-pad-x);
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 200ms var(--ease-hud);
+  }
+  .pod-row-head:hover,
+  .pod-row-head:focus-visible {
+    background: rgba(232, 154, 60, 0.03);
+  }
+  .pod-row-head:focus-visible {
+    outline: 1px solid var(--color-amber);
+    outline-offset: -1px;
+  }
+
+  .pod-row-marker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-amber);
+  }
+  .pod-row-marker .rule {
+    width: 18px;
+    height: 1px;
+    background: var(--color-rule);
+  }
+
+  .pod-row-thumb {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    border: 1px solid var(--color-rule);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .pod-row-thumb img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: url(#duotone-amber) contrast(1.05) brightness(0.95);
+  }
+  .pod-row-thumb::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(14, 17, 20, 0) 0,
+      rgba(14, 17, 20, 0) 1px,
+      rgba(14, 17, 20, 0.35) 2px,
+      rgba(14, 17, 20, 0) 3px
+    );
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  .pod-row-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .pod-row-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+    flex-wrap: wrap;
+  }
+  .pod-row-eyebrow .dot { color: var(--color-faint); }
+  .pod-row-eyebrow .onair-dot {
+    width: 5px;
+    height: 5px;
+  }
+  .pod-row-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: -0.005em;
+    font-size: clamp(1.0625rem, 2.4vw, 1.375rem);
+    line-height: 1.15;
+    color: var(--color-text-bright);
+    transition: color 200ms var(--ease-hud);
+    text-wrap: balance;
+  }
+  .pod-row-head:hover .pod-row-title,
+  .pod-row-head:focus-visible .pod-row-title {
+    color: var(--color-amber-glow);
+  }
+
+  .pod-row-aside {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--color-mute);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .pod-row-dur { color: var(--color-text); font-variant-numeric: tabular-nums; }
+  .pod-row-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border: 1px solid var(--color-rule-strong);
+    color: var(--color-amber);
+    background: rgba(14, 17, 20, 0.4);
+    transition:
+      color 200ms var(--ease-hud),
+      background-color 200ms var(--ease-hud),
+      border-color 200ms var(--ease-hud);
+  }
+  .pod-row-head:hover .pod-row-cta,
+  .pod-row-head:focus-visible .pod-row-cta {
+    color: var(--color-amber-glow);
+    border-color: var(--color-amber-dim);
+    background: rgba(232, 154, 60, 0.08);
+  }
+  .pod-row-cta-icon {
+    display: inline-block;
+    transform: translateY(-1px);
+    transition: transform 220ms var(--ease-hud);
+  }
+  .pod-row[data-open="true"] .pod-row-cta-icon {
+    transform: rotate(90deg);
+  }
+
+  /* Drawer — animated via grid-rows like the mobile nav. */
+  .pod-row-shell {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 360ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .pod-row[data-open="true"] .pod-row-shell {
+    grid-template-rows: 1fr;
+  }
+  .pod-row-inner {
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 var(--pod-pad-x);
+  }
+  .pod-row-inner > *:first-child { margin-top: 4px; }
+  .pod-row-inner > *:last-child  { margin-bottom: var(--pod-pad-y); }
+
+  .pod-row-player {
+    position: relative;
+    border: 1px solid var(--color-rule);
+    background: rgba(20, 24, 28, 0.4);
+    padding: 8px;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition:
+      opacity 300ms 80ms var(--ease-hud),
+      transform 300ms 80ms var(--ease-hud);
+  }
+  .pod-row[data-open="true"] .pod-row-player {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .pod-row-player iframe {
+    display: block;
+    width: 100%;
+    height: 152px;
+    border: 0;
+    background: var(--color-void);
+  }
+
+  .pod-row-links {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition:
+      opacity 300ms 160ms var(--ease-hud),
+      transform 300ms 160ms var(--ease-hud);
+  }
+  .pod-row[data-open="true"] .pod-row-links {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 540px) {
+    .pod-row-head {
+      grid-template-columns: auto 56px minmax(0, 1fr);
+      grid-template-rows: auto auto;
+      gap: 10px 12px;
+    }
+    .pod-row-thumb { width: 56px; height: 56px; }
+    .pod-row-aside {
+      grid-column: 1 / -1;
+      justify-content: space-between;
+      border-top: 1px solid var(--color-rule);
+      padding-top: 10px;
+    }
+  }
+
+  /* Reduced motion — strip drawer easing. */
+  @media (prefers-reduced-motion: reduce) {
+    .pod-row-shell,
+    .pod-row-player,
+    .pod-row-links {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Lazy-load Spotify iframes on first open of a row, and wire up the
+  // expand/collapse toggle + copy-link CTAs.
+  (function () {
+    const pods = document.querySelectorAll<HTMLElement>("[data-pod]");
+    pods.forEach((pod) => {
+      const toggle = pod.querySelector<HTMLButtonElement>("[data-pod-toggle]");
+      const shell = pod.querySelector<HTMLElement>("[data-pod-shell]");
+      const iframe = pod.querySelector<HTMLIFrameElement>("iframe[data-lazy]");
+      const label = pod.querySelector<HTMLElement>("[data-pod-label]");
+
+      const setOpen = (open: boolean) => {
+        pod.dataset.open = open ? "true" : "false";
+        if (toggle) toggle.setAttribute("aria-expanded", String(open));
+        if (label) label.textContent = open ? "STOP" : "PLAY";
+        // Inject the iframe src on first open to avoid loading
+        // Spotify chunks until requested.
+        if (open && iframe && iframe.dataset.src) {
+          iframe.src = iframe.dataset.src;
+          delete iframe.dataset.src;
+        }
+      };
+
+      if (toggle && shell) {
+        toggle.addEventListener("click", () => {
+          const open = pod.dataset.open !== "true";
+          setOpen(open);
+        });
+      }
+    });
+
+    // Copy-link buttons (used on the hero card).
+    const copyBtns = document.querySelectorAll<HTMLButtonElement>("[data-copy]");
+    copyBtns.forEach((btn) => {
+      const url = btn.dataset.copy;
+      const label = btn.querySelector<HTMLElement>("[data-copy-label]");
+      const originalLabel = label?.textContent ?? "";
+      btn.addEventListener("click", async () => {
+        if (!url) return;
+        try {
+          await navigator.clipboard.writeText(url);
+          btn.dataset.state = "copied";
+          if (label) label.textContent = "LINK COPIED";
+          window.setTimeout(() => {
+            delete btn.dataset.state;
+            if (label) label.textContent = originalLabel;
+          }, 1600);
+        } catch {
+          // Fallback — show a brief failure state.
+          if (label) label.textContent = "PRESS ⌘C";
+          window.setTimeout(() => {
+            if (label) label.textContent = originalLabel;
+          }, 1600);
+        }
+      });
+    });
+  })();
+</script>

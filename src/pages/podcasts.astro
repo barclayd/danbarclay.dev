@@ -1,0 +1,616 @@
+---
+import Base from "../layouts/Base.astro";
+import HudFrame from "../components/HudFrame.astro";
+import SubPageHeader from "../components/SubPageHeader.astro";
+import SubPageFooter from "../components/SubPageFooter.astro";
+import PodcastCard from "../components/PodcastCard.astro";
+import ScrambleText from "../components/ScrambleText.tsx";
+import podcastsRaw from "../data/podcasts.json";
+import type { Podcast } from "../lib/types";
+
+const podcasts = (podcastsRaw as Podcast[]).slice().sort((a, b) => {
+  // Featured first, then newest by publishedAt.
+  if (a.featured !== b.featured) return a.featured ? -1 : 1;
+  return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+});
+
+const [hero, ...archive] = podcasts;
+
+const title =
+  "Podcasts — Dan Barclay · Appearances, calls and voice intercepts";
+const description =
+  "Podcast appearances by Dan Barclay — engineering leader, founder of Promptly and KeepFresh. Voice transmissions, calls in to other shows, and conversations about engineering, AI, testing and product.";
+
+const PERSON_ID = "https://danbarclay.dev/#person";
+
+const podcastSchema = podcasts.map((p) => ({
+  "@context": "https://schema.org",
+  "@type": "PodcastEpisode",
+  "@id": `https://danbarclay.dev/podcasts/#${p.slug}`,
+  url: p.spotifyUrl,
+  name: p.title,
+  datePublished: p.publishedAt,
+  timeRequired: `PT${Math.floor(p.durationSeconds / 60)}M`,
+  description: p.description,
+  image: p.artworkUrl,
+  partOfSeries: {
+    "@type": "PodcastSeries",
+    name: p.show,
+    url: p.showUrl,
+  },
+  associatedMedia: {
+    "@type": "MediaObject",
+    contentUrl: p.spotifyUrl,
+    embedUrl: p.embedUrl,
+    encodingFormat: "audio/mpeg",
+  },
+  contributor: { "@id": PERSON_ID },
+  about: { "@id": PERSON_ID },
+  inLanguage: "en",
+}));
+
+const totalSeconds = podcasts.reduce((sum, p) => sum + p.durationSeconds, 0);
+const totalMinutes = Math.round(totalSeconds / 60);
+const showCount = new Set(podcasts.map((p) => p.show)).size;
+---
+
+<Base
+  title={title}
+  description={description}
+  pageType="CollectionPage"
+  jsonLd={podcastSchema}
+  breadcrumbs={[
+    { name: "Home", url: "/" },
+    { name: "About", url: "/about/" },
+    { name: "Podcasts" },
+  ]}
+>
+  <main
+    class="mx-auto flex w-full max-w-[1100px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
+  >
+    <SubPageHeader terminal="TERMINAL/PODCASTS" current="about" />
+
+    {/* SVG defs — duotone-amber filter reused by every podcast artwork. */}
+    <svg
+      width="0"
+      height="0"
+      aria-hidden="true"
+      class="pointer-events-none absolute"
+      style="position:absolute; left:-9999px; top:-9999px;"
+    >
+      <defs>
+        <filter id="duotone-amber" color-interpolation-filters="sRGB">
+          <feColorMatrix
+            type="matrix"
+            values="0.2126 0.7152 0.0722 0 0
+                    0.2126 0.7152 0.0722 0 0
+                    0.2126 0.7152 0.0722 0 0
+                    0      0      0      1 0"
+          />
+          <feComponentTransfer>
+            <feFuncR type="table" tableValues="0.055 0.910" />
+            <feFuncG type="table" tableValues="0.067 0.604" />
+            <feFuncB type="table" tableValues="0.078 0.235" />
+          </feComponentTransfer>
+        </filter>
+      </defs>
+    </svg>
+
+    {/* ========================================================== */}
+    {/* INTRO + FEATURED EPISODE                                    */}
+    {/* ========================================================== */}
+    <HudFrame
+      label="C/PODCASTS // VOICE · INTERCEPT"
+      index="ON-AIR"
+      className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
+    >
+      <div class="page-intro">
+        <div class="page-intro-eyebrow">
+          <span class="rule" aria-hidden="true"></span>
+          <span>PODCASTS · DAN BARCLAY</span>
+        </div>
+        <h1 class="page-intro-title">
+          <ScrambleText client:visible text="VOICE /" duration={700} />
+          <br />
+          <ScrambleText client:visible text="INTERCEPT" duration={900} delay={140} />
+        </h1>
+        <p class="page-intro-desc">
+          Captured transmissions. Podcasts and live calls where
+          <strong>Dan Barclay</strong> has shown up — talking engineering,
+          AI, testing, and the messy parts of shipping software.
+          Press play. Stay on frequency.
+        </p>
+
+        <ul class="page-intro-stats" aria-label="Podcast stats">
+          <li>
+            <span class="k">EPISODES</span>
+            <span class="v">{String(podcasts.length).padStart(2, "0")}</span>
+          </li>
+          <li>
+            <span class="k">SHOWS</span>
+            <span class="v">{String(showCount).padStart(2, "0")}</span>
+          </li>
+          <li>
+            <span class="k">RUNTIME</span>
+            <span class="v">{totalMinutes} MIN</span>
+          </li>
+          <li>
+            <span class="k">SIGNAL</span>
+            <span class="v amber">STABLE</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="my-10 h-px w-full bg-[var(--color-rule)] rule-draw"></div>
+
+      <div class="featured-eyebrow">
+        <span class="dot" aria-hidden="true"></span>
+        <span>FEATURED · LATEST TRANSMISSION</span>
+      </div>
+
+      {hero && <PodcastCard podcast={hero} variant="hero" />}
+    </HudFrame>
+
+    {/* ========================================================== */}
+    {/* ARCHIVE                                                      */}
+    {/* ========================================================== */}
+    <HudFrame
+      label="C/PODCASTS // ARCHIVE · TRANSMISSIONS"
+      index={archive.length > 0 ? `${String(archive.length).padStart(2, "0")} REC.` : "STANDBY"}
+      className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
+    >
+      <div class="archive-head">
+        <div>
+          <div class="archive-eyebrow">
+            <span class="rule" aria-hidden="true"></span>
+            <span>ARCHIVE</span>
+          </div>
+          <h2 class="archive-title">Back-catalogue</h2>
+          <p class="archive-desc">
+            Every other episode, sorted newest first. Tap a row to expand
+            the player inline — Spotify chunks load on demand.
+          </p>
+        </div>
+        <div class="archive-meter" aria-hidden="true">
+          <span class="archive-meter-k">INTERCEPTED</span>
+          <span class="archive-meter-v">{String(archive.length).padStart(2, "0")}</span>
+        </div>
+      </div>
+
+      <div class="my-8 h-px w-full bg-[var(--color-rule)]"></div>
+
+      {archive.length > 0 ? (
+        <div class="archive-list">
+          {archive.map((p, i) => (
+            <div class="archive-row">
+              <PodcastCard podcast={p} variant="row" />
+              {i < archive.length - 1 && <div class="archive-divider" aria-hidden="true"></div>}
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* Standby state — feels intentional, not absent. */
+        <div class="standby">
+          <div class="standby-graphic" aria-hidden="true">
+            <span class="onair-dot"></span>
+            <span class="standby-line"></span>
+            <span class="standby-line"></span>
+            <span class="standby-line"></span>
+          </div>
+          <div class="standby-text">
+            <div class="standby-title">STANDBY · ARCHIVE EMPTY</div>
+            <p class="standby-body">
+              Only one transmission on file. More incoming as the calendar
+              fills. Producers and hosts — pitches via
+              <a href="mailto:barclaysd@me.com">barclaysd@me.com</a>.
+            </p>
+          </div>
+        </div>
+      )}
+    </HudFrame>
+
+    {/* ========================================================== */}
+    {/* CTA — book Dan on your show                                  */}
+    {/* ========================================================== */}
+    <HudFrame
+      label="C/PODCASTS // OUTBOUND · CHANNEL OPEN"
+      index="HAILING"
+      className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
+    >
+      <div class="cta-wrap">
+        <div>
+          <div class="cta-eyebrow">
+            <span class="rule" aria-hidden="true"></span>
+            <span>WANT DAN ON YOUR SHOW?</span>
+          </div>
+          <h2 class="cta-title">Open a channel.</h2>
+          <p class="cta-body">
+            Engineering leadership, founding a B2B SaaS, building AI features
+            into production, scaling teams, iOS — happy to talk about any of
+            it. Drop a line and we'll find a slot.
+          </p>
+        </div>
+        <div class="cta-actions">
+          <a
+            class="cta-pri"
+            href="mailto:barclaysd@me.com?subject=Podcast%20invite"
+          >
+            <span>EMAIL · BARCLAYSD@ME.COM</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+          <a class="cta-sec" href="/about/">
+            <span>OPERATOR DOSSIER</span>
+            <span aria-hidden="true">↳</span>
+          </a>
+        </div>
+      </div>
+    </HudFrame>
+
+    <SubPageFooter />
+  </main>
+</Base>
+
+<style>
+  /* ============================ PAGE INTRO ============================== */
+  .page-intro {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .page-intro-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .page-intro-eyebrow .rule {
+    height: 1px;
+    width: 24px;
+    background: var(--color-amber);
+  }
+  .page-intro-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: -0.015em;
+    line-height: 0.9;
+    color: var(--color-text-bright);
+    font-size: clamp(2.5rem, 9vw, 5rem);
+    margin: 0;
+  }
+  .page-intro-desc {
+    margin: 0;
+    max-width: 38em;
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-mute);
+    text-wrap: pretty;
+  }
+  .page-intro-desc strong {
+    color: var(--color-text-bright);
+    font-weight: 500;
+  }
+
+  .page-intro-stats {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--color-rule);
+    border: 1px solid var(--color-rule);
+    max-width: 36rem;
+  }
+  @media (min-width: 640px) {
+    .page-intro-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  .page-intro-stats li {
+    background: var(--color-void);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+  .page-intro-stats .k {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .page-intro-stats .v {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    color: var(--color-text-bright);
+    font-variant-numeric: tabular-nums;
+  }
+  .page-intro-stats .v.amber { color: var(--color-amber); }
+
+  /* ============================ FEATURED BAND ============================ */
+  .featured-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-amber);
+  }
+  .featured-eyebrow .dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--color-amber);
+    box-shadow: 0 0 8px rgba(232, 154, 60, 0.5);
+    animation: pulse-amber 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse-amber {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(0.78); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .featured-eyebrow .dot { animation: none; }
+  }
+
+  /* ============================ ARCHIVE ============================ */
+  .archive-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .archive-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .archive-eyebrow .rule {
+    height: 1px;
+    width: 24px;
+    background: var(--color-amber);
+  }
+  .archive-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: var(--color-text-bright);
+    font-size: clamp(1.75rem, 4.5vw, 2.5rem);
+    margin: 0;
+    line-height: 0.95;
+  }
+  .archive-desc {
+    margin-top: 10px;
+    max-width: 38em;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--color-mute);
+  }
+  .archive-meter {
+    border: 1px solid var(--color-rule);
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .archive-meter-v {
+    color: var(--color-amber);
+    font-size: 1.25rem;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .archive-list {
+    background: var(--color-rule);
+    display: flex;
+    flex-direction: column;
+  }
+  .archive-row {
+    background: var(--color-void);
+  }
+  .archive-divider {
+    height: 1px;
+    background: var(--color-rule);
+  }
+
+  /* Standby (empty state) — composed, not anemic. */
+  .standby {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    align-items: center;
+    border: 1px dashed var(--color-rule-strong);
+    background:
+      repeating-linear-gradient(
+        45deg,
+        rgba(232, 154, 60, 0.025) 0,
+        rgba(232, 154, 60, 0.025) 6px,
+        transparent 6px,
+        transparent 12px
+      ),
+      var(--color-void);
+    padding: 22px 22px;
+  }
+  @media (min-width: 640px) {
+    .standby {
+      grid-template-columns: auto 1fr;
+      gap: 28px;
+      padding: 28px;
+    }
+  }
+  .standby-graphic {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .standby-graphic .onair-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--color-amber);
+    box-shadow: 0 0 0 1px rgba(232, 154, 60, 0.35),
+      0 0 12px rgba(232, 154, 60, 0.6);
+    animation: pulse-amber 1.8s ease-in-out infinite;
+  }
+  .standby-line {
+    display: inline-block;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      var(--color-amber) 0%,
+      var(--color-amber-dim) 50%,
+      transparent 100%
+    );
+    animation: standby-line 2.4s ease-in-out infinite;
+  }
+  .standby-line:nth-child(2) { width: 36px; animation-delay: 100ms; }
+  .standby-line:nth-child(3) { width: 22px; animation-delay: 240ms; }
+  .standby-line:nth-child(4) { width: 14px; animation-delay: 380ms; }
+  @keyframes standby-line {
+    0%, 100% { opacity: 0.25; transform: translateX(0); }
+    50%      { opacity: 1;    transform: translateX(4px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .standby-graphic .onair-dot,
+    .standby-line { animation: none; }
+  }
+  .standby-text { min-width: 0; }
+  .standby-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-amber);
+    margin-bottom: 8px;
+  }
+  .standby-body {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--color-mute);
+    max-width: 44em;
+  }
+  .standby-body a {
+    color: var(--color-text-bright);
+    border-bottom: 1px solid var(--color-amber-dim);
+    transition: color 200ms var(--ease-hud), border-color 200ms var(--ease-hud);
+  }
+  .standby-body a:hover {
+    color: var(--color-amber-glow);
+    border-bottom-color: var(--color-amber);
+  }
+
+  /* ============================ CTA ============================ */
+  .cta-wrap {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    align-items: end;
+  }
+  @media (min-width: 768px) {
+    .cta-wrap {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 40px;
+    }
+  }
+  .cta-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-amber);
+  }
+  .cta-eyebrow .rule {
+    height: 1px;
+    width: 24px;
+    background: var(--color-amber);
+  }
+  .cta-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: var(--color-text-bright);
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    line-height: 0.95;
+    margin: 0 0 12px;
+  }
+  .cta-body {
+    margin: 0;
+    max-width: 36em;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-mute);
+  }
+  .cta-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cta-pri,
+  .cta-sec {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 18px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    transition:
+      color 200ms var(--ease-hud),
+      background-color 200ms var(--ease-hud),
+      border-color 200ms var(--ease-hud),
+      transform 200ms var(--ease-hud);
+  }
+  .cta-pri {
+    color: var(--color-amber);
+    background: rgba(232, 154, 60, 0.08);
+    border: 1px solid var(--color-amber-dim);
+  }
+  .cta-pri:hover {
+    color: var(--color-amber-glow);
+    border-color: var(--color-amber);
+    background: rgba(232, 154, 60, 0.16);
+    transform: translateY(-1px);
+  }
+  .cta-sec {
+    color: var(--color-mute);
+    border: 1px solid var(--color-rule-strong);
+  }
+  .cta-sec:hover {
+    color: var(--color-amber-glow);
+    border-color: var(--color-amber-dim);
+  }
+</style>
