@@ -28,3 +28,27 @@ export type Project = {
   totalCommits: number;
   index: number;
 };
+
+export type Podcast = {
+  index: number;
+  slug: string;
+  spotifyEpisodeId: string;
+  spotifyUrl: string;
+  embedUrl: string;
+  appleUrl?: string;
+  showUrl?: string;
+  title: string;
+  show: string;
+  showHost: string;
+  /** Dan's role on the episode — e.g. "Caller", "Guest", "Host". */
+  role: string;
+  artworkUrl: string;
+  /** ISO date — YYYY-MM-DD. */
+  publishedAt: string;
+  durationSeconds: number;
+  description: string;
+  topics: string[];
+  /** Optional pull-quote rendered on the featured episode hero. */
+  quote?: string;
+  featured?: boolean;
+};
