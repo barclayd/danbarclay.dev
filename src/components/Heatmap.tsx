@@ -130,7 +130,7 @@ export default function Heatmap({ data }: Props) {
     return () => document.removeEventListener("pointerdown", onDocPointerDown);
   }, [hover]);
 
-  // On mobile, the SVG is wider than the viewport — scroll to the most-recent
+  // On mobile, the SVG is wider than the viewport - scroll to the most-recent
   // week on first paint so users see today, not Jan 2025.
   useEffect(() => {
     if (!wrapRef.current) return;
@@ -179,7 +179,7 @@ export default function Heatmap({ data }: Props) {
         role="grid"
         aria-label={`GitHub contributions, ${data.total} in the past year`}
         onPointerMove={(e) => {
-          // Mouse hover only — on touch, allow native horizontal scroll instead.
+          // Mouse hover only - on touch, allow native horizontal scroll instead.
           if (e.pointerType === "mouse") {
             updateFromPointer(e.clientX, e.clientY);
           }
@@ -193,12 +193,12 @@ export default function Heatmap({ data }: Props) {
           updateFromPointer(e.clientX, e.clientY);
         }}
         onPointerLeave={(e) => {
-          // Only clear for mouse — touch users can scroll/pan past and tooltip persists.
+          // Only clear for mouse - touch users can scroll/pan past and tooltip persists.
           if (e.pointerType === "mouse") setHover(null);
         }}
         onPointerCancel={() => setHover(null)}
       >
-        {/* Day-of-week labels — SVG text so they scale uniformly. */}
+        {/* Day-of-week labels - SVG text so they scale uniformly. */}
         {["", "MON", "", "WED", "", "FRI", ""].map((label, i) =>
           label ? (
             <text
@@ -216,7 +216,7 @@ export default function Heatmap({ data }: Props) {
           ) : null
         )}
 
-        {/* Month labels — embedded in SVG so they scale uniformly. */}
+        {/* Month labels - embedded in SVG so they scale uniformly. */}
         {monthLabels.map((m) => (
           <text
             key={m.col}
@@ -273,7 +273,7 @@ export default function Heatmap({ data }: Props) {
         )}
         </div>
 
-        {/* Right-edge fade — mobile-only affordance signalling that the grid scrolls. Scoped to the heatmap row only. */}
+        {/* Right-edge fade - mobile-only affordance signalling that the grid scrolls. Scoped to the heatmap row only. */}
         <div
           className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[var(--color-void)] via-[rgba(14,17,20,0.6)] to-transparent sm:hidden"
           aria-hidden="true"

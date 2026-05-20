@@ -13,7 +13,7 @@
     "artworkUrl": "https://i.scdn.co/image/ab67656300005f1fb2524acadbb8b932c27df41e",
     "publishedAt": "2024-12-09",
     "durationSeconds": 600,
-    "description": "Called in to Kent C. Dodds with a question on whether the Testing Trophy still holds up in 2025 — given that SSR is now the React default via Remix and Next.js, and that browser-based e2e tools like Playwright and Vitest Browser Mode have made end-to-end coverage close to integration-test cheap. Kent weighs in on whether the trophy's shape should shift toward more e2e.",
+    "description": "Called in to Kent C. Dodds with a question on whether the Testing Trophy still holds up in 2025 - given that SSR is now the React default via Remix and Next.js, and that browser-based e2e tools like Playwright and Vitest Browser Mode have made end-to-end coverage close to integration-test cheap. Kent weighs in on whether the trophy's shape should shift toward more e2e.",
     "topics": ["TESTING", "REACT", "SSR", "PLAYWRIGHT", "VITEST"],
     "featured": true
   }

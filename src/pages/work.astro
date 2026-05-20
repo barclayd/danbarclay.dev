@@ -9,13 +9,13 @@ import type { Project } from "../lib/types";
 
 const projects = projectsRaw as Project[];
 
-const title = "Work — Dan Barclay · Selected projects shipped publicly";
+const title = "Work - Dan Barclay · Selected projects shipped publicly";
 const description =
-  "Selected work by Dan Barclay — engineering leader in London. Including Promptly (LLM prompt CMS, 100+ companies), KeepFresh (iOS app, 77K+ downloads) and open-source side projects.";
+  "Selected work by Dan Barclay - engineering leader in London. Including Promptly (LLM prompt CMS, 100+ companies), KeepFresh (iOS app, 77K+ downloads) and open-source side projects.";
 
 const PERSON_ID = "https://danbarclay.dev/#person";
 
-// Per-project schema — each is a SoftwareApplication / MobileApplication whose
+// Per-project schema - each is a SoftwareApplication / MobileApplication whose
 // creator and author are the Person entity declared on the home page.
 const workSchema = [
   {
@@ -28,7 +28,7 @@ const workSchema = [
     applicationCategory: "DeveloperApplication",
     operatingSystem: "Web",
     description:
-      "A B2B SaaS CMS for LLM prompts. Hands prompt authoring back to the domain experts who write them — versioning, releasing and shipping prompts without a code deploy. Used in production by 100+ companies.",
+      "A B2B SaaS CMS for LLM prompts. Hands prompt authoring back to the domain experts who write them - versioning, releasing and shipping prompts without a code deploy. Used in production by 100+ companies.",
     creator: { "@id": PERSON_ID },
     author: { "@id": PERSON_ID },
     publisher: { "@id": PERSON_ID },
@@ -50,8 +50,8 @@ const workSchema = [
 ];
 
 const fmtYearWindow = (created: string, pushed: string) => {
-  const a = created ? new Date(created).getUTCFullYear().toString() : "—";
-  const b = pushed ? new Date(pushed).getUTCFullYear().toString() : "—";
+  const a = created ? new Date(created).getUTCFullYear().toString() : "-";
+  const b = pushed ? new Date(pushed).getUTCFullYear().toString() : "-";
   return a === b ? a : `${a}–${b.slice(2)}`;
 };
 ---
@@ -149,7 +149,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
           <div class="og-frame relative aspect-[16/10] overflow-hidden border border-[var(--color-rule)] bg-[var(--color-void)]">
             <img
               src="https://images.keepfre.sh/app/images/og-image.png"
-              alt="Promptly — the CMS powering the next wave of AI development"
+              alt="Promptly - the CMS powering the next wave of AI development"
               loading="lazy"
               decoding="async"
               width="1200"
@@ -177,7 +177,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
           </div>
           <p class="mt-2 text-sm leading-relaxed text-[var(--color-mute)]">
             The CMS powering the next wave of AI development. Domain experts
-            author, version and ship prompts — without a code deploy.
+            author, version and ship prompts - without a code deploy.
           </p>
           <div class="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-rule)] pt-3 font-mono text-[10px] uppercase tracking-hud">
             <span class="text-[var(--color-mute)]">B2B SAAS · 100+ COMPANIES</span>
@@ -208,7 +208,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
           <div class="og-frame relative aspect-[16/10] overflow-hidden border border-[var(--color-rule)] bg-[var(--color-void)]">
             <img
               src="https://images.keepfre.sh/app/icons/app-icon-background.webp"
-              alt="KeepFresh — iOS app working to end food waste"
+              alt="KeepFresh - iOS app working to end food waste"
               loading="lazy"
               decoding="async"
               width="1024"
@@ -233,7 +233,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
           </div>
           <p class="mt-2 text-sm leading-relaxed text-[var(--color-mute)]">
             An iOS app working to end food waste for good. Households track
-            groceries and catch what's about to expire — used daily.
+            groceries and catch what's about to expire - used daily.
           </p>
           <div class="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-rule)] pt-3 font-mono text-[10px] uppercase tracking-hud">
             <span class="text-[var(--color-mute)]">77,000+ DOWNLOADS</span>
@@ -287,7 +287,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
                   <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-hud text-[var(--color-amber)]">
                     <span>C/{String(p.index).padStart(2, "0")}</span>
                     <span class="h-px flex-1 bg-[var(--color-rule)]" aria-hidden="true" />
-                    <span>{p.language ?? "—"}</span>
+                    <span>{p.language ?? "-"}</span>
                   </div>
                   <a
                     href={internalHref ?? p.url}
@@ -377,7 +377,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
     filter: url(#duotone-amber) contrast(1.1) brightness(1.02);
   }
 
-  /* Horizontal scanlines — Black Mirror CRT trace. */
+  /* Horizontal scanlines - Black Mirror CRT trace. */
   .og-frame::before {
     content: "";
     position: absolute;
@@ -478,14 +478,14 @@ const fmtYearWindow = (created: string, pushed: string) => {
   /* === Scan-line sweep on hover =========================================== */
   .og-frame .scan-sweep,
   .og-card .og-frame::after {
-    /* placeholder for stack order — scan sweep uses a dedicated layer below */
+    /* placeholder for stack order - scan sweep uses a dedicated layer below */
   }
 
   .og-card .og-frame {
     position: relative;
   }
 
-  /* Animated horizontal scan sweep — fires on hover. */
+  /* Animated horizontal scan sweep - fires on hover. */
   .og-card::before {
     content: none;
   }
@@ -508,7 +508,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
       0 0 24px -8px rgba(0, 0, 0, 0.6);
   }
 
-  /* Sweep band — implemented as an extra positioned element on hover via
+  /* Sweep band - implemented as an extra positioned element on hover via
      :hover with a pseudo-element layered above the image, below the
      scanlines. We use the og-card hover state to trigger a translateY
      animation on a dedicated band. */
