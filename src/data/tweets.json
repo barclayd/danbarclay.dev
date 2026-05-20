@@ -1,0 +1,155 @@
+[
+  {
+    "id": "1976005328262312222",
+    "url": "https://x.com/DanielBarclay/status/1976005328262312222",
+    "text": "Loving building on @Cloudflare as my go to platform for deploying pretty much everything. \n\nSeeing them lead the way with MCP, the collab with Astro, TanStack to power open source and the ease of use vs AWS makes it a no brainer for me in 2025",
+    "postedAt": "2025-10-08T19:22:00Z",
+    "pinned": true,
+    "metrics": { "likes": 82, "reposts": 4, "replies": 9 }
+  },
+  {
+    "id": "2049549957221237063",
+    "url": "https://x.com/DanielBarclay/status/2049549957221237063",
+    "text": "I've had the exact same experience. The change of behaviour and inconsistencies have resulted in me changing to Codex",
+    "postedAt": "2026-04-29T18:02:00Z",
+    "quoteOf": {
+      "author": "Zach Mueller",
+      "handle": "TheZachMueller",
+      "text": "I've been using Claude Code since July of 2025, and have been on the Max plan the entire time.\n\nThere was a solid 6 months when Claude was fantastic. The models worked great. And things could be predicable.\n\nAfter 4.6 things started to change, and known behaviors started changing. That's not bad, models change. The importance here is the model didn't ~regress~ on my own workflows and integrated seamlessly-enough that it didn't bother me.\n\n4.7 has changed that. Ever since its release I have fought this model. On behavior. On knowledge. On ~laziness~ especially, something the prior models I found for my tasks had no such issues.\n\nThis model is the first I cannot rely on. Yes, insert one should never rely on a 3rd party model, but for those of you working this industry you know we still do to some extent.\n\nThis will be the only tweet I do this rant, but after 10 months of using Claude, I'm gone.",
+      "url": "https://x.com/TheZachMueller/status/2049116099053031563"
+    }
+  },
+  {
+    "id": "2032578734453096795",
+    "url": "https://x.com/DanielBarclay/status/2032578734453096795",
+    "text": "Wow MCP UI has arrived",
+    "postedAt": "2026-03-13T22:05:00Z",
+    "media": [{ "type": "image", "src": "/tweets/2032578734453096795/1.jpg", "alt": "MCP UI screenshot" }]
+  },
+  {
+    "id": "2025608452488192301",
+    "url": "https://x.com/DanielBarclay/status/2025608452488192301",
+    "text": "Claude automatically cleaning up the context before implementing a plan is super sweet too.",
+    "postedAt": "2026-02-22T16:27:00Z",
+    "media": [{ "type": "image", "src": "/tweets/2025608452488192301/1.jpg", "alt": "Claude Code context cleanup screenshot" }]
+  },
+  {
+    "id": "2025608092864410048",
+    "url": "https://x.com/DanielBarclay/status/2025608092864410048",
+    "text": "Happy true Carabao Cup Final day to all those who celebrate. Never fails to bring out a belting day in February in the UK",
+    "postedAt": "2026-02-22T16:26:00Z"
+  },
+  {
+    "id": "2025606960737878048",
+    "url": "https://x.com/DanielBarclay/status/2025606960737878048",
+    "text": "Shocked at how this has totally levelled up the output I get from Opus 4.6\n\nDon't get me wrong - it can lead to LOTS of questions but worth it to nail the requirements upfront (how good software was built before AI)\n\n@AnthropicAI please make this a config option for plan mode",
+    "postedAt": "2026-02-22T16:21:00Z",
+    "quoteOf": {
+      "author": "Matt Pocock",
+      "handle": "mattpocockuk",
+      "text": "Claude Code (or Opus 4.6) feels like it asks you far fewer questions during plan mode\n\nTry:\n\n\"Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one.\"",
+      "url": "https://x.com/mattpocockuk/status/2024576093894955369"
+    },
+    "metrics": { "likes": 1, "reposts": 0, "replies": 1 }
+  },
+  {
+    "id": "2025382465380979181",
+    "url": "https://x.com/DanielBarclay/status/2025382465380979181",
+    "text": "Touché 😅",
+    "postedAt": "2026-02-22T01:29:00Z",
+    "quoteOf": {
+      "author": "CodeRabbit",
+      "handle": "coderabbitai",
+      "text": "Wheres the 10x engineer Dan?",
+      "url": "https://x.com/coderabbitai/status/2024885468794413151"
+    },
+    "metrics": { "likes": 1, "reposts": 0, "replies": 0 }
+  },
+  {
+    "id": "2025307856002490752",
+    "url": "https://x.com/DanielBarclay/status/2025307856002490752",
+    "text": "Introducing Snippets - the easy way to share guidelines across multiple prompts.\nTry now at PromptlyCMS.com",
+    "postedAt": "2026-02-21T20:33:00Z",
+    "media": [{ "type": "image", "src": "/tweets/2025307856002490752/1.jpg", "alt": "PromptlyCMS Snippets feature screenshot" }]
+  },
+  {
+    "id": "2024830361297916224",
+    "url": "https://x.com/DanielBarclay/status/2024830361297916224",
+    "text": "Looks like @coderabbitai can't handle a 10x engineer when it sees one",
+    "postedAt": "2026-02-20T12:55:00Z",
+    "media": [{ "type": "image", "src": "/tweets/2024830361297916224/1.jpg", "alt": "CodeRabbit comment screenshot" }],
+    "metrics": { "likes": 1, "reposts": 0, "replies": 1 }
+  },
+  {
+    "id": "2024817298100387974",
+    "url": "https://x.com/DanielBarclay/status/2024817298100387974",
+    "text": "It would really make my day to get your feedback @mattpocockuk! 🙏",
+    "postedAt": "2026-02-20T12:03:00Z",
+    "metrics": { "likes": 0, "reposts": 0, "replies": 1 }
+  },
+  {
+    "id": "2023902670768005414",
+    "url": "https://x.com/DanielBarclay/status/2023902670768005414",
+    "text": "The glass view you get when Ghostty is inactive is even better. Simply sublime",
+    "postedAt": "2026-02-17T23:29:00Z",
+    "media": [{ "type": "image", "src": "/tweets/2023902670768005414/1.jpg", "alt": "Ghostty Liquid Glass theme - inactive state" }]
+  },
+  {
+    "id": "2023874016105427265",
+    "url": "https://x.com/DanielBarclay/status/2023874016105427265",
+    "text": "Officially in love with Ghostty's Liquid Glass theme.\n\nAdd this to your config:\nbackground-blur = macos-glass-regular",
+    "postedAt": "2026-02-17T21:35:00Z",
+    "media": [{ "type": "image", "src": "/tweets/2023874016105427265/1.jpg", "alt": "Ghostty Liquid Glass theme screenshot" }],
+    "metrics": { "likes": 0, "reposts": 0, "replies": 1 }
+  },
+  {
+    "id": "2023855792706007078",
+    "url": "https://x.com/DanielBarclay/status/2023855792706007078",
+    "text": "There's also a full cost calculator (determined by real token usage and api pricing) so teams know exactly how much their AI agent will cost them at scale, before it goes live",
+    "postedAt": "2026-02-17T20:23:00Z",
+    "media": [{ "type": "image", "src": "/tweets/2023855792706007078/1.jpg", "alt": "PromptlyCMS cost calculator screenshot" }],
+    "metrics": { "likes": 0, "reposts": 0, "replies": 1 }
+  },
+  {
+    "id": "2023844979853193702",
+    "url": "https://x.com/DanielBarclay/status/2023844979853193702",
+    "text": "In businesses and teams when you want product/sales/marketing to freely edit, test and publish changes, it takes devs < 30 secs to wire it up\n\nDesigned from the ground up to compliment ai-sdk.dev",
+    "postedAt": "2026-02-17T19:40:00Z",
+    "media": [{ "type": "image", "src": "/tweets/2023844979853193702/1.jpg", "alt": "PromptlyCMS dev integration screenshot" }],
+    "metrics": { "likes": 0, "reposts": 0, "replies": 1 }
+  },
+  {
+    "id": "2023839851934552568",
+    "url": "https://x.com/DanielBarclay/status/2023839851934552568",
+    "text": "@mattpocockuk I'm an indie dev who got fed up of having prompts in source code, so I made a solution that integrates with AI sdk to make it easier for teams to manage.\nIt's free and open source.\n\nI'm a big fan of your work and would love your feedback pls!\npromptlycms.com",
+    "postedAt": "2026-02-17T19:19:00Z",
+    "metrics": { "likes": 0, "reposts": 0, "replies": 1 }
+  },
+  {
+    "id": "2017355320276721827",
+    "url": "https://x.com/DanielBarclay/status/2017355320276721827",
+    "text": "The code that clearly led Perseverance to safety https://github.com/barclayd/mars-rover",
+    "postedAt": "2026-01-30T21:52:00Z"
+  },
+  {
+    "id": "2017355125656891582",
+    "url": "https://x.com/DanielBarclay/status/2017355125656891582",
+    "text": "I'm taking the credit for this one",
+    "postedAt": "2026-01-30T21:51:00Z",
+    "quoteOf": {
+      "author": "Anthropic",
+      "handle": "AnthropicAI",
+      "text": "On December 8, the Perseverance rover safely trundled across the surface of Mars.\n\nThis was the first AI-planned drive on another planet. And it was planned by Claude.",
+      "url": "https://x.com/AnthropicAI/status/2017313346375004487"
+    },
+    "media": [{ "type": "image", "src": "/tweets/2017355125656891582/1.jpg", "alt": "Perseverance rover screenshot" }],
+    "metrics": { "likes": 0, "reposts": 0, "replies": 1 }
+  },
+  {
+    "id": "2003608278870495551",
+    "url": "https://x.com/DanielBarclay/status/2003608278870495551",
+    "text": "Day 3 of tweeting every day until my first B2B SaaS @promptlycms makes $1000 MRR #buildinpublic \n\nSlower day today, added login/sign up screens. Upskilling on BetterAuth, hopefully will have fully functional auth tomorrow",
+    "postedAt": "2025-12-23T23:26:00Z",
+    "metrics": { "likes": 2, "reposts": 0, "replies": 0 }
+  }
+]

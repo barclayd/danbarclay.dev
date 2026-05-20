@@ -56,8 +56,8 @@ html {
   scrollbar-width: thin;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  /* Clip horizontal overflow on the root so nothing — overlays, marquees,
-     iframe mirrors — can ever introduce a horizontal scrollbar on mobile.
+  /* Clip horizontal overflow on the root so nothing - overlays, marquees,
+     iframe mirrors - can ever introduce a horizontal scrollbar on mobile.
      `clip` is preferable to `hidden` because it does not establish a new
      scroll container, so `position: sticky` etc. still work normally. */
   overflow-x: clip;
@@ -77,7 +77,7 @@ body {
 }
 
 /* ====== Global atmospheric overlays ====== */
-/* Scanline texture — very subtle 2px repeating gradient over everything. */
+/* Scanline texture - very subtle 2px repeating gradient over everything. */
 body::before {
   content: "";
   position: fixed;
@@ -94,7 +94,7 @@ body::before {
   mix-blend-mode: overlay;
 }
 
-/* Vignette — focuses the eye, very subtle. */
+/* Vignette - focuses the eye, very subtle. */
 body::after {
   content: "";
   position: fixed;
@@ -131,7 +131,7 @@ body::after {
 
 /* ====== SEO / accessibility helpers ====== */
 /* Visually hidden but present in source for crawlers and screen readers.
-   Use sparingly — only for canonical entity statements that LLM crawlers
+   Use sparingly - only for canonical entity statements that LLM crawlers
    extract as factoid summaries. */
 .sr-only-seo {
   position: absolute;
@@ -161,7 +161,7 @@ body::after {
   letter-spacing: 0.08em;
 }
 
-/* Checkered border edges — used on avatar frame and tagged panels. */
+/* Checkered border edges - used on avatar frame and tagged panels. */
 .checker-edge {
   --c: var(--color-rule-strong);
   background-image:
@@ -342,7 +342,7 @@ number-flow {
   }
 }
 
-/* Rule line — draws left to right as it enters view. */
+/* Rule line - draws left to right as it enters view. */
 @keyframes rule-draw {
   from {
     transform: scaleX(0);
@@ -404,7 +404,7 @@ number-flow {
   }
 }
 
-/* Panel scan-sweep — a thin amber light sweeps across each hud-frame as it
+/* Panel scan-sweep - a thin amber light sweeps across each hud-frame as it
    enters view, suggesting the panel is being decoded line-by-line.
    Uses background-position so the stripe stays clipped to the element box
    without affecting the parent's overflow (preserves floating labels). */
@@ -451,7 +451,7 @@ number-flow {
   }
 }
 
-/* Heatmap cell reveal — column-based stagger. */
+/* Heatmap cell reveal - column-based stagger. */
 @keyframes cell-reveal {
   from {
     opacity: 0;
@@ -608,7 +608,7 @@ a:focus-visible {
   background: var(--color-amber-dim);
 }
 
-/* Heatmap scroller — slimmer, amber-tinted scrollbar that fits the HUD chrome. */
+/* Heatmap scroller - slimmer, amber-tinted scrollbar that fits the HUD chrome. */
 .heatmap-scroll {
   scrollbar-width: thin;
   scrollbar-color: var(--color-amber-dim) transparent;

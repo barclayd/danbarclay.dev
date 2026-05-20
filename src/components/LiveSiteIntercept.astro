@@ -1,8 +1,8 @@
 ---
 /**
- * LiveSiteIntercept — a projected HUD that mirrors a live external site.
+ * LiveSiteIntercept - a projected HUD that mirrors a live external site.
  *
- * Visual reference: Black Mirror — The Entire History of You, taxi
+ * Visual reference: Black Mirror - The Entire History of You, taxi
  * windscreen overlay. Cut-corner polygon frame, pixelated edge dither,
  * top status chips, right-hand TARIFF column, bottom marquee strip, and
  * a translucent amber wash + scanlines over the projected feed.
@@ -36,7 +36,7 @@ const checkerId = `checker-${id}`;
   aria-label={`Live mirrored feed of ${host}`}
   data-id={id}
 >
-  {/* Inline SVG defs — pixel dither pattern used in masks below. */}
+  {/* Inline SVG defs - pixel dither pattern used in masks below. */}
   <svg
     width="0"
     height="0"
@@ -71,7 +71,7 @@ const checkerId = `checker-${id}`;
     </defs>
   </svg>
 
-  {/* Corner brackets — etched into the outer chrome, not the inner panel. */}
+  {/* Corner brackets - etched into the outer chrome, not the inner panel. */}
   <span class="cnr cnr-tl" aria-hidden="true"></span>
   <span class="cnr cnr-tr" aria-hidden="true"></span>
   <span class="cnr cnr-bl" aria-hidden="true"></span>
@@ -109,7 +109,7 @@ const checkerId = `checker-${id}`;
   {/* === MAIN BODY · viewport + tariff column ========================= */}
   <div class="body">
     <div class="viewport">
-      {/* The live iframe — rendered at 2× and scaled 0.5 so the site
+      {/* The live iframe - rendered at 2× and scaled 0.5 so the site
           renders at desktop breakpoint inside a compact preview frame. */}
       <iframe
         class="frame"
@@ -120,13 +120,13 @@ const checkerId = `checker-${id}`;
         sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
       ></iframe>
 
-      {/* Overlay layers — order matters. */}
+      {/* Overlay layers - order matters. */}
       <span class="amber-wash" aria-hidden="true"></span>
       <span class="scanlines" aria-hidden="true"></span>
       <span class="vignette" aria-hidden="true"></span>
       <span class="noise" aria-hidden="true"></span>
 
-      {/* Tracker reticle — crosshair in top-right corner. */}
+      {/* Tracker reticle - crosshair in top-right corner. */}
       <span class="reticle" aria-hidden="true">
         <span class="ret-h"></span>
         <span class="ret-v"></span>
@@ -137,7 +137,7 @@ const checkerId = `checker-${id}`;
       <span class="glyph glyph-tl">PROJECTED · DO NOT INTERACT W/ SURFACE</span>
       <span class="glyph glyph-br">REC · {new Date().toISOString().slice(11, 19)}Z</span>
 
-      {/* Click-to-open layer — clickable surface that opens the host. */}
+      {/* Click-to-open layer - clickable surface that opens the host. */}
       <a
         class="enter"
         href={src}
@@ -152,7 +152,7 @@ const checkerId = `checker-${id}`;
       </a>
     </div>
 
-    {/* TARIFF column — stacked label/value pairs, pixel-dither bottom edge.
+    {/* TARIFF column - stacked label/value pairs, pixel-dither bottom edge.
         Visible only on wide screens to preserve the windscreen-HUD aspect. */}
     <aside class="tariff" aria-hidden="true">
       <div class="tariff-row">
@@ -175,7 +175,7 @@ const checkerId = `checker-${id}`;
         <div class="tariff-k">SESSION</div>
         <div class="tariff-v tariff-v-sm">0xFF8C·{id.slice(0, 4).toUpperCase()}</div>
       </div>
-      {/* Pixel-dither bottom band — purely decorative. */}
+      {/* Pixel-dither bottom band - purely decorative. */}
       <div class="tariff-foot">
         <div class="px-row">
           {Array.from({ length: 24 }).map(() => <span class="px"></span>)}
@@ -232,7 +232,7 @@ const checkerId = `checker-${id}`;
         rgba(14, 17, 20, 0.7) 100%
       );
     border: 1px solid var(--color-rule);
-    /* Chamfered top-right + bottom-left corners — windscreen-HUD geometry. */
+    /* Chamfered top-right + bottom-left corners - windscreen-HUD geometry. */
     clip-path: polygon(
       0 0,
       calc(100% - var(--cnr)) 0,
@@ -248,7 +248,7 @@ const checkerId = `checker-${id}`;
     color: var(--color-text);
   }
 
-  /* Etched corner brackets — small amber L-shapes inset from the polygon. */
+  /* Etched corner brackets - small amber L-shapes inset from the polygon. */
   .cnr {
     position: absolute;
     width: 10px;
@@ -351,7 +351,7 @@ const checkerId = `checker-${id}`;
     background: var(--color-rule);
   }
   @media (max-width: 720px) {
-    /* Strip down to just signal on mobile — chips would crowd the bar. */
+    /* Strip down to just signal on mobile - chips would crowd the bar. */
     .status-chips { display: none; }
     .status { padding: 12px 16px 10px 16px; }
   }
@@ -381,7 +381,7 @@ const checkerId = `checker-${id}`;
     }
   }
 
-  /* Iframe — rendered at 200% and scaled 0.5 so the framed site renders
+  /* Iframe - rendered at 200% and scaled 0.5 so the framed site renders
      at a desktop breakpoint inside the compact preview. */
   .frame {
     position: absolute;
@@ -394,7 +394,7 @@ const checkerId = `checker-${id}`;
     transform: scale(0.5);
     transform-origin: 0 0;
     /* Slight downward shift gives the impression the projection is being
-       drawn line-by-line — visual continuity with the scanline overlay. */
+       drawn line-by-line - visual continuity with the scanline overlay. */
     filter: saturate(0.7) contrast(1.04);
     transition: filter 600ms ease;
     pointer-events: none;
@@ -403,7 +403,7 @@ const checkerId = `checker-${id}`;
     filter: saturate(0.95) contrast(1.02);
   }
 
-  /* Amber tint wash — sells the projected/glass-HUD vibe. */
+  /* Amber tint wash - sells the projected/glass-HUD vibe. */
   .amber-wash {
     position: absolute;
     inset: 0;
@@ -459,7 +459,7 @@ const checkerId = `checker-${id}`;
     z-index: 3;
   }
 
-  /* Subtle noise overlay — emulates projected grain. */
+  /* Subtle noise overlay - emulates projected grain. */
   .noise {
     position: absolute;
     inset: 0;
@@ -470,7 +470,7 @@ const checkerId = `checker-${id}`;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1   0 0 0 0 1   0 0 0 0 1   0 0 0 0.7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   }
 
-  /* Tracker reticle — corner crosshair with a soft pulse. */
+  /* Tracker reticle - corner crosshair with a soft pulse. */
   .reticle {
     position: absolute;
     top: 18px;
@@ -535,7 +535,7 @@ const checkerId = `checker-${id}`;
   .glyph-tl { top: 18px; left: 18px; }
   .glyph-br { bottom: 18px; right: 18px; }
 
-  /* === Enter overlay — clickable surface =============================== */
+  /* === Enter overlay - clickable surface =============================== */
   .enter {
     position: absolute;
     inset: 0;
@@ -642,7 +642,7 @@ const checkerId = `checker-${id}`;
     height: 2px;
     background: var(--color-amber);
   }
-  /* Sparse second row — only every third pixel — creates the dither look. */
+  /* Sparse second row - only every third pixel - creates the dither look. */
   .px-row-sparse .px:nth-child(3n + 1),
   .px-row-sparse .px:nth-child(3n + 2) {
     background: transparent;

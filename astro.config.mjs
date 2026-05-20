@@ -16,6 +16,8 @@ export default defineConfig({
         'https://danbarclay.dev/',
         'https://danbarclay.dev/about/',
         'https://danbarclay.dev/work/',
+        'https://danbarclay.dev/podcasts/',
+        'https://danbarclay.dev/tweets/',
         'https://danbarclay.dev/promptly/',
         'https://danbarclay.dev/keepfresh/',
       ],

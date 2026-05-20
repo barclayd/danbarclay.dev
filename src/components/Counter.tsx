@@ -9,7 +9,7 @@ type Props = {
   delay?: number;
   /** When true, count only fires after entering the viewport. */
   whenVisible?: boolean;
-  /** Format the number — defaults to en-GB with thousands separators. */
+  /** Format the number - defaults to en-GB with thousands separators. */
   format?: Intl.NumberFormatOptions;
   className?: string;
   /** Optional locale, defaults to en-GB. */

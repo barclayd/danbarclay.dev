@@ -1,6 +1,6 @@
 ---
 /**
- * SiteNav — site-wide navigation rail.
+ * SiteNav - site-wide navigation rail.
  *
  * On desktop (≥sm) the bar shows: [● DANBARCLAY.DEV · TERMINAL/X] [nav items] [STATUS]
  *
@@ -131,7 +131,7 @@ const navItems = [
 </header>
 
 <style>
-  /* Containment — the drawer must never push body width. */
+  /* Containment - the drawer must never push body width. */
   .site-nav {
     width: 100%;
     max-width: 100%;
@@ -148,7 +148,7 @@ const navItems = [
   }
 
   /* === Mobile toggle button === */
-  /* Mobile-only — hidden on ≥640px. */
+  /* Mobile-only - hidden on ≥640px. */
   .nav-toggle {
     display: inline-flex;
     align-items: center;
@@ -230,7 +230,7 @@ const navItems = [
   .nav-panel[data-open="true"] {
     grid-template-rows: 1fr;
   }
-  /* Mobile-only drawer — never render on desktop. */
+  /* Mobile-only drawer - never render on desktop. */
   @media (min-width: 640px) {
     .nav-panel {
       display: none;
@@ -398,7 +398,7 @@ const navItems = [
     text-align: right;
   }
 
-  /* Reduced motion — keep the structure but kill the choreography. */
+  /* Reduced motion - keep the structure but kill the choreography. */
   @media (prefers-reduced-motion: reduce) {
     .pulse-amber,
     .nav-panel,

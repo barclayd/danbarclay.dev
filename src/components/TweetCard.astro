@@ -1,0 +1,642 @@
+---
+/**
+ * TweetCard - captured-transmission card for a single tweet.
+ *
+ * Variants:
+ *   - "hero" - large, top-of-page card with the pinned (or latest) tweet.
+ *   - "row"  - compact archive row card.
+ *
+ * Whole card is a link to the canonical tweet on x.com. Renders timestamp,
+ * thread badge, inline parent block (reply / quote), full text with
+ * linkified URLs + @mentions + styled #hashtags, media gallery, HUD
+ * telemetry metrics row, and optional topic chips.
+ */
+import type { Tweet } from "../lib/types";
+
+interface Props {
+  tweet: Tweet;
+  variant?: "hero" | "row";
+}
+
+const { tweet, variant = "row" } = Astro.props;
+const isHero = variant === "hero";
+
+/* ----- Date helpers ----- */
+const fmtTimestamp = (iso: string) => {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return (
+    `${d.getUTCFullYear()}.${pad(d.getUTCMonth() + 1)}.${pad(d.getUTCDate())} · ` +
+    `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())} UTC`
+  );
+};
+
+const fmtCount = (n: number | undefined) => {
+  if (n == null) return "-";
+  if (n < 1000) return String(n);
+  if (n < 10_000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  if (n < 1_000_000) return Math.round(n / 1000) + "K";
+  return (n / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
+};
+
+/* ----- Text rendering - linkify URLs, @mentions, #hashtags, escape HTML ----- */
+const escapeHtml = (s: string) =>
+  s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
+// One pass: split on URL / @mention / #hashtag tokens, escape inert text,
+// wrap tokens with semantic spans/links.
+const renderTweetText = (raw: string): string => {
+  const TOKEN =
+    /(https?:\/\/[^\s<>'"]+|@[A-Za-z0-9_]{1,15}|#[A-Za-z][A-Za-z0-9_]{0,99})/g;
+
+  let out = "";
+  let i = 0;
+  for (const m of raw.matchAll(TOKEN)) {
+    const idx = m.index ?? 0;
+    if (idx > i) out += escapeHtml(raw.slice(i, idx));
+    const tok = m[0];
+    if (tok.startsWith("http")) {
+      const href = escapeHtml(tok);
+      // Display: drop scheme + www. for cleaner reading.
+      const display = escapeHtml(tok.replace(/^https?:\/\/(www\.)?/, ""));
+      out +=
+        `<a class="tw-link" href="${href}" target="_blank" rel="noopener noreferrer">` +
+        `${display}</a>`;
+    } else if (tok.startsWith("@")) {
+      const handle = tok.slice(1);
+      out +=
+        `<a class="tw-mention" href="https://x.com/${escapeHtml(handle)}" ` +
+        `target="_blank" rel="noopener noreferrer">${escapeHtml(tok)}</a>`;
+    } else {
+      // #hashtag - styled, not linked.
+      out += `<span class="tw-hashtag">${escapeHtml(tok)}</span>`;
+    }
+    i = idx + tok.length;
+  }
+  if (i < raw.length) out += escapeHtml(raw.slice(i));
+
+  // Preserve newlines.
+  return out.replace(/\n/g, "<br/>");
+};
+
+const bodyHtml = renderTweetText(tweet.text);
+
+/* ----- Reply / quote parent ----- */
+const parent = tweet.replyTo ?? tweet.quoteOf ?? null;
+const parentKind: "REPLY" | "QUOTE" | null = tweet.replyTo
+  ? "REPLY"
+  : tweet.quoteOf
+    ? "QUOTE"
+    : null;
+
+const timestamp = fmtTimestamp(tweet.postedAt);
+const mediaCount = tweet.media?.length ?? 0;
+---
+
+<a
+  class:list={["tw", isHero ? "tw-hero" : "tw-row"]}
+  href={tweet.url}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label={`Tweet from ${timestamp} - opens on x.com`}
+>
+  {/* ============================ STATUS STRIP ============================ */}
+  <header class="tw-status">
+    <div class="tw-status-left">
+      <span class="onair-dot" aria-hidden="true"></span>
+      <span class="tw-status-text">
+        {isHero ? "PINNED · LIVE INTERCEPT" : "POST · INTERCEPT"}
+      </span>
+    </div>
+    <div class="tw-status-chips">
+      {tweet.thread && (
+        <span class="chip chip-amber">
+          <span class="chip-k">THREAD</span>
+          <span class="chip-v">{tweet.thread.position}/{tweet.thread.total}</span>
+        </span>
+      )}
+      {parentKind && (
+        <span class="chip">
+          <span class="chip-k">{parentKind}</span>
+          <span class="chip-v">@{parent!.handle}</span>
+        </span>
+      )}
+      <span class="chip">
+        <span class="chip-k">{timestamp.split(" · ")[0]}</span>
+        <span class="chip-v">{timestamp.split(" · ")[1]}</span>
+      </span>
+    </div>
+    <div class="tw-status-out" aria-hidden="true">
+      <span>↗</span>
+      <span>X.COM</span>
+    </div>
+  </header>
+
+  <div class="tw-body">
+    {/* ============================ INLINE PARENT ============================ */}
+    {parent && (
+      <blockquote class="tw-parent">
+        <div class="tw-parent-eyebrow">
+          <span class="rule" aria-hidden="true"></span>
+          <span>{parentKind} TO</span>
+          <span class="tw-parent-author">
+            {parent.author} <span class="tw-parent-handle">@{parent.handle}</span>
+          </span>
+        </div>
+        <p class="tw-parent-text">{parent.text}</p>
+      </blockquote>
+    )}
+
+    {/* ============================ TWEET TEXT ============================ */}
+    <div class="tw-text" set:html={bodyHtml}></div>
+
+    {/* ============================ MEDIA ============================ */}
+    {mediaCount > 0 && (
+      <div
+        class:list={["tw-media", `tw-media-${Math.min(mediaCount, 4)}`]}
+        aria-label={`${mediaCount} media item${mediaCount > 1 ? "s" : ""}`}
+      >
+        {tweet.media!.map((m, i) => (
+          <figure class="tw-media-cell">
+            {m.type === "video" ? (
+              <video
+                src={m.src}
+                poster={m.poster}
+                controls
+                preload="metadata"
+                playsinline
+                width={m.width}
+                height={m.height}
+              ></video>
+            ) : (
+              <img
+                src={m.src}
+                alt={m.alt ?? `Tweet media ${i + 1}`}
+                loading="lazy"
+                decoding="async"
+                width={m.width}
+                height={m.height}
+              />
+            )}
+            <span class="tw-media-tag" aria-hidden="true">
+              {m.type.toUpperCase()}/{String(i + 1).padStart(2, "0")}
+            </span>
+          </figure>
+        ))}
+      </div>
+    )}
+
+    {/* ============================ FOOTER ============================ */}
+    <footer class="tw-foot">
+      {tweet.metrics && (
+        <div class="tw-metrics" aria-label="Engagement">
+          <span class="tw-metric">
+            <span class="k">LIKES</span>
+            <span class="v">{fmtCount(tweet.metrics.likes)}</span>
+          </span>
+          <span class="tw-metric-sep" aria-hidden="true"></span>
+          <span class="tw-metric">
+            <span class="k">RP</span>
+            <span class="v">{fmtCount(tweet.metrics.reposts)}</span>
+          </span>
+          <span class="tw-metric-sep" aria-hidden="true"></span>
+          <span class="tw-metric">
+            <span class="k">REPLY</span>
+            <span class="v">{fmtCount(tweet.metrics.replies)}</span>
+          </span>
+          {tweet.metrics.views != null && (
+            <>
+              <span class="tw-metric-sep" aria-hidden="true"></span>
+              <span class="tw-metric">
+                <span class="k">VIEWS</span>
+                <span class="v">{fmtCount(tweet.metrics.views)}</span>
+              </span>
+            </>
+          )}
+        </div>
+      )}
+      {tweet.topics && tweet.topics.length > 0 && (
+        <ul class="tw-topics" aria-label="Topics">
+          {tweet.topics.map((t) => (
+            <li>{t.toUpperCase()}</li>
+          ))}
+        </ul>
+      )}
+    </footer>
+  </div>
+</a>
+
+<style>
+  /* ============================ BASE ============================ */
+  .tw {
+    position: relative;
+    display: block;
+    color: var(--color-text);
+    text-decoration: none;
+    background: linear-gradient(
+      180deg,
+      rgba(20, 24, 28, 0.55) 0%,
+      rgba(14, 17, 20, 0.55) 100%
+    );
+    border: 1px solid var(--color-rule);
+    transition:
+      border-color 200ms var(--ease-hud),
+      background-color 200ms var(--ease-hud),
+      transform 220ms var(--ease-hud),
+      box-shadow 220ms var(--ease-hud);
+  }
+  .tw:hover,
+  .tw:focus-visible {
+    border-color: var(--color-amber-dim);
+    background: linear-gradient(
+      180deg,
+      rgba(28, 22, 18, 0.6) 0%,
+      rgba(18, 16, 14, 0.6) 100%
+    );
+    transform: translateY(-1px);
+    box-shadow:
+      0 0 0 1px rgba(232, 154, 60, 0.08),
+      0 12px 30px -16px rgba(232, 154, 60, 0.25);
+  }
+  .tw:focus-visible {
+    outline: 1px solid var(--color-amber);
+    outline-offset: 2px;
+  }
+
+  /* Subtle amber light-leak from the top-right when hovering - HUD vibe. */
+  .tw::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 60% 30% at 100% 0%,
+      rgba(232, 154, 60, 0.08) 0%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 280ms var(--ease-hud);
+  }
+  .tw:hover::before,
+  .tw:focus-visible::before {
+    opacity: 1;
+  }
+
+  /* Scanline sweep over the card surface - slow, very subtle. */
+  .tw::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.012) 0,
+      rgba(255, 255, 255, 0.012) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: overlay;
+    opacity: 0.6;
+  }
+
+  /* ============================ STATUS STRIP ============================ */
+  .tw-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-rule);
+    background: rgba(14, 17, 20, 0.5);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .tw-hero .tw-status {
+    padding: 14px 20px;
+    font-size: 10px;
+  }
+  .tw-status-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tw-status-text {
+    color: var(--color-amber);
+  }
+  .onair-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--color-amber);
+    box-shadow: 0 0 0 1px rgba(232, 154, 60, 0.35),
+      0 0 8px rgba(232, 154, 60, 0.55);
+    animation: pulse-amber 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse-amber {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.82); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .onair-dot { animation: none; }
+  }
+
+  .tw-status-chips {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    margin-left: auto;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .chip-k {
+    color: var(--color-mute);
+    font-size: 9px;
+  }
+  .chip-v {
+    color: var(--color-text-bright);
+    font-variant-numeric: tabular-nums;
+  }
+  .chip-amber .chip-k {
+    color: var(--color-amber-dim);
+  }
+  .chip-amber .chip-v {
+    color: var(--color-amber);
+  }
+  .tw-status-out {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-mute);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    transition: color 200ms var(--ease-hud), transform 200ms var(--ease-hud);
+  }
+  .tw:hover .tw-status-out,
+  .tw:focus-visible .tw-status-out {
+    color: var(--color-amber-glow);
+    transform: translateX(2px);
+  }
+
+  /* ============================ BODY ============================ */
+  .tw-body {
+    padding: 18px 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .tw-hero .tw-body {
+    padding: 26px 22px 22px;
+    gap: 18px;
+  }
+  @media (min-width: 640px) {
+    .tw-body { padding: 22px 22px 18px; }
+    .tw-hero .tw-body { padding: 32px 32px 26px; gap: 22px; }
+  }
+
+  /* ============================ INLINE PARENT ============================ */
+  .tw-parent {
+    position: relative;
+    margin: 0;
+    padding: 12px 14px 12px 16px;
+    border-left: 2px solid var(--color-rule-strong);
+    background: rgba(20, 24, 28, 0.55);
+    color: var(--color-mute);
+  }
+  .tw-parent::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      var(--color-amber-dim),
+      transparent
+    );
+    opacity: 0.7;
+  }
+  .tw-parent-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+    margin-bottom: 6px;
+  }
+  .tw-parent-eyebrow .rule {
+    height: 1px;
+    width: 18px;
+    background: var(--color-amber-dim);
+    display: inline-block;
+  }
+  .tw-parent-author {
+    color: var(--color-text);
+    text-transform: none;
+    letter-spacing: 0.02em;
+    font-family: var(--font-display);
+    font-size: 11px;
+  }
+  .tw-parent-handle {
+    color: var(--color-mute);
+  }
+  .tw-parent-text {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--color-text);
+    /* Clamp to ~4 lines so the user's own voice stays primary. */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ============================ TWEET TEXT ============================ */
+  .tw-text {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-text-bright);
+    text-wrap: pretty;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  .tw-hero .tw-text {
+    font-size: clamp(1.125rem, 2.2vw, 1.375rem);
+    line-height: 1.5;
+    letter-spacing: -0.005em;
+  }
+
+  /* Linkified inline elements - preserve hover signal without competing with
+     the card-level hover state. */
+  .tw-text :global(.tw-link) {
+    color: var(--color-amber);
+    border-bottom: 1px solid var(--color-amber-dim);
+    transition: color 160ms var(--ease-hud), border-color 160ms var(--ease-hud);
+  }
+  .tw-text :global(.tw-link:hover) {
+    color: var(--color-amber-glow);
+    border-bottom-color: var(--color-amber);
+  }
+  .tw-text :global(.tw-mention) {
+    color: var(--color-amber);
+    transition: color 160ms var(--ease-hud);
+  }
+  .tw-text :global(.tw-mention:hover) {
+    color: var(--color-amber-glow);
+  }
+  .tw-text :global(.tw-hashtag) {
+    color: var(--color-amber-dim);
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.04em;
+  }
+
+  /* ============================ MEDIA ============================ */
+  .tw-media {
+    display: grid;
+    gap: 4px;
+    border: 1px solid var(--color-rule);
+    padding: 4px;
+    background: var(--color-void);
+  }
+  .tw-media-1 { grid-template-columns: 1fr; }
+  .tw-media-2 { grid-template-columns: 1fr 1fr; }
+  .tw-media-3 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+  .tw-media-3 .tw-media-cell:first-child {
+    grid-row: span 2;
+  }
+  .tw-media-4 { grid-template-columns: 1fr 1fr; }
+
+  .tw-media-cell {
+    position: relative;
+    margin: 0;
+    background: var(--color-void);
+    overflow: hidden;
+    border: 1px solid var(--color-faint);
+    aspect-ratio: 16 / 10;
+  }
+  .tw-media-1 .tw-media-cell { aspect-ratio: 16 / 9; }
+  .tw-media-cell img,
+  .tw-media-cell video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: var(--color-void);
+  }
+  .tw-media-tag {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    padding: 2px 6px;
+    background: rgba(14, 17, 20, 0.72);
+    backdrop-filter: blur(2px);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--color-amber);
+    pointer-events: none;
+  }
+
+  /* ============================ FOOTER ============================ */
+  .tw-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 18px;
+    margin-top: 2px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--color-rule);
+  }
+  .tw-metrics {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .tw-metric {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .tw-metric .k {
+    color: var(--color-mute);
+    font-size: 9px;
+  }
+  .tw-metric .v {
+    color: var(--color-text-bright);
+    font-variant-numeric: tabular-nums;
+  }
+  .tw-metric-sep {
+    width: 1px;
+    height: 10px;
+    background: var(--color-rule-strong);
+  }
+  .tw-topics {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-left: auto;
+  }
+  .tw-topics li {
+    padding: 3px 8px;
+    border: 1px solid var(--color-rule-strong);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--color-mute);
+    background: rgba(14, 17, 20, 0.55);
+  }
+
+  /* ============================ MOBILE TIGHTENING ============================ */
+  @media (max-width: 480px) {
+    .tw-status {
+      padding: 10px 14px;
+      gap: 8px 10px;
+    }
+    .tw-status-chips {
+      width: 100%;
+      margin-left: 0;
+      justify-content: flex-start;
+    }
+    .tw-status-out {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+    }
+    .tw-status {
+      position: relative;
+      padding-right: 70px;
+    }
+  }
+</style>

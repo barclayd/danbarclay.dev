@@ -14,8 +14,8 @@ interface Props {
 const SITE_URL = "https://danbarclay.dev";
 
 const {
-  title = "Dan Barclay — Engineering Leader, Founder, London",
-  description = "Dan Barclay is an engineering leader and founder based in London, focused on building Promptly — the CMS powering the next wave of AI development — and KeepFresh — an iOS app working to end food waste for good. 10+ years shipping product and AI experiences to millions.",
+  title = "Dan Barclay - Engineering Leader, Founder, London",
+  description = "Dan Barclay is an engineering leader and founder based in London, focused on building Promptly - the CMS powering the next wave of AI development - and KeepFresh - an iOS app working to end food waste for good. 10+ years shipping product and AI experiences to millions.",
   ogImage = "/og.png",
   pageType = "WebPage",
   noPersonGraph = false,
@@ -54,14 +54,14 @@ const personGraph = {
       contentUrl: ogImageUrl,
       width: 1200,
       height: 630,
-      caption: "Dan Barclay — Engineering Leader",
+      caption: "Dan Barclay - Engineering Leader",
     },
     {
       "@type": "WebSite",
       "@id": SITE_URL + "/#website",
       url: SITE_URL + "/",
       name: "Dan Barclay",
-      description: "Personal site of Dan Barclay — engineering leader and founder in London.",
+      description: "Personal site of Dan Barclay - engineering leader and founder in London.",
       inLanguage: "en-GB",
       publisher: { "@id": SITE_URL + "/#person" },
       author: { "@id": SITE_URL + "/#person" },
@@ -75,7 +75,7 @@ const personGraph = {
       alternateName: ["Daniel Barclay", "barclayd"],
       jobTitle: "Engineering Lead",
       description:
-        "Engineering leader, full-stack product engineer and founder with 10+ years building software for millions of users. Focused on building Promptly — the CMS powering the next wave of AI development — and KeepFresh, an iOS app working to end food waste for good. Based in London, UK.",
+        "Engineering leader, full-stack product engineer and founder with 10+ years building software for millions of users. Focused on building Promptly - the CMS powering the next wave of AI development - and KeepFresh, an iOS app working to end food waste for good. Based in London, UK.",
       url: SITE_URL + "/",
       mainEntityOfPage: { "@id": SITE_URL + "/#page" },
       image: {
@@ -131,7 +131,7 @@ const personGraph = {
   ],
 };
 
-// BreadcrumbList — emitted only when the page declares a trail. The final
+// BreadcrumbList - emitted only when the page declares a trail. The final
 // item omits `item` per Google guidance, so the trail terminator isn't a
 // self-link to the current page.
 const breadcrumbJsonLd =
@@ -187,7 +187,7 @@ const graphsToEmit = [
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Dan Barclay — Engineering Leader, Founder, London" />
+    <meta property="og:image:alt" content="Dan Barclay - Engineering Leader, Founder, London" />
     {pageType === "ProfilePage" && (
       <>
         <meta property="profile:first_name" content="Dan" />
@@ -201,11 +201,11 @@ const graphsToEmit = [
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
-    <meta name="twitter:image:alt" content="Dan Barclay — Engineering Leader, Founder, London" />
+    <meta name="twitter:image:alt" content="Dan Barclay - Engineering Leader, Founder, London" />
     <meta name="twitter:site" content="@danielbarclay" />
     <meta name="twitter:creator" content="@danielbarclay" />
 
-    <!-- IndieWeb rel=me — links this site to other profiles in the identity graph. -->
+    <!-- IndieWeb rel=me - links this site to other profiles in the identity graph. -->
     <link rel="me" href="https://github.com/barclayd" />
     <link rel="me" href="https://x.com/danielbarclay" />
     <link rel="me" href="https://www.linkedin.com/in/barclayd/" />
@@ -215,7 +215,7 @@ const graphsToEmit = [
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large" />
 
-    <!-- Structured data — the heart of the LLM/Knowledge-Graph signal. -->
+    <!-- Structured data - the heart of the LLM/Knowledge-Graph signal. -->
     <script
       type="application/ld+json"
       set:html={JSON.stringify(graphsToEmit.length === 1 ? graphsToEmit[0] : graphsToEmit)}
@@ -228,7 +228,7 @@ const graphsToEmit = [
     <slot />
 
     <script is:inline>
-      // Scroll progress bar — fixed 1px amber line at the top of the viewport.
+      // Scroll progress bar - fixed 1px amber line at the top of the viewport.
       (function () {
         const bar = document.getElementById("scroll-progress");
         if (!bar) return;
@@ -253,7 +253,7 @@ const graphsToEmit = [
         update();
       })();
 
-      // Cursor radial glow — pointer-tracked amber spotlight (mouse only).
+      // Cursor radial glow - pointer-tracked amber spotlight (mouse only).
       (function () {
         const glow = document.getElementById("cursor-glow");
         if (!glow) return;

@@ -22,7 +22,7 @@ export default function TelemetryClock() {
       className="font-mono text-[11px] tabular-nums text-[var(--color-text)]"
       suppressHydrationWarning
     >
-      {now ? fmtUTC(now) : "————.——.—— / ——:——:—— UTC"}
+      {now ? fmtUTC(now) : "----.--.-- / --:--:-- UTC"}
     </span>
   );
 }

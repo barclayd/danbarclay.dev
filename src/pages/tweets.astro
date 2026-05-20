@@ -3,159 +3,165 @@ import Base from "../layouts/Base.astro";
 import HudFrame from "../components/HudFrame.astro";
 import SubPageHeader from "../components/SubPageHeader.astro";
 import SubPageFooter from "../components/SubPageFooter.astro";
-import PodcastCard from "../components/PodcastCard.astro";
+import TweetCard from "../components/TweetCard.astro";
 import ScrambleText from "../components/ScrambleText.tsx";
-import podcastsRaw from "../data/podcasts.json";
-import type { Podcast } from "../lib/types";
+import tweetsRaw from "../data/tweets.json";
+import type { Tweet } from "../lib/types";
 
-const podcasts = (podcastsRaw as Podcast[]).slice().sort((a, b) => {
-  // Featured first, then newest by publishedAt.
-  if (a.featured !== b.featured) return a.featured ? -1 : 1;
-  return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+const tweets = (tweetsRaw as Tweet[]).slice().sort((a, b) => {
+  // Pinned first, then newest by postedAt.
+  if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+  return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
 });
 
-const [hero, ...archive] = podcasts;
+const [hero, ...archive] = tweets;
 
 const title =
-  "Podcasts - Dan Barclay · Appearances, calls and voice intercepts";
+  "Tweets - Dan Barclay · On-site archive of @danielbarclay";
 const description =
-  "Podcast appearances by Dan Barclay - engineering leader, founder of Promptly and KeepFresh. Voice transmissions, calls in to other shows, and conversations about engineering, AI, testing and product.";
+  "An on-site archive of tweets by Dan Barclay - engineering leader, founder of Promptly and KeepFresh. Short transmissions on engineering, AI, testing, iOS and the messy parts of shipping software.";
 
-const PERSON_ID = "https://danbarclay.dev/#person";
+const SITE_URL = "https://danbarclay.dev";
+const PERSON_ID = `${SITE_URL}/#person`;
 
-const podcastSchema = podcasts.map((p) => ({
+const tweetSchema = tweets.map((t) => ({
   "@context": "https://schema.org",
-  "@type": "PodcastEpisode",
-  "@id": `https://danbarclay.dev/podcasts/#${p.slug}`,
-  url: p.spotifyUrl,
-  name: p.title,
-  datePublished: p.publishedAt,
-  timeRequired: `PT${Math.floor(p.durationSeconds / 60)}M`,
-  description: p.description,
-  image: p.artworkUrl,
-  partOfSeries: {
-    "@type": "PodcastSeries",
-    name: p.show,
-    url: p.showUrl,
-  },
-  associatedMedia: {
-    "@type": "MediaObject",
-    contentUrl: p.spotifyUrl,
-    embedUrl: p.embedUrl,
-    encodingFormat: "audio/mpeg",
-  },
-  contributor: { "@id": PERSON_ID },
-  about: { "@id": PERSON_ID },
+  "@type": "SocialMediaPosting",
+  "@id": `${SITE_URL}/tweets/#${t.id}`,
+  url: t.url,
+  identifier: t.id,
+  articleBody: t.text,
+  datePublished: t.postedAt,
+  author: { "@id": PERSON_ID },
+  creator: { "@id": PERSON_ID },
   inLanguage: "en",
+  ...(t.media && t.media.length > 0
+    ? {
+        image: t.media
+          .filter((m) => m.type === "image" || m.type === "gif")
+          .map((m) => new URL(m.src, SITE_URL).toString()),
+      }
+    : {}),
+  ...(t.metrics
+    ? {
+        interactionStatistic: [
+          {
+            "@type": "InteractionCounter",
+            interactionType: { "@type": "LikeAction" },
+            userInteractionCount: t.metrics.likes,
+          },
+          {
+            "@type": "InteractionCounter",
+            interactionType: { "@type": "ShareAction" },
+            userInteractionCount: t.metrics.reposts,
+          },
+          {
+            "@type": "InteractionCounter",
+            interactionType: { "@type": "ReplyAction" },
+            userInteractionCount: t.metrics.replies,
+          },
+        ],
+      }
+    : {}),
+  isPartOf: { "@id": `${SITE_URL}/tweets/#page` },
 }));
 
-const totalSeconds = podcasts.reduce((sum, p) => sum + p.durationSeconds, 0);
-const totalMinutes = Math.round(totalSeconds / 60);
-const showCount = new Set(podcasts.map((p) => p.show)).size;
+const totalPosts = tweets.length;
 ---
 
 <Base
   title={title}
   description={description}
   pageType="CollectionPage"
-  jsonLd={podcastSchema}
+  jsonLd={tweetSchema}
   breadcrumbs={[
     { name: "Home", url: "/" },
     { name: "About", url: "/about/" },
-    { name: "Podcasts" },
+    { name: "Tweets" },
   ]}
 >
   <main
     class="mx-auto flex w-full max-w-[1100px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
   >
-    <SubPageHeader terminal="TERMINAL/PODCASTS" current="about" />
-
-    {/* SVG defs - duotone-amber filter reused by every podcast artwork. */}
-    <svg
-      width="0"
-      height="0"
-      aria-hidden="true"
-      class="pointer-events-none absolute"
-      style="position:absolute; left:-9999px; top:-9999px;"
-    >
-      <defs>
-        <filter id="duotone-amber" color-interpolation-filters="sRGB">
-          <feColorMatrix
-            type="matrix"
-            values="0.2126 0.7152 0.0722 0 0
-                    0.2126 0.7152 0.0722 0 0
-                    0.2126 0.7152 0.0722 0 0
-                    0      0      0      1 0"
-          />
-          <feComponentTransfer>
-            <feFuncR type="table" tableValues="0.055 0.910" />
-            <feFuncG type="table" tableValues="0.067 0.604" />
-            <feFuncB type="table" tableValues="0.078 0.235" />
-          </feComponentTransfer>
-        </filter>
-      </defs>
-    </svg>
+    <SubPageHeader terminal="TERMINAL/X" current="about" />
 
     {/* ========================================================== */}
-    {/* INTRO + FEATURED EPISODE                                    */}
+    {/* INTRO + HERO TWEET                                          */}
     {/* ========================================================== */}
     <HudFrame
-      label="C/PODCASTS // VOICE · INTERCEPT"
+      label="C/TWEETS // SHORT-WAVE · INTERCEPT"
       index="ON-AIR"
       className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
     >
       <div class="page-intro">
         <div class="page-intro-eyebrow">
           <span class="rule" aria-hidden="true"></span>
-          <span>PODCASTS · DAN BARCLAY</span>
+          <span>TWEETS · @DANIELBARCLAY</span>
         </div>
         <h1 class="page-intro-title">
-          <ScrambleText client:visible text="VOICE /" duration={700} />
+          <ScrambleText client:visible text="TWEETS /" duration={700} />
           <br />
-          <ScrambleText client:visible text="INTERCEPT" duration={900} delay={140} />
+          <ScrambleText client:visible text="ARCHIVE" duration={900} delay={140} />
         </h1>
         <p class="page-intro-desc">
-          Captured transmissions. Podcasts and live calls where
-          <strong>Dan Barclay</strong> has shown up - talking engineering,
-          AI, testing, and the messy parts of shipping software.
-          Press play. Stay on frequency.
+          Short-wave transmissions. An on-site archive of posts by
+          <strong>Dan Barclay</strong> - engineering, AI, testing, iOS,
+          and the messy parts of shipping software. Tap any card to open
+          the live tweet on X.
         </p>
 
-        <ul class="page-intro-stats" aria-label="Podcast stats">
+        <ul class="page-intro-stats" aria-label="Tweet stats">
           <li>
-            <span class="k">EPISODES</span>
-            <span class="v">{String(podcasts.length).padStart(2, "0")}</span>
+            <span class="k">POSTS</span>
+            <span class="v">{String(totalPosts).padStart(2, "0")}</span>
           </li>
           <li>
-            <span class="k">SHOWS</span>
-            <span class="v">{String(showCount).padStart(2, "0")}</span>
-          </li>
-          <li>
-            <span class="k">RUNTIME</span>
-            <span class="v">{totalMinutes} MIN</span>
+            <span class="k">CHANNEL</span>
+            <span class="v">@DANIELBARCLAY</span>
           </li>
           <li>
             <span class="k">SIGNAL</span>
-            <span class="v amber">STABLE</span>
+            <span class="v amber">{totalPosts > 0 ? "STABLE" : "STANDBY"}</span>
           </li>
         </ul>
       </div>
 
       <div class="my-10 h-px w-full bg-[var(--color-rule)] rule-draw"></div>
 
-      <div class="featured-eyebrow">
-        <span class="dot" aria-hidden="true"></span>
-        <span>FEATURED · LATEST TRANSMISSION</span>
-      </div>
-
-      {hero && <PodcastCard podcast={hero} variant="hero" />}
+      {hero ? (
+        <>
+          <div class="featured-eyebrow">
+            <span class="dot" aria-hidden="true"></span>
+            <span>{hero.pinned ? "PINNED · LATEST INTERCEPT" : "LATEST · INTERCEPT"}</span>
+          </div>
+          <TweetCard tweet={hero} variant="hero" />
+        </>
+      ) : (
+        /* Hero-slot standby - keeps the panel composed when the archive is empty. */
+        <div class="hero-standby">
+          <div class="hero-standby-graphic" aria-hidden="true">
+            <span class="onair-dot"></span>
+            <span class="hs-line"></span>
+            <span class="hs-line"></span>
+            <span class="hs-line"></span>
+          </div>
+          <div class="hero-standby-text">
+            <div class="hero-standby-title">STANDBY · CHANNEL OPEN</div>
+            <p class="hero-standby-body">
+              No transmissions on file yet. New posts are mirrored here
+              from <a href="https://x.com/danielbarclay" target="_blank" rel="noopener noreferrer">@danielbarclay</a>.
+              The signal will resume shortly.
+            </p>
+          </div>
+        </div>
+      )}
     </HudFrame>
 
     {/* ========================================================== */}
     {/* ARCHIVE                                                      */}
     {/* ========================================================== */}
     <HudFrame
-      label="C/PODCASTS // ARCHIVE · TRANSMISSIONS"
+      label="C/TWEETS // ARCHIVE · TRANSMISSIONS"
       index={archive.length > 0 ? `${String(archive.length).padStart(2, "0")} REC.` : "STANDBY"}
       className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
     >
@@ -167,8 +173,8 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
           </div>
           <h2 class="archive-title">Back-catalogue</h2>
           <p class="archive-desc">
-            Every other episode, sorted newest first. Tap a row to expand
-            the player inline - Spotify chunks load on demand.
+            Every other post, newest first. Tap a card to open the live
+            tweet on X - replies and quote-tweets carry the parent inline.
           </p>
         </div>
         <div class="archive-meter" aria-hidden="true">
@@ -181,15 +187,12 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
 
       {archive.length > 0 ? (
         <div class="archive-list">
-          {archive.map((p, i) => (
-            <div class="archive-row">
-              <PodcastCard podcast={p} variant="row" />
-              {i < archive.length - 1 && <div class="archive-divider" aria-hidden="true"></div>}
-            </div>
+          {archive.map((t) => (
+            <TweetCard tweet={t} variant="row" />
           ))}
         </div>
       ) : (
-        /* Standby state - feels intentional, not absent. */
+        /* Archive standby - composed empty state. */
         <div class="standby">
           <div class="standby-graphic" aria-hidden="true">
             <span class="onair-dot"></span>
@@ -200,9 +203,9 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
           <div class="standby-text">
             <div class="standby-title">STANDBY · ARCHIVE EMPTY</div>
             <p class="standby-body">
-              Only one transmission on file. More incoming as the calendar
-              fills. Producers and hosts - pitches via
-              <a href="mailto:barclaysd@me.com">barclaysd@me.com</a>.
+              {hero
+                ? "Only one transmission on file. Older posts will roll in as the archive backfills."
+                : "Archive is dark. Once posts land in /tweets/, they'll surface here in reverse-chronological order."}
             </p>
           </div>
         </div>
@@ -210,10 +213,10 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
     </HudFrame>
 
     {/* ========================================================== */}
-    {/* CTA - book Dan on your show                                  */}
+    {/* CTA - follow on X                                            */}
     {/* ========================================================== */}
     <HudFrame
-      label="C/PODCASTS // OUTBOUND · CHANNEL OPEN"
+      label="C/TWEETS // OUTBOUND · CHANNEL OPEN"
       index="HAILING"
       className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
     >
@@ -221,21 +224,23 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
         <div>
           <div class="cta-eyebrow">
             <span class="rule" aria-hidden="true"></span>
-            <span>WANT DAN ON YOUR SHOW?</span>
+            <span>WANT THE LIVE FEED?</span>
           </div>
-          <h2 class="cta-title">Open a channel.</h2>
+          <h2 class="cta-title">Follow on X.</h2>
           <p class="cta-body">
-            Engineering leadership, founding a B2B SaaS, building AI features
-            into production, scaling teams, iOS - happy to talk about any of
-            it. Drop a line and we'll find a slot.
+            This page is an on-site mirror - punchy, curated, on-brand.
+            The live feed, replies and conversations all happen on X.
+            Hit follow if you want it as it lands.
           </p>
         </div>
         <div class="cta-actions">
           <a
             class="cta-pri"
-            href="mailto:barclaysd@me.com?subject=Podcast%20invite"
+            href="https://x.com/danielbarclay"
+            target="_blank"
+            rel="noopener noreferrer me"
           >
-            <span>EMAIL · BARCLAYSD@ME.COM</span>
+            <span>FOLLOW · @DANIELBARCLAY</span>
             <span aria-hidden="true">↗</span>
           </a>
           <a class="cta-sec" href="/about/">
@@ -308,7 +313,7 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
     max-width: 36rem;
   }
   @media (min-width: 640px) {
-    .page-intro-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .page-intro-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
   .page-intro-stats li {
     background: var(--color-void);
@@ -425,20 +430,17 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
   }
 
   .archive-list {
-    background: var(--color-rule);
     display: flex;
     flex-direction: column;
+    gap: 16px;
   }
-  .archive-row {
-    background: var(--color-void);
-  }
-  .archive-divider {
-    height: 1px;
-    background: var(--color-rule);
+  @media (min-width: 640px) {
+    .archive-list { gap: 20px; }
   }
 
-  /* Standby (empty state) - composed, not anemic. */
-  .standby {
+  /* Standby (empty state) - composed, not anemic. Shared shape with podcasts. */
+  .standby,
+  .hero-standby {
     display: grid;
     grid-template-columns: 1fr;
     gap: 18px;
@@ -456,18 +458,21 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
     padding: 22px 22px;
   }
   @media (min-width: 640px) {
-    .standby {
+    .standby,
+    .hero-standby {
       grid-template-columns: auto 1fr;
       gap: 28px;
       padding: 28px;
     }
   }
-  .standby-graphic {
+  .standby-graphic,
+  .hero-standby-graphic {
     display: flex;
     align-items: center;
     gap: 8px;
   }
-  .standby-graphic .onair-dot {
+  .standby-graphic .onair-dot,
+  .hero-standby-graphic .onair-dot {
     width: 9px;
     height: 9px;
     border-radius: 999px;
@@ -476,7 +481,8 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
       0 0 12px rgba(232, 154, 60, 0.6);
     animation: pulse-amber 1.8s ease-in-out infinite;
   }
-  .standby-line {
+  .standby-line,
+  .hs-line {
     display: inline-block;
     height: 1px;
     background: linear-gradient(
@@ -487,19 +493,26 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
     );
     animation: standby-line 2.4s ease-in-out infinite;
   }
-  .standby-line:nth-child(2) { width: 36px; animation-delay: 100ms; }
-  .standby-line:nth-child(3) { width: 22px; animation-delay: 240ms; }
-  .standby-line:nth-child(4) { width: 14px; animation-delay: 380ms; }
+  .standby-line:nth-child(2),
+  .hs-line:nth-child(2) { width: 36px; animation-delay: 100ms; }
+  .standby-line:nth-child(3),
+  .hs-line:nth-child(3) { width: 22px; animation-delay: 240ms; }
+  .standby-line:nth-child(4),
+  .hs-line:nth-child(4) { width: 14px; animation-delay: 380ms; }
   @keyframes standby-line {
     0%, 100% { opacity: 0.25; transform: translateX(0); }
     50%      { opacity: 1;    transform: translateX(4px); }
   }
   @media (prefers-reduced-motion: reduce) {
     .standby-graphic .onair-dot,
-    .standby-line { animation: none; }
+    .hero-standby-graphic .onair-dot,
+    .standby-line,
+    .hs-line { animation: none; }
   }
-  .standby-text { min-width: 0; }
-  .standby-title {
+  .standby-text,
+  .hero-standby-text { min-width: 0; }
+  .standby-title,
+  .hero-standby-title {
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 0.22em;
@@ -507,7 +520,8 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
     color: var(--color-amber);
     margin-bottom: 8px;
   }
-  .standby-body {
+  .standby-body,
+  .hero-standby-body {
     margin: 0;
     font-family: var(--font-display);
     font-size: 0.9375rem;
@@ -515,12 +529,14 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
     color: var(--color-mute);
     max-width: 44em;
   }
-  .standby-body a {
+  .standby-body a,
+  .hero-standby-body a {
     color: var(--color-text-bright);
     border-bottom: 1px solid var(--color-amber-dim);
     transition: color 200ms var(--ease-hud), border-color 200ms var(--ease-hud);
   }
-  .standby-body a:hover {
+  .standby-body a:hover,
+  .hero-standby-body a:hover {
     color: var(--color-amber-glow);
     border-bottom-color: var(--color-amber);
   }

@@ -1,16 +1,16 @@
 ---
 /**
- * PodcastCard — captured-transmission card for a single podcast episode.
+ * PodcastCard - captured-transmission card for a single podcast episode.
  *
  * Two variants:
- *   - "hero" — full-width composition with side-by-side artwork + metadata,
+ *   - "hero" - full-width composition with side-by-side artwork + metadata,
  *     a waveform decoration, and the Spotify embed expanded by default.
- *   - "row"  — compact stacked row with thumbnail, metadata and a
+ *   - "row"  - compact stacked row with thumbnail, metadata and a
  *     click-to-expand Spotify embed.
  *
  * Reuses the site-wide #duotone-amber SVG filter declared on the page.
  *
- * The Spotify iframe is loaded lazily — `data-src` is swapped to `src`
+ * The Spotify iframe is loaded lazily - `data-src` is swapped to `src`
  * on first open (or immediately, for the hero variant).
  */
 import type { Podcast } from "../lib/types";
@@ -78,12 +78,12 @@ const date = fmtDate(podcast.publishedAt);
       </header>
 
       <div class="pod-body">
-        {/* Left — artwork */}
+        {/* Left - artwork */}
         <div class="pod-art-wrap">
           <div class="pod-art" aria-hidden="false">
             <img
               src={podcast.artworkUrl}
-              alt={`${podcast.show} — episode artwork`}
+              alt={`${podcast.show} - episode artwork`}
               loading="lazy"
               decoding="async"
               width="300"
@@ -112,7 +112,7 @@ const date = fmtDate(podcast.publishedAt);
           </div>
         </div>
 
-        {/* Right — metadata */}
+        {/* Right - metadata */}
         <div class="pod-meta">
           <div class="pod-marker">
             <span>EP/{idxLabel}</span>
@@ -173,7 +173,7 @@ const date = fmtDate(podcast.publishedAt);
         </div>
       </div>
 
-      {/* Player — always open for the hero */}
+      {/* Player - always open for the hero */}
       <div class="pod-player">
         <div class="pod-player-hud" aria-hidden="true">
           <span class="hud-tag">PLAYER · SPOTIFY</span>
@@ -182,7 +182,7 @@ const date = fmtDate(podcast.publishedAt);
         <div class="pod-player-frame">
           <iframe
             src={podcast.embedUrl}
-            title={`Spotify player — ${podcast.title}`}
+            title={`Spotify player - ${podcast.title}`}
             loading="lazy"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             allowfullscreen
@@ -264,7 +264,7 @@ const date = fmtDate(podcast.publishedAt);
           <div class="pod-row-player">
             <iframe
               data-src={podcast.embedUrl}
-              title={`Spotify player — ${podcast.title}`}
+              title={`Spotify player - ${podcast.title}`}
               loading="lazy"
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
               allowfullscreen
@@ -291,7 +291,7 @@ const date = fmtDate(podcast.publishedAt);
 
 <style>
   /* =========================================================================
-     SHARED — chrome, chips, CTAs, waveform.
+     SHARED - chrome, chips, CTAs, waveform.
      ========================================================================= */
   .pod {
     --pod-pad-x: 1.25rem;
@@ -307,7 +307,7 @@ const date = fmtDate(podcast.publishedAt);
     }
   }
 
-  /* Live amber dot, calmer than the site nav's pulse — a steady ON-AIR signal. */
+  /* Live amber dot, calmer than the site nav's pulse - a steady ON-AIR signal. */
   .onair-dot {
     display: inline-block;
     width: 7px;
@@ -327,7 +327,7 @@ const date = fmtDate(podcast.publishedAt);
     .onair-dot { animation: none; }
   }
 
-  /* Reticles — small amber tick marks at the four corners of any framed image. */
+  /* Reticles - small amber tick marks at the four corners of any framed image. */
   .reticle {
     position: absolute;
     width: 12px;
@@ -374,7 +374,7 @@ const date = fmtDate(podcast.publishedAt);
   .art-tag-tl { top: 6px; left: 6px; color: var(--color-amber); }
   .art-tag-br { bottom: 6px; right: 6px; }
 
-  /* CTAs — same shape as the rest of the site. */
+  /* CTAs - same shape as the rest of the site. */
   .cta {
     display: inline-flex;
     align-items: center;
@@ -473,7 +473,7 @@ const date = fmtDate(podcast.publishedAt);
   .pod-status-chips .chip-k { color: var(--color-mute); }
   .pod-status-chips .chip-v { color: var(--color-text-bright); }
 
-  /* Body grid — artwork left, metadata right */
+  /* Body grid - artwork left, metadata right */
   .pod-body {
     display: grid;
     grid-template-columns: 1fr;
@@ -549,7 +549,7 @@ const date = fmtDate(podcast.publishedAt);
     mix-blend-mode: normal;
   }
 
-  /* Lateral spec strip beneath the artwork — keeps the "operator dossier" feel. */
+  /* Lateral spec strip beneath the artwork - keeps the "operator dossier" feel. */
   .pod-art-spec {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -710,7 +710,7 @@ const date = fmtDate(podcast.publishedAt);
     color: var(--color-amber);
   }
 
-  /* Waveform — bouncing amber FFT bars + label rail. */
+  /* Waveform - bouncing amber FFT bars + label rail. */
   .pod-wave {
     position: relative;
     border-top: 1px solid var(--color-rule);
@@ -988,7 +988,7 @@ const date = fmtDate(podcast.publishedAt);
     transform: rotate(90deg);
   }
 
-  /* Drawer — animated via grid-rows like the mobile nav. */
+  /* Drawer - animated via grid-rows like the mobile nav. */
   .pod-row-shell {
     display: grid;
     grid-template-rows: 0fr;
@@ -1059,7 +1059,7 @@ const date = fmtDate(podcast.publishedAt);
     }
   }
 
-  /* Reduced motion — strip drawer easing. */
+  /* Reduced motion - strip drawer easing. */
   @media (prefers-reduced-motion: reduce) {
     .pod-row-shell,
     .pod-row-player,
@@ -1117,7 +1117,7 @@ const date = fmtDate(podcast.publishedAt);
             if (label) label.textContent = originalLabel;
           }, 1600);
         } catch {
-          // Fallback — show a brief failure state.
+          // Fallback - show a brief failure state.
           if (label) label.textContent = "PRESS ⌘C";
           window.setTimeout(() => {
             if (label) label.textContent = originalLabel;
