@@ -12,6 +12,8 @@ export default defineConfig({
       changefreq: 'monthly',
       priority: 0.7,
       lastmod: new Date(),
+      // /macros is a private, noindex utility page - keep it out of the sitemap.
+      filter: (page) => !page.includes('/macros'),
       customPages: [
         'https://danbarclay.dev/',
         'https://danbarclay.dev/about/',
