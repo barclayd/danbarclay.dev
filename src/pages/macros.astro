@@ -1,0 +1,20 @@
+---
+import Base from "../layouts/Base.astro";
+import NutritionCockpit from "../components/NutritionCockpit.tsx";
+
+const title = "Fuel Plan - Macros";
+const description = "Personal nutrition cockpit - daily calorie and macro targets by training phase and day type.";
+---
+
+<Base title={title} description={description} noindex noPersonGraph>
+  {/* client:only - the cockpit depends on the visitor's date and localStorage,
+      so it renders entirely client-side to avoid hydration mismatches. */}
+  <NutritionCockpit client:only="react" />
+</Base>
+
+<style is:global>
+  /* Full-bleed app page - the cockpit owns the viewport. */
+  body {
+    background: #0c0d0f;
+  }
+</style>

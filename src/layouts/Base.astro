@@ -7,6 +7,7 @@ interface Props {
   ogImage?: string;
   pageType?: "ProfilePage" | "AboutPage" | "CollectionPage" | "WebPage";
   noPersonGraph?: boolean;
+  noindex?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   breadcrumbs?: Array<{ name: string; url?: string }>;
 }
@@ -19,6 +20,7 @@ const {
   ogImage = "/og.png",
   pageType = "WebPage",
   noPersonGraph = false,
+  noindex = false,
   jsonLd,
   breadcrumbs,
 } = Astro.props;
@@ -212,14 +214,22 @@ const graphsToEmit = [
     <link rel="me" href="mailto:barclaysd@me.com" />
 
     <!-- Robots: maximise indexing + snippet richness for AI overviews. -->
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large" />
+    {noindex ? (
+      <meta name="robots" content="noindex, nofollow" />
+    ) : (
+      <>
+        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large" />
+      </>
+    )}
 
     <!-- Structured data - the heart of the LLM/Knowledge-Graph signal. -->
-    <script
-      type="application/ld+json"
-      set:html={JSON.stringify(graphsToEmit.length === 1 ? graphsToEmit[0] : graphsToEmit)}
-    />
+    {graphsToEmit.length > 0 && (
+      <script
+        type="application/ld+json"
+        set:html={JSON.stringify(graphsToEmit.length === 1 ? graphsToEmit[0] : graphsToEmit)}
+      />
+    )}
   </head>
   <body>
     <div class="boot-scanline" aria-hidden="true"></div>
