@@ -25,7 +25,11 @@ const {
   breadcrumbs,
 } = Astro.props;
 
-const canonicalUrl = new URL(Astro.url.pathname, SITE_URL).toString();
+// With `build.format: 'file'` the build-time pathname is "/about.html";
+// canonical URLs are the extensionless form ("/about", "/" for the index).
+const canonicalPath =
+  Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "/") || "/";
+const canonicalUrl = new URL(canonicalPath, SITE_URL).toString();
 const ogImageUrl = new URL(ogImage, SITE_URL).toString();
 const profileImageUrl = new URL("/dan-barclay.webp", SITE_URL).toString();
 

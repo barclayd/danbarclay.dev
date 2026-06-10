@@ -26,7 +26,7 @@ const PERSON_ID = "https://danbarclay.dev/#person";
 const podcastSchema = podcasts.map((p) => ({
   "@context": "https://schema.org",
   "@type": "PodcastEpisode",
-  "@id": `https://danbarclay.dev/podcasts/#${p.slug}`,
+  "@id": `https://danbarclay.dev/podcasts#${p.slug}`,
   url: p.spotifyUrl,
   name: p.title,
   datePublished: p.publishedAt,
@@ -61,7 +61,7 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
   jsonLd={podcastSchema}
   breadcrumbs={[
     { name: "Home", url: "/" },
-    { name: "About", url: "/about/" },
+    { name: "About", url: "/about" },
     { name: "Podcasts" },
   ]}
 >
@@ -238,7 +238,7 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
             <span>EMAIL · BARCLAYSD@ME.COM</span>
             <span aria-hidden="true">↗</span>
           </a>
-          <a class="cta-sec" href="/about/">
+          <a class="cta-sec" href="/about">
             <span>OPERATOR DOSSIER</span>
             <span aria-hidden="true">↳</span>
           </a>
