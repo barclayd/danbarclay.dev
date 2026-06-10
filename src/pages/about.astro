@@ -53,7 +53,7 @@ const faqs = [
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "@id": "https://danbarclay.dev/about/#faq",
+  "@id": "https://danbarclay.dev/about#faq",
   mainEntity: faqs.map((f) => ({
     "@type": "Question",
     name: f.q,
@@ -135,7 +135,7 @@ const faqJsonLd = {
             </p>
             <ul class="ml-1 space-y-3 text-[var(--color-mute)]">
               <li class="border-l border-[var(--color-amber-dim)] pl-4">
-                <a href="/promptly/" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">Promptly</a>
+                <a href="/promptly" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">Promptly</a>
                 - <strong class="text-[var(--color-text-bright)]">the CMS
                 powering the next wave of AI development.</strong> A B2B SaaS
                 that hands LLM prompts back to the domain experts who write
@@ -143,7 +143,7 @@ const faqJsonLd = {
                 on a typed prompt-fetching SDK.
               </li>
               <li class="border-l border-[var(--color-amber-dim)] pl-4">
-                <a href="/keepfresh/" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">KeepFresh</a>
+                <a href="/keepfresh" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">KeepFresh</a>
                 - <strong class="text-[var(--color-text-bright)]">a Swift-built
                 iOS app working to end food waste for good.</strong> Tracks
                 grocery inventory and surfaces expiry alerts before things
@@ -202,7 +202,7 @@ const faqJsonLd = {
         {[
           { label: "GITHUB", code: "github.com/barclayd", href: "https://github.com/barclayd", desc: "Source code and side projects." },
           { label: "TWITTER · X", code: "x.com/danielbarclay", href: "https://x.com/danielbarclay", desc: "Notes, links and updates." },
-          { label: "TWEETS · MIRROR", code: "danbarclay.dev/tweets", href: "/tweets/", desc: "On-site archive of @danielbarclay." },
+          { label: "TWEETS · MIRROR", code: "danbarclay.dev/tweets", href: "/tweets", desc: "On-site archive of @danielbarclay." },
           { label: "LINKEDIN", code: "linkedin.com/in/barclayd", href: "https://www.linkedin.com/in/barclayd/", desc: "Career history and credentials." },
           { label: "EMAIL", code: "barclaysd@me.com", href: "mailto:barclaysd@me.com", desc: "Direct contact." },
           { label: "PROMPTLY", code: "promptlycms.com", href: "https://promptlycms.com", desc: "Company / SaaS founded by Dan Barclay." },
@@ -264,7 +264,7 @@ const faqJsonLd = {
           </defs>
         </svg>
 
-        <a href="/podcasts/" class="voice-card group">
+        <a href="/podcasts" class="voice-card group">
           <div class="voice-card-meta">
             <div class="voice-eyebrow">
               <span class="voice-onair" aria-hidden="true"></span>

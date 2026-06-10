@@ -21,7 +21,7 @@ const workSchema = [
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "@id": "https://danbarclay.dev/promptly/#app",
+    "@id": "https://danbarclay.dev/promptly#app",
     name: "Promptly",
     alternateName: "Promptly CMS",
     url: "https://promptlycms.com",
@@ -36,7 +36,7 @@ const workSchema = [
   {
     "@context": "https://schema.org",
     "@type": "MobileApplication",
-    "@id": "https://danbarclay.dev/keepfresh/#app",
+    "@id": "https://danbarclay.dev/keepfresh#app",
     name: "KeepFresh",
     url: "https://keepfre.sh",
     applicationCategory: "LifestyleApplication",
@@ -131,7 +131,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
       <div class="grid grid-cols-1 gap-px bg-[var(--color-rule)] md:grid-cols-2">
         {/* PROMPTLY */}
         <a
-          href="/promptly/"
+          href="/promptly"
           class="og-card group relative flex flex-col gap-0 bg-[var(--color-void)] p-4 transition-colors hover:bg-[rgba(232,154,60,0.025)] sm:p-6"
         >
           <div class="mb-3 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-hud">
@@ -190,7 +190,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
 
         {/* KEEPFRESH */}
         <a
-          href="/keepfresh/"
+          href="/keepfresh"
           class="og-card group relative flex flex-col gap-0 bg-[var(--color-void)] p-4 transition-colors hover:bg-[rgba(232,154,60,0.025)] sm:p-6"
         >
           <div class="mb-3 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-hud">
@@ -276,9 +276,9 @@ const fmtYearWindow = (created: string, pushed: string) => {
         {projects.map((p) => {
           const internalHref =
             p.slug === "promptly" || p.slug === "promptly-package"
-              ? "/promptly/"
+              ? "/promptly"
               : p.slug === "keepfresh-ios" || p.slug === "keepfresh-api"
-                ? "/keepfresh/"
+                ? "/keepfresh"
                 : null;
           return (
             <article class="bg-[var(--color-void)] px-4 py-6 sm:px-6 sm:py-8 group transition-colors hover:bg-[rgba(232,154,60,0.025)]">

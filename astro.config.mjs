@@ -6,6 +6,10 @@ import robotsTxt from 'astro-robots-txt';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
+  trailingSlash: 'never',
+  build: {
+    format: 'file',
+  },
   integrations: [
     react(),
     sitemap({
@@ -14,15 +18,6 @@ export default defineConfig({
       lastmod: new Date(),
       // /macros is a private, noindex utility page - keep it out of the sitemap.
       filter: (page) => !page.includes('/macros'),
-      customPages: [
-        'https://danbarclay.dev/',
-        'https://danbarclay.dev/about/',
-        'https://danbarclay.dev/work/',
-        'https://danbarclay.dev/podcasts/',
-        'https://danbarclay.dev/tweets/',
-        'https://danbarclay.dev/promptly/',
-        'https://danbarclay.dev/keepfresh/',
-      ],
     }),
     robotsTxt({
       host: 'danbarclay.dev',
