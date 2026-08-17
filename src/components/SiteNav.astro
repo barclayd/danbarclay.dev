@@ -14,12 +14,14 @@
  */
 
 interface Props {
-  terminal: string;
+  /** Omit to hide the terminal sig (homepage). */
+  terminal?: string;
+  /** Omit to hide the status readout (homepage). */
   status?: string;
   current?: "about" | "work" | "promptly" | "keepfresh" | "home";
 }
 
-const { terminal, status = "STATUS · NOMINAL", current } = Astro.props;
+const { terminal, status, current } = Astro.props;
 
 const navItems = [
   { key: "home", label: "HOME", href: "/", desc: "ROOT" },
@@ -41,7 +43,7 @@ const navItems = [
         aria-hidden="true"
       ></span>
       <span class="truncate">
-        DANBARCLAY.DEV<span class="hidden sm:inline"> · {terminal}</span>
+        DANBARCLAY.DEV{terminal && <span class="hidden sm:inline"> · {terminal}</span>}
       </span>
     </div>
 
@@ -66,9 +68,11 @@ const navItems = [
     </nav>
 
     {/* Desktop status */}
-    <div class="hidden sm:block">
-      <span>{status}</span>
-    </div>
+    {status && (
+      <div class="hidden sm:block">
+        <span>{status}</span>
+      </div>
+    )}
 
     {/* Mobile toggle */}
     <button
@@ -122,10 +126,12 @@ const navItems = [
         }
       </ul>
       <div class="nav-panel-rule" aria-hidden="true"></div>
-      <div class="nav-panel-foot">
-        <span class="nav-panel-foot-status">{status}</span>
-        <span class="nav-panel-foot-sig">{terminal}</span>
-      </div>
+      {(status || terminal) && (
+        <div class="nav-panel-foot">
+          <span class="nav-panel-foot-status">{status}</span>
+          <span class="nav-panel-foot-sig">{terminal}</span>
+        </div>
+      )}
     </div>
   </div>
 </header>
