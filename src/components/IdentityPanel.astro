@@ -8,12 +8,6 @@ import contributions from "../data/contributions.json";
 const AVATAR_URL = "/dan-barclay.webp";
 
 const totalContributions = contributions.total;
-const fetchedAt = new Date(contributions.fetchedAt);
-const fetchedAtLabel =
-  fetchedAt.toISOString().slice(0, 10).replace(/-/g, ".") +
-  " " +
-  fetchedAt.toISOString().slice(11, 16) +
-  " UTC";
 
 // Years coding from 2016
 const yearsCoding = new Date().getUTCFullYear() - 2016;
@@ -31,8 +25,7 @@ const stack = [
 ---
 
 <HudFrame
-  label="C/00 // OPERATOR"
-  index="REC. 39765499"
+  label="PORTFOLIO"
   className="px-6 py-8 sm:px-10 sm:py-12 md:px-14 md:py-16"
 >
   <div class="grid gap-8 md:grid-cols-[260px_1fr] md:gap-16 boot-stagger">
@@ -45,8 +38,8 @@ const stack = [
       />
       <div class="flex w-40 sm:w-52 md:w-[220px] flex-col gap-1">
         <div class="flex items-center justify-between font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
-          <span>GH/UID</span>
-          <span class="text-[var(--color-text)]">39765499</span>
+          <span>GITHUB</span>
+          <span class="text-[var(--color-text)]">barclayd</span>
         </div>
         <div class="flex items-center justify-between font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
           <span>STATUS</span>
@@ -56,7 +49,7 @@ const stack = [
           </span>
         </div>
         <div class="flex items-center justify-between font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
-          <span>NODE</span>
+          <span>BASED</span>
           <span class="text-[var(--color-text)]">LON · 51.5N</span>
         </div>
       </div>
@@ -138,7 +131,7 @@ const stack = [
         </div>
         <div class="bg-[var(--color-void)] px-3 py-3">
           <div class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
-            GH / CONTRIB · 12M
+            GITHUB / 12M
           </div>
           <div class="font-mono text-xl font-medium text-[var(--color-text)] sm:text-2xl">
             <Counter
@@ -178,7 +171,6 @@ const stack = [
     </span>
     <TelemetryClock client:idle />
     <span class="whitespace-nowrap">LAT 51.5074°N · LON 0.1278°W</span>
-    <span class="hidden sm:inline sm:ml-auto">PULL {fetchedAtLabel}</span>
   </div>
 </HudFrame>
 

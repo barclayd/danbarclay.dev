@@ -2,12 +2,10 @@
 import SiteNav from "./SiteNav.astro";
 
 interface Props {
-  terminal: string;
-  status?: string;
   current?: "about" | "work" | "promptly" | "keepfresh" | "home";
 }
 
-const { terminal, status = "STATUS · NOMINAL", current } = Astro.props;
+const { current } = Astro.props;
 ---
 
-<SiteNav terminal={terminal} status={status} current={current} />
+<SiteNav current={current} />

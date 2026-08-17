@@ -17,9 +17,9 @@ const podcasts = (podcastsRaw as Podcast[]).slice().sort((a, b) => {
 const [hero, ...archive] = podcasts;
 
 const title =
-  "Podcasts - Dan Barclay · Appearances, calls and voice intercepts";
+  "Podcasts - Dan Barclay · Appearances and guest spots";
 const description =
-  "Podcast appearances by Dan Barclay - engineering leader, founder of Promptly and KeepFresh. Voice transmissions, calls in to other shows, and conversations about engineering, AI, testing and product.";
+  "Podcast appearances by Dan Barclay - engineering leader, founder of Promptly and KeepFresh. Guest spots, calls in to other shows, and conversations about engineering, AI, testing and product.";
 
 const PERSON_ID = "https://danbarclay.dev/#person";
 
@@ -52,6 +52,9 @@ const podcastSchema = podcasts.map((p) => ({
 const totalSeconds = podcasts.reduce((sum, p) => sum + p.durationSeconds, 0);
 const totalMinutes = Math.round(totalSeconds / 60);
 const showCount = new Set(podcasts.map((p) => p.show)).size;
+const latestYear = Math.max(
+  ...podcasts.map((p) => new Date(p.publishedAt).getUTCFullYear()),
+);
 ---
 
 <Base
@@ -68,7 +71,7 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
   <main
     class="mx-auto flex w-full max-w-[1100px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
   >
-    <SubPageHeader terminal="TERMINAL/PODCASTS" current="about" />
+    <SubPageHeader current="about" />
 
     {/* SVG defs - duotone-amber filter reused by every podcast artwork. */}
     <svg
@@ -100,25 +103,21 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
     {/* INTRO + FEATURED EPISODE                                    */}
     {/* ========================================================== */}
     <HudFrame
-      label="C/PODCASTS // VOICE · INTERCEPT"
-      index="ON-AIR"
+      label="PODCASTS"
       className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
     >
       <div class="page-intro">
         <div class="page-intro-eyebrow">
           <span class="rule" aria-hidden="true"></span>
-          <span>PODCASTS · DAN BARCLAY</span>
+          <span>DAN BARCLAY</span>
         </div>
         <h1 class="page-intro-title">
-          <ScrambleText client:visible text="VOICE /" duration={700} />
-          <br />
-          <ScrambleText client:visible text="INTERCEPT" duration={900} delay={140} />
+          <ScrambleText client:visible text="PODCASTS" duration={900} />
         </h1>
         <p class="page-intro-desc">
-          Captured transmissions. Podcasts and live calls where
-          <strong>Dan Barclay</strong> has shown up - talking engineering,
-          AI, testing, and the messy parts of shipping software.
-          Press play. Stay on frequency.
+          Podcasts and live calls where <strong>Dan Barclay</strong> has
+          shown up - talking engineering, AI, testing, and the messy parts
+          of shipping software. Press play.
         </p>
 
         <ul class="page-intro-stats" aria-label="Podcast stats">
@@ -135,8 +134,8 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
             <span class="v">{totalMinutes} MIN</span>
           </li>
           <li>
-            <span class="k">SIGNAL</span>
-            <span class="v amber">STABLE</span>
+            <span class="k">LATEST</span>
+            <span class="v amber">{latestYear}</span>
           </li>
         </ul>
       </div>
@@ -145,7 +144,7 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
 
       <div class="featured-eyebrow">
         <span class="dot" aria-hidden="true"></span>
-        <span>FEATURED · LATEST TRANSMISSION</span>
+        <span>FEATURED · LATEST EPISODE</span>
       </div>
 
       {hero && <PodcastCard podcast={hero} variant="hero" />}
@@ -155,8 +154,8 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
     {/* ARCHIVE                                                      */}
     {/* ========================================================== */}
     <HudFrame
-      label="C/PODCASTS // ARCHIVE · TRANSMISSIONS"
-      index={archive.length > 0 ? `${String(archive.length).padStart(2, "0")} REC.` : "STANDBY"}
+      label="PODCAST ARCHIVE"
+      index={archive.length > 0 ? `${String(archive.length).padStart(2, "0")} EPISODES` : undefined}
       className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
     >
       <div class="archive-head">
@@ -172,7 +171,7 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
           </p>
         </div>
         <div class="archive-meter" aria-hidden="true">
-          <span class="archive-meter-k">INTERCEPTED</span>
+          <span class="archive-meter-k">EPISODES</span>
           <span class="archive-meter-v">{String(archive.length).padStart(2, "0")}</span>
         </div>
       </div>
@@ -198,10 +197,10 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
             <span class="standby-line"></span>
           </div>
           <div class="standby-text">
-            <div class="standby-title">STANDBY · ARCHIVE EMPTY</div>
+            <div class="standby-title">MORE COMING SOON</div>
             <p class="standby-body">
-              Only one transmission on file. More incoming as the calendar
-              fills. Producers and hosts - pitches via
+              Only one episode on file so far. More as the calendar fills.
+              Producers and hosts - pitches via{" "}
               <a href="mailto:barclaysd@me.com">barclaysd@me.com</a>.
             </p>
           </div>
@@ -213,8 +212,7 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
     {/* CTA - book Dan on your show                                  */}
     {/* ========================================================== */}
     <HudFrame
-      label="C/PODCASTS // OUTBOUND · CHANNEL OPEN"
-      index="HAILING"
+      label="CONTACT"
       className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
     >
       <div class="cta-wrap">
@@ -239,7 +237,7 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
             <span aria-hidden="true">↗</span>
           </a>
           <a class="cta-sec" href="/about">
-            <span>OPERATOR DOSSIER</span>
+            <span>ABOUT DAN BARCLAY</span>
             <span aria-hidden="true">↳</span>
           </a>
         </div>

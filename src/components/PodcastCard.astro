@@ -1,6 +1,6 @@
 ---
 /**
- * PodcastCard - captured-transmission card for a single podcast episode.
+ * PodcastCard - card for a single podcast episode.
  *
  * Two variants:
  *   - "hero" - full-width composition with side-by-side artwork + metadata,
@@ -64,7 +64,7 @@ const date = fmtDate(podcast.publishedAt);
       <header class="pod-status">
         <div class="pod-status-left">
           <span class="onair-dot" aria-hidden="true" />
-          <span>ON-AIR · VOICE INTERCEPT</span>
+          <span>PODCAST EPISODE</span>
         </div>
         <div class="pod-status-chips" aria-hidden="true">
           <span class="chip"><span class="chip-k">EP</span><span class="chip-v">{idxLabel}</span></span>
@@ -93,7 +93,6 @@ const date = fmtDate(podcast.publishedAt);
             <span class="reticle reticle-tr" aria-hidden="true" />
             <span class="reticle reticle-bl" aria-hidden="true" />
             <span class="reticle reticle-br" aria-hidden="true" />
-            <span class="art-tag art-tag-tl">FRAME · {idxLabel}</span>
             <span class="art-tag art-tag-br">{podcast.show.toUpperCase()}</span>
           </div>
           <div class="pod-art-spec">
@@ -168,7 +167,7 @@ const date = fmtDate(podcast.publishedAt);
           ))}
         </div>
         <div class="pod-wave-label">
-          <span>SIG / FFT · LIVE TRACE</span>
+          <span>WAVEFORM</span>
           <span>02 · CH-A</span>
         </div>
       </div>
@@ -220,7 +219,7 @@ const date = fmtDate(podcast.publishedAt);
         data-pod-toggle
       >
         <div class="pod-row-marker">
-          <span>C/{idxLabel}</span>
+          <span>{idxLabel}</span>
           <span class="rule" aria-hidden="true" />
         </div>
 
@@ -307,7 +306,7 @@ const date = fmtDate(podcast.publishedAt);
     }
   }
 
-  /* Live amber dot, calmer than the site nav's pulse - a steady ON-AIR signal. */
+  /* Live amber dot, calmer than the site nav's pulse. */
   .onair-dot {
     display: inline-block;
     width: 7px;
@@ -371,7 +370,6 @@ const date = fmtDate(podcast.publishedAt);
     z-index: 4;
     pointer-events: none;
   }
-  .art-tag-tl { top: 6px; left: 6px; color: var(--color-amber); }
   .art-tag-br { bottom: 6px; right: 6px; }
 
   /* CTAs - same shape as the rest of the site. */

@@ -76,11 +76,10 @@ const faqJsonLd = {
   <main
     class="mx-auto flex w-full max-w-[1100px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
   >
-    <SubPageHeader terminal="TERMINAL/ABOUT" current="about" />
+    <SubPageHeader current="about" />
 
     <HudFrame
-      label="C/ABOUT // OPERATOR · BIOGRAPHY"
-      index="REC. 39765499"
+      label="ABOUT"
       className="px-6 py-10 sm:px-10 sm:py-14"
     >
       <div class="grid gap-10 md:grid-cols-[220px_1fr] md:gap-14">
@@ -99,7 +98,7 @@ const faqJsonLd = {
               <span>ROLE</span><span class="text-[var(--color-text)]">ENG LEAD</span>
             </div>
             <div class="flex items-center justify-between">
-              <span>NODE</span><span class="text-[var(--color-text)]">LON · UK</span>
+              <span>BASED</span><span class="text-[var(--color-text)]">LON · UK</span>
             </div>
             <div class="flex items-center justify-between">
               <span>YRS</span><span class="text-[var(--color-amber)]">10+</span>
@@ -124,7 +123,7 @@ const faqJsonLd = {
 
           <div class="space-y-5 font-display text-base leading-relaxed text-[var(--color-text)] sm:text-[1.0625rem]">
             <p>
-              <strong class="text-[var(--color-text-bright)]">Dan Barclay</strong>
+              <strong class="text-[var(--color-text-bright)]">Dan Barclay</strong>{" "}
               is an engineering leader, full-stack product engineer and founder
               based in London, United Kingdom. He has spent 10+ years building
               and scaling software for millions of users - across consumer
@@ -135,7 +134,7 @@ const faqJsonLd = {
             </p>
             <ul class="ml-1 space-y-3 text-[var(--color-mute)]">
               <li class="border-l border-[var(--color-amber-dim)] pl-4">
-                <a href="/promptly" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">Promptly</a>
+                <a href="/promptly" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">Promptly</a>{" "}
                 - <strong class="text-[var(--color-text-bright)]">the CMS
                 powering the next wave of AI development.</strong> A B2B SaaS
                 that hands LLM prompts back to the domain experts who write
@@ -143,7 +142,7 @@ const faqJsonLd = {
                 on a typed prompt-fetching SDK.
               </li>
               <li class="border-l border-[var(--color-amber-dim)] pl-4">
-                <a href="/keepfresh" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">KeepFresh</a>
+                <a href="/keepfresh" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">KeepFresh</a>{" "}
                 - <strong class="text-[var(--color-text-bright)]">a Swift-built
                 iOS app working to end food waste for good.</strong> Tracks
                 grocery inventory and surfaces expiry alerts before things
@@ -185,8 +184,7 @@ const faqJsonLd = {
 
     <!-- Profile graph: every property Dan controls, cross-linked. -->
     <HudFrame
-      label="C/ABOUT // IDENTITY GRAPH"
-      index="SAMEAS"
+      label="PROFILES"
       className="px-6 py-10 sm:px-10 sm:py-14"
     >
       <h2 class="font-display text-2xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-3xl">
@@ -202,7 +200,7 @@ const faqJsonLd = {
         {[
           { label: "GITHUB", code: "github.com/barclayd", href: "https://github.com/barclayd", desc: "Source code and side projects." },
           { label: "TWITTER · X", code: "x.com/danielbarclay", href: "https://x.com/danielbarclay", desc: "Notes, links and updates." },
-          { label: "TWEETS · MIRROR", code: "danbarclay.dev/tweets", href: "/tweets", desc: "On-site archive of @danielbarclay." },
+          { label: "TWEETS", code: "danbarclay.dev/tweets", href: "/tweets", desc: "On-site archive of @danielbarclay." },
           { label: "LINKEDIN", code: "linkedin.com/in/barclayd", href: "https://www.linkedin.com/in/barclayd/", desc: "Career history and credentials." },
           { label: "EMAIL", code: "barclaysd@me.com", href: "mailto:barclaysd@me.com", desc: "Direct contact." },
           { label: "PROMPTLY", code: "promptlycms.com", href: "https://promptlycms.com", desc: "Company / SaaS founded by Dan Barclay." },
@@ -234,8 +232,7 @@ const faqJsonLd = {
     <!-- Voice / Intercept - link out to the podcasts archive. -->
     {featuredPodcast && (
       <HudFrame
-        label="C/ABOUT // VOICE · INTERCEPT"
-        index="ON-AIR"
+        label="PODCASTS"
         className="px-6 py-10 sm:px-10 sm:py-14"
       >
         {/* Inline SVG defs scoped to this card so the duotone preview works. */}
@@ -268,10 +265,10 @@ const faqJsonLd = {
           <div class="voice-card-meta">
             <div class="voice-eyebrow">
               <span class="voice-onair" aria-hidden="true"></span>
-              <span>VOICE · {String(podcastCount).padStart(2, "0")} INTERCEPTED</span>
+              <span>{String(podcastCount).padStart(2, "0")} {podcastCount === 1 ? "EPISODE" : "EPISODES"}</span>
             </div>
             <h2 class="voice-title">
-              Captured / Voice
+              Podcast Appearances
             </h2>
             <p class="voice-desc">
               Podcast appearances and live calls. Conversations on
@@ -287,7 +284,7 @@ const faqJsonLd = {
               </span>
             </div>
             <span class="voice-cta">
-              <span>OPEN VOICE INTERCEPT</span>
+              <span>OPEN PODCASTS</span>
               <span class="voice-cta-arrow" aria-hidden="true">↳</span>
             </span>
           </div>
@@ -307,7 +304,6 @@ const faqJsonLd = {
               <span class="voice-reticle voice-reticle-tr" aria-hidden="true"></span>
               <span class="voice-reticle voice-reticle-bl" aria-hidden="true"></span>
               <span class="voice-reticle voice-reticle-br" aria-hidden="true"></span>
-              <span class="voice-art-tag">FRAME · {String(featuredPodcast.index).padStart(2, "0")}</span>
             </div>
             <div class="voice-wave" aria-hidden="true">
               {Array.from({ length: 24 }).map((_, i) => (
@@ -321,8 +317,7 @@ const faqJsonLd = {
 
     <!-- FAQ - pure-prose Q&A, mirrored in FAQPage JSON-LD for AI overviews. -->
     <HudFrame
-      label="C/ABOUT // FREQUENTLY ASKED"
-      index="FAQ"
+      label="FAQ"
       className="px-6 py-10 sm:px-10 sm:py-14"
     >
       <h2 class="font-display text-2xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-3xl">
@@ -335,7 +330,7 @@ const faqJsonLd = {
         {faqs.map((f, i) => (
           <article class="bg-[var(--color-void)] px-4 py-6 sm:px-6 sm:py-8">
             <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-hud text-[var(--color-amber)]">
-              <span>Q/{String(i + 1).padStart(2, "0")}</span>
+              <span>{String(i + 1).padStart(2, "0")}</span>
               <span class="h-px flex-1 bg-[var(--color-rule)]" aria-hidden="true" />
             </div>
             <h3 class="mt-3 font-display text-lg font-semibold text-[var(--color-text-bright)] sm:text-xl">
@@ -354,7 +349,7 @@ const faqJsonLd = {
 </Base>
 
 <style>
-  /* ============================ VOICE INTERCEPT CARD ====================== */
+  /* ============================ PODCAST CARD ============================= */
   .voice-card {
     display: grid;
     grid-template-columns: 1fr;
@@ -558,19 +553,6 @@ const faqJsonLd = {
       transparent 55%,
       rgba(0, 0, 0, 0.55) 100%
     );
-  }
-  .voice-art-tag {
-    position: absolute;
-    top: 6px;
-    left: 6px;
-    z-index: 4;
-    padding: 3px 6px;
-    background: rgba(14, 17, 20, 0.85);
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-amber);
   }
 
   .voice-reticle {
