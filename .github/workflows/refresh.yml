@@ -9,6 +9,8 @@ on:
 jobs:
   trigger:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Trigger Cloudflare deploy hook
         env:
@@ -19,3 +21,19 @@ jobs:
             exit 0
           fi
           curl -fsSL -X POST "$HOOK"
+
+      - uses: actions/checkout@v4
+
+      # GitHub disables scheduled workflows after 60 days without a commit.
+      # ponytail: empty commit once the last one is 50 days old, not every run.
+      - name: Keepalive
+        run: |
+          last=$(git log -1 --format=%ct)
+          if [ $(( $(date +%s) - last )) -lt 4320000 ]; then
+            echo "Last commit is under 50 days old; nothing to do."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "chore: keepalive"
+          git push
