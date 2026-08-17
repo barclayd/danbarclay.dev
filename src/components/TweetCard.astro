@@ -1,6 +1,6 @@
 ---
 /**
- * TweetCard - captured-transmission card for a single tweet.
+ * TweetCard - card for a single tweet.
  *
  * Variants:
  *   - "hero" - large, top-of-page card with the pinned (or latest) tweet.
@@ -110,7 +110,7 @@ const mediaCount = tweet.media?.length ?? 0;
     <div class="tw-status-left">
       <span class="onair-dot" aria-hidden="true"></span>
       <span class="tw-status-text">
-        {isHero ? "PINNED · LIVE INTERCEPT" : "POST · INTERCEPT"}
+        {isHero ? "PINNED POST" : "POST"}
       </span>
     </div>
     <div class="tw-status-chips">

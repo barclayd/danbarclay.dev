@@ -98,7 +98,7 @@ const faqJsonLd = {
               <span>ROLE</span><span class="text-[var(--color-text)]">ENG LEAD</span>
             </div>
             <div class="flex items-center justify-between">
-              <span>NODE</span><span class="text-[var(--color-text)]">LON · UK</span>
+              <span>BASED</span><span class="text-[var(--color-text)]">LON · UK</span>
             </div>
             <div class="flex items-center justify-between">
               <span>YRS</span><span class="text-[var(--color-amber)]">10+</span>
@@ -185,7 +185,6 @@ const faqJsonLd = {
     <!-- Profile graph: every property Dan controls, cross-linked. -->
     <HudFrame
       label="PROFILES"
-      index="SAMEAS"
       className="px-6 py-10 sm:px-10 sm:py-14"
     >
       <h2 class="font-display text-2xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-3xl">
@@ -201,7 +200,7 @@ const faqJsonLd = {
         {[
           { label: "GITHUB", code: "github.com/barclayd", href: "https://github.com/barclayd", desc: "Source code and side projects." },
           { label: "TWITTER · X", code: "x.com/danielbarclay", href: "https://x.com/danielbarclay", desc: "Notes, links and updates." },
-          { label: "TWEETS · MIRROR", code: "danbarclay.dev/tweets", href: "/tweets", desc: "On-site archive of @danielbarclay." },
+          { label: "TWEETS", code: "danbarclay.dev/tweets", href: "/tweets", desc: "On-site archive of @danielbarclay." },
           { label: "LINKEDIN", code: "linkedin.com/in/barclayd", href: "https://www.linkedin.com/in/barclayd/", desc: "Career history and credentials." },
           { label: "EMAIL", code: "barclaysd@me.com", href: "mailto:barclaysd@me.com", desc: "Direct contact." },
           { label: "PROMPTLY", code: "promptlycms.com", href: "https://promptlycms.com", desc: "Company / SaaS founded by Dan Barclay." },
@@ -234,7 +233,6 @@ const faqJsonLd = {
     {featuredPodcast && (
       <HudFrame
         label="PODCASTS"
-        index="ON-AIR"
         className="px-6 py-10 sm:px-10 sm:py-14"
       >
         {/* Inline SVG defs scoped to this card so the duotone preview works. */}
@@ -267,10 +265,10 @@ const faqJsonLd = {
           <div class="voice-card-meta">
             <div class="voice-eyebrow">
               <span class="voice-onair" aria-hidden="true"></span>
-              <span>VOICE · {String(podcastCount).padStart(2, "0")} INTERCEPTED</span>
+              <span>{String(podcastCount).padStart(2, "0")} {podcastCount === 1 ? "EPISODE" : "EPISODES"}</span>
             </div>
             <h2 class="voice-title">
-              Captured / Voice
+              Podcast Appearances
             </h2>
             <p class="voice-desc">
               Podcast appearances and live calls. Conversations on
@@ -286,7 +284,7 @@ const faqJsonLd = {
               </span>
             </div>
             <span class="voice-cta">
-              <span>OPEN VOICE INTERCEPT</span>
+              <span>OPEN PODCASTS</span>
               <span class="voice-cta-arrow" aria-hidden="true">↳</span>
             </span>
           </div>
@@ -352,7 +350,7 @@ const faqJsonLd = {
 </Base>
 
 <style>
-  /* ============================ VOICE INTERCEPT CARD ====================== */
+  /* ============================ PODCAST CARD ============================= */
   .voice-card {
     display: grid;
     grid-template-columns: 1fr;

@@ -103,28 +103,28 @@ const fmtYearWindow = (created: string, pushed: string) => {
 
     <HudFrame
       label="FEATURED WORK"
-      index="LIVE × 2"
+      index="2 PRODUCTS"
       className="px-6 py-10 sm:px-10 sm:py-14"
     >
       <div class="mb-8 flex flex-wrap items-baseline justify-between gap-4">
         <div>
           <div class="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
             <span class="h-px w-6 bg-[var(--color-amber)]"></span>
-            <span>FLAGSHIP · CURRENT FOCUS</span>
+            <span>CURRENT FOCUS</span>
           </div>
           <h2
             class="font-display font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)]"
             style="font-size: clamp(1.75rem, 4.5vw, 2.5rem);"
           >
-            Captured / Frames
+            Flagship Products
           </h2>
           <p class="mt-3 max-w-xl font-mono text-[11px] uppercase tracking-hud text-[var(--color-mute)]">
-            TWO PRODUCTS · DUOTONE INTERCEPT · SIGNALS HOT
+            TWO PRODUCTS · BUILT AND SHIPPED
           </p>
         </div>
         <div class="flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
           <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)] pulse-dot"></span>
-          <span>FEED · STABLE</span>
+          <span>BOTH LIVE</span>
         </div>
       </div>
 
@@ -136,9 +136,9 @@ const fmtYearWindow = (created: string, pushed: string) => {
         >
           <div class="mb-3 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-hud">
             <div class="flex items-center gap-3 text-[var(--color-amber)]">
-              <span>FRAME · 01/02</span>
+              <span>PRODUCT · 01/02</span>
               <span class="h-px w-4 bg-[var(--color-rule)]" aria-hidden="true"></span>
-              <span class="text-[var(--color-mute)]">SIG · PROMPTLY</span>
+              <span class="text-[var(--color-mute)]">PROMPTLY</span>
             </div>
             <span class="inline-flex items-center gap-1.5 text-[var(--color-mute)]">
               <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)] pulse-dot"></span>
@@ -182,7 +182,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
           <div class="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-rule)] pt-3 font-mono text-[10px] uppercase tracking-hud">
             <span class="text-[var(--color-mute)]">B2B SAAS · 100+ COMPANIES</span>
             <span class="inline-flex items-center gap-1.5 text-[var(--color-amber)] group-hover:text-[var(--color-amber-glow)]">
-              <span>OPEN DOSSIER</span>
+              <span>READ MORE</span>
               <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">↳</span>
             </span>
           </div>
@@ -195,9 +195,9 @@ const fmtYearWindow = (created: string, pushed: string) => {
         >
           <div class="mb-3 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-hud">
             <div class="flex items-center gap-3 text-[var(--color-amber)]">
-              <span>FRAME · 02/02</span>
+              <span>PRODUCT · 02/02</span>
               <span class="h-px w-4 bg-[var(--color-rule)]" aria-hidden="true"></span>
-              <span class="text-[var(--color-mute)]">SIG · KEEPFRESH</span>
+              <span class="text-[var(--color-mute)]">KEEPFRESH</span>
             </div>
             <span class="inline-flex items-center gap-1.5 text-[var(--color-mute)]">
               <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)] pulse-dot"></span>
@@ -238,7 +238,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
           <div class="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-rule)] pt-3 font-mono text-[10px] uppercase tracking-hud">
             <span class="text-[var(--color-mute)]">77,000+ DOWNLOADS</span>
             <span class="inline-flex items-center gap-1.5 text-[var(--color-amber)] group-hover:text-[var(--color-amber-glow)]">
-              <span>OPEN DOSSIER</span>
+              <span>READ MORE</span>
               <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">↳</span>
             </span>
           </div>
@@ -248,7 +248,6 @@ const fmtYearWindow = (created: string, pushed: string) => {
 
     <HudFrame
       label="SELECTED WORK"
-      index="OUTBOUND"
       className="px-6 py-10 sm:px-10 sm:py-14"
     >
       <div class="mb-8">
@@ -285,7 +284,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
               <div class="grid gap-6 grid-cols-[minmax(0,1fr)] md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-start">
                 <div class="flex flex-col gap-3">
                   <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-hud text-[var(--color-amber)]">
-                    <span>C/{String(p.index).padStart(2, "0")}</span>
+                    <span>{String(p.index).padStart(2, "0")}</span>
                     <span class="h-px flex-1 bg-[var(--color-rule)]" aria-hidden="true" />
                     <span>{p.language ?? "-"}</span>
                   </div>
@@ -336,7 +335,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
                 </div>
                 <div class="relative min-w-0">
                   <div class="mb-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
-                    <span>CMT/T·WEEKLY</span>
+                    <span>COMMITS · WEEKLY</span>
                     <span>BY DAN BARCLAY</span>
                   </div>
                   <div class="relative border border-[var(--color-rule)] bg-[rgba(20,24,28,0.4)] p-3">

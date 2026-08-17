@@ -2,7 +2,7 @@
 import Base from "../layouts/Base.astro";
 import HudFrame from "../components/HudFrame.astro";
 
-const title = "404 - Signal lost · danbarclay.dev";
+const title = "404 - Page not found · danbarclay.dev";
 const description =
   "This page on Dan Barclay's site couldn't be found. Head back to the homepage or browse the about / work / projects sections.";
 ---
@@ -28,7 +28,6 @@ const description =
 
     <HudFrame
       label="NOT FOUND"
-      index="STRAY"
       className="px-6 py-10 sm:px-10 sm:py-14"
     >
       <div class="flex flex-col gap-8">
@@ -41,14 +40,14 @@ const description =
             class="font-display font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)]"
             style="font-size: clamp(2.5rem, 11vw, 5.5rem);"
           >
-            Signal
+            Page Not
             <br />
-            Lost
+            Found
           </h1>
           <p class="mt-6 max-w-xl font-display text-base leading-relaxed text-[var(--color-mute)] sm:text-lg">
-            That page on Dan Barclay's site couldn't be found. The frequency may
-            have drifted, or the transmission was never recorded. The links below
-            will route you back to known coordinates.
+            That page on Dan Barclay's site couldn't be found. It may have moved,
+            or it may never have existed. The links below will get you back to
+            somewhere useful.
           </p>
         </div>
 

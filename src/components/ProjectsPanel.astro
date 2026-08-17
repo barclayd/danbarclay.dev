@@ -29,7 +29,6 @@ const fmtRecency = (iso: string) => {
 
 <HudFrame
   label="PROJECTS"
-  index="OUTBOUND"
   className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
 >
   <div class="flex flex-wrap items-baseline justify-between gap-4">
@@ -61,7 +60,7 @@ const fmtRecency = (iso: string) => {
             {/* Left meta column */}
             <div class="flex flex-col gap-3">
               <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-hud text-[var(--color-amber)]">
-                <span>C/{String(p.index).padStart(2, "0")}</span>
+                <span>{String(p.index).padStart(2, "0")}</span>
                 <span class="h-px flex-1 bg-[var(--color-rule)]" aria-hidden="true" />
               </div>
               <a
@@ -119,7 +118,7 @@ const fmtRecency = (iso: string) => {
             {/* Right chart column */}
             <div class="relative min-w-0">
               <div class="mb-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
-                <span>CMT/T·WEEKLY</span>
+                <span>COMMITS · WEEKLY</span>
                 <span>{p.language ?? "-"}</span>
               </div>
               <div class="relative border border-[var(--color-rule)] bg-[rgba(20,24,28,0.4)] p-3">
