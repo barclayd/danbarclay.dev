@@ -48,7 +48,8 @@ const navItems = [
     </div>
 
     {/* Desktop full nav */}
-    <nav aria-label="Site" class="hidden items-center gap-4 sm:flex">
+    {/* flex-1 + centre holds the nav position whether or not a status sits beside it. */}
+    <nav aria-label="Site" class="hidden flex-1 items-center justify-center gap-4 sm:flex">
       {
         navItems
           .filter((item) => item.key !== "home" || current !== "home")
