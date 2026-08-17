@@ -13,7 +13,7 @@
 interface Props {
   src: string;
   host: string;          // e.g. "PROMPTLYCMS.COM"
-  signal: string;        // e.g. "PROMPTLY · LIVE FEED"
+  signal: string;        // e.g. "PROMPTLY · LIVE SITE"
   ctaLabel?: string;     // e.g. "ENTER LIVE INSTANCE"
   /** A unique id used to scope SVG defs (must be unique per page). */
   id: string;
@@ -134,7 +134,7 @@ const checkerId = `checker-${id}`;
       </span>
 
       {/* HUD glyph labels overlaid on the feed. */}
-      <span class="glyph glyph-tl">PROJECTED · DO NOT INTERACT W/ SURFACE</span>
+      <span class="glyph glyph-tl">PREVIEW ONLY · NOT INTERACTIVE</span>
       <span class="glyph glyph-br">REC · {new Date().toISOString().slice(11, 19)}Z</span>
 
       {/* Click-to-open layer - clickable surface that opens the host. */}
@@ -156,7 +156,7 @@ const checkerId = `checker-${id}`;
         Visible only on wide screens to preserve the windscreen-HUD aspect. */}
     <aside class="tariff" aria-hidden="true">
       <div class="tariff-row">
-        <div class="tariff-k">SIGNAL</div>
+        <div class="tariff-k">STATUS</div>
         <div class="tariff-v">LIVE</div>
       </div>
       <div class="tariff-row">
@@ -168,7 +168,7 @@ const checkerId = `checker-${id}`;
         <div class="tariff-v tariff-v-sm">{host}</div>
       </div>
       <div class="tariff-row">
-        <div class="tariff-k">MIRROR</div>
+        <div class="tariff-k">FRAMES</div>
         <div class="tariff-v">02 / 02</div>
       </div>
       <div class="tariff-row">
@@ -198,7 +198,7 @@ const checkerId = `checker-${id}`;
       <span class="marquee-sep">◆</span>
       <span class="marquee-item">INTERACTIONS FORWARDED TO HOST</span>
       <span class="marquee-sep">◆</span>
-      <span class="marquee-item">DO NOT INTERACT WITH PROJECTED SURFACE</span>
+      <span class="marquee-item">PREVIEW ONLY · NOT INTERACTIVE</span>
       <span class="marquee-sep">◆</span>
       <span class="marquee-item">TAP TO ENTER</span>
       <span class="marquee-sep">◆</span>
@@ -211,7 +211,7 @@ const checkerId = `checker-${id}`;
       <span class="marquee-sep">◆</span>
       <span class="marquee-item">INTERACTIONS FORWARDED TO HOST</span>
       <span class="marquee-sep">◆</span>
-      <span class="marquee-item">DO NOT INTERACT WITH PROJECTED SURFACE</span>
+      <span class="marquee-item">PREVIEW ONLY · NOT INTERACTIVE</span>
       <span class="marquee-sep">◆</span>
       <span class="marquee-item">TAP TO ENTER</span>
       <span class="marquee-sep">◆</span>

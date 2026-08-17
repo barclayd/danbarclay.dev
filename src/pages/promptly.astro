@@ -55,11 +55,11 @@ const facts = [
   <main
     class="mx-auto flex w-full max-w-[1100px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
   >
-    <SubPageHeader terminal="TERMINAL/PROMPTLY" current="promptly" />
+    <SubPageHeader current="promptly" />
 
     <HudFrame
-      label="C/PRJ · 01 // PROMPTLY"
-      index="OPERATIONAL"
+      label="PROMPTLY"
+      index="LIVE"
       className="px-6 py-10 sm:px-10 sm:py-14"
     >
       <div class="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
@@ -74,7 +74,7 @@ const facts = [
       </h1>
       <p class="mt-6 max-w-2xl font-display text-base leading-relaxed text-[var(--color-mute)] sm:text-lg">
         <strong class="text-[var(--color-text-bright)]">Promptly</strong> is a
-        B2B SaaS CMS for LLM prompts - founded and built by
+        B2B SaaS CMS for LLM prompts - founded and built by{" "}
         <a href="/about" class="text-[var(--color-amber)] hover:text-[var(--color-amber-glow)]">Dan Barclay</a>.
         It exists on a simple thesis: your prompts don't belong in your codebase.
         They belong with the domain experts who actually know how to write them.
@@ -85,13 +85,13 @@ const facts = [
       {/* Live mirrored feed of promptlycms.com - windscreen-HUD intercept. */}
       <div class="mt-2 mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
         <span class="h-px w-6 bg-[var(--color-amber)]"></span>
-        <span>LIVE · INTERCEPT · PROJECTED FEED</span>
+        <span>LIVE PREVIEW</span>
       </div>
       <LiveSiteIntercept
         id="promptly"
         src="https://promptlycms.com"
         host="PROMPTLYCMS.COM"
-        signal="PROMPTLY · MIRROR"
+        signal="PROMPTLY · LIVE SITE"
         ctaLabel="ENTER LIVE INSTANCE"
       />
 
@@ -149,11 +149,11 @@ const facts = [
             Author
           </h2>
           <p class="mt-4 font-display text-base leading-relaxed text-[var(--color-mute)]">
-            <a href="/about" class="text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">Dan Barclay</a>
+            <a href="/about" class="text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">Dan Barclay</a>{" "}
             is an engineering leader and full-stack product engineer based in
             London. Promptly - the CMS powering the next wave of AI
             development - is one of two products he is focused on building.
-            The other is
+            The other is{" "}
             <a href="/keepfresh" class="text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">KeepFresh</a>,
             an iOS app working to end food waste for good.
           </p>
