@@ -1,0 +1,505 @@
+---
+/**
+ * StackOverflowPanel - Dan's Stack Overflow standing, framed as evidence
+ * rather than a stat dump.
+ *
+ * The signature element is the band readout: one continuous bar segmented in
+ * proportion to the answer score the community has voted onto each tag. It
+ * encodes the real shape of the profile - three deep specialities and a
+ * shallower tail - in a form you can read in two seconds, without reading a
+ * single number.
+ */
+import HudFrame from "./HudFrame.astro";
+import ScrambleText from "./ScrambleText.tsx";
+import so from "../data/stackoverflow.json";
+import type { StackOverflowData } from "../lib/types";
+
+const data = so as StackOverflowData;
+
+const totalScore = data.tags.reduce((sum, t) => sum + t.score, 0);
+const maxScore = Math.max(...data.tags.map((t) => t.score), 1);
+
+const bands = data.tags.map((t) => {
+  const width = (t.score / totalScore) * 100;
+  return {
+    ...t,
+    /* Width is the tag's share of the scored total - the honest proportion. */
+    width,
+    /* Brightness tracks score against the strongest tag. Floored so the tail
+       stays visible against the panel rather than dissolving into it. */
+    weight: Math.max(22, Math.round((t.score / maxScore) * 100)),
+    /* Narrow bands would clip their own label mid-word; the legend names them. */
+    showLabel: width >= 12,
+  };
+});
+
+const badgeLine = [
+  `${data.badges.gold} GOLD`,
+  `${data.badges.silver} SILVER`,
+  `${data.badges.bronze} BRONZE`,
+].join(" · ");
+
+const yearsActive = new Date().getUTCFullYear() - data.memberSince;
+
+const bandSummary = data.tags
+  .map((t) => `${t.tag} ${t.score}`)
+  .join(", ");
+---
+
+<HudFrame
+  label="STACK OVERFLOW"
+  index={`${yearsActive} YEARS ANSWERING`}
+  className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
+>
+  <div class="so-head">
+    <div>
+      <div class="so-eyebrow">
+        <span class="rule" aria-hidden="true"></span>
+        <span>PEER-REVIEWED · STACK OVERFLOW</span>
+      </div>
+      <h2 class="so-title">
+        <ScrambleText client:visible text="SPECIALITIES, SCORED" duration={900} />
+      </h2>
+      <p class="so-desc">
+        Dan has answered on <strong>Stack Overflow</strong> since {data.memberSince}.
+        The tags below are not a self-assessment - each one is weighted by the
+        score other engineers voted onto his answers in it.
+      </p>
+    </div>
+
+    <div class="so-rep">
+      <div class="so-rep-v">{data.reputation.toLocaleString("en-GB")}</div>
+      <div class="so-rep-k">REPUTATION</div>
+      <dl class="so-meta">
+        <div><dt>ANSWERS</dt><dd>{data.answers}</dd></div>
+        <div><dt>BADGES</dt><dd>{badgeLine}</dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="my-8 h-px w-full bg-[var(--color-rule)] rule-draw"></div>
+
+  {/* ===== Band readout - proportional score allocation across tags ===== */}
+  <figure class="so-figure">
+    <div
+      class="so-bands"
+      role="img"
+      aria-label={`Answer score by tag: ${bandSummary}. Total ${totalScore}.`}
+    >
+      {bands.map((b, i) => (
+        <span
+          class="so-band"
+          style={`--w:${b.width}%; --weight:${b.weight}%; --i:${i}`}
+        >
+          {b.showLabel && <span class="so-band-tag">{b.tag}</span>}
+        </span>
+      ))}
+    </div>
+
+    <div class="so-scale" aria-hidden="true">
+      <span>SHARE OF ANSWER SCORE</span>
+      <span class="so-scale-rule"></span>
+      <span>{totalScore.toLocaleString("en-GB")} TOTAL · {data.tags.length} TAGS</span>
+    </div>
+
+    <figcaption class="so-legend">
+      {bands.map((b) => (
+        <div class="so-legend-item">
+          <span class="so-legend-swatch" style={`--weight:${b.weight}%`} aria-hidden="true"></span>
+          <span class="so-legend-tag">{b.tag}</span>
+          <span class="so-legend-score">{b.score.toLocaleString("en-GB")}</span>
+          <span class="so-legend-sub">
+            {b.answers} {b.answers === 1 ? "answer" : "answers"}
+          </span>
+        </div>
+      ))}
+    </figcaption>
+  </figure>
+
+  {data.topAnswer && (
+    <>
+      <div class="my-8 h-px w-full bg-[var(--color-rule)]"></div>
+
+      <div class="so-top">
+        <div class="so-eyebrow">
+          <span class="rule" aria-hidden="true"></span>
+          <span>HIGHEST-SCORING ANSWER</span>
+        </div>
+        <a
+          href={data.topAnswer.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="so-top-link"
+        >
+          <span class="so-top-score">+{data.topAnswer.score}</span>
+          <span class="so-top-body">
+            <span class="so-top-title">{data.topAnswer.title}</span>
+            <span class="so-top-sub">
+              Answered {data.topAnswer.year} · {data.topAnswer.tags.join(" · ")}
+            </span>
+          </span>
+          <span class="so-top-arrow" aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </>
+  )}
+
+  <a
+    href={data.url}
+    target="_blank"
+    rel="noopener noreferrer me"
+    class="so-cta"
+  >
+    <span>VIEW FULL PROFILE ON STACK OVERFLOW</span>
+    <span aria-hidden="true">↗</span>
+  </a>
+</HudFrame>
+
+<style>
+  /* ====== Head ====== */
+  .so-head {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  @media (min-width: 768px) {
+    .so-head {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 3rem;
+    }
+  }
+
+  .so-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .so-eyebrow .rule {
+    display: block;
+    height: 1px;
+    width: 1.5rem;
+    background: var(--color-amber);
+  }
+
+  .so-title {
+    margin-top: 0.75rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4.5vw, 2rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: var(--color-text-bright);
+  }
+
+  .so-desc {
+    margin: 0.75rem 0 0;
+    max-width: 46ch;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-mute);
+  }
+  .so-desc strong {
+    color: var(--color-text-bright);
+    font-weight: 500;
+  }
+
+  /* ====== Reputation figure ====== */
+  .so-rep {
+    flex-shrink: 0;
+  }
+  @media (min-width: 768px) {
+    .so-rep {
+      text-align: right;
+    }
+  }
+  .so-rep-v {
+    font-family: var(--font-display);
+    font-size: clamp(2.75rem, 8vw, 3.75rem);
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: var(--color-amber);
+  }
+  .so-rep-k {
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .so-meta {
+    margin: 1.25rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .so-meta > div {
+    display: flex;
+    gap: 0.75rem;
+  }
+  @media (min-width: 768px) {
+    .so-meta > div {
+      justify-content: flex-end;
+    }
+  }
+  .so-meta dt {
+    color: var(--color-mute);
+  }
+  .so-meta dd {
+    margin: 0;
+    color: var(--color-text);
+  }
+
+  /* ====== Band readout ====== */
+  .so-figure {
+    margin: 0;
+  }
+
+  .so-bands {
+    display: flex;
+    width: 100%;
+    height: 56px;
+    gap: 2px;
+    background: var(--color-void);
+  }
+  @media (min-width: 640px) {
+    .so-bands {
+      height: 72px;
+    }
+  }
+
+  .so-band {
+    position: relative;
+    width: var(--w);
+    min-width: 3px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    /* Brightness tracks the tag's score against the strongest one. */
+    background: color-mix(
+      in srgb,
+      var(--color-amber) var(--weight),
+      var(--color-amber-faint)
+    );
+  }
+
+  .so-band-tag {
+    padding: 0 0 6px 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-void);
+    /* Thin tail bands clip their own label; the legend below carries it. */
+    opacity: 0.85;
+  }
+
+  .so-scale {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .so-scale-rule {
+    flex: 1;
+    height: 1px;
+    background: var(--color-rule);
+  }
+
+  /* ====== Legend ====== */
+  .so-legend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    margin-top: 1.5rem;
+    background: var(--color-rule);
+  }
+  @media (min-width: 640px) {
+    .so-legend {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .so-legend {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+
+  .so-legend-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.85rem 0.9rem;
+    background: var(--color-void);
+  }
+  .so-legend-swatch {
+    display: block;
+    width: 1.5rem;
+    height: 3px;
+    background: color-mix(
+      in srgb,
+      var(--color-amber) var(--weight),
+      var(--color-amber-faint)
+    );
+  }
+  .so-legend-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-bright);
+    overflow-wrap: anywhere;
+  }
+  .so-legend-score {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--color-amber);
+  }
+  .so-legend-sub {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+
+  /* ====== Highest-scoring answer ====== */
+  .so-top-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--color-rule);
+    background: var(--color-void);
+    transition: background-color 120ms linear, border-color 120ms linear;
+  }
+  .so-top-link:hover,
+  .so-top-link:focus-visible {
+    background: rgba(232, 154, 60, 0.04);
+    border-color: var(--color-amber-dim);
+  }
+  .so-top-score {
+    flex-shrink: 0;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--color-amber);
+  }
+  @media (min-width: 640px) {
+    .so-top-score {
+      font-size: 1.875rem;
+    }
+  }
+  .so-top-body {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .so-top-title {
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    color: var(--color-text-bright);
+  }
+  @media (min-width: 640px) {
+    .so-top-title {
+      font-size: 1.0625rem;
+    }
+  }
+  .so-top-sub {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .so-top-arrow {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    color: var(--color-mute);
+    transition: transform 120ms linear, color 120ms linear;
+  }
+  .so-top-link:hover .so-top-arrow,
+  .so-top-link:focus-visible .so-top-arrow {
+    transform: translateX(3px);
+    color: var(--color-amber);
+  }
+
+  /* ====== CTA ====== */
+  .so-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 2rem;
+    padding: 0.7rem 1.1rem;
+    border: 1px solid var(--color-amber-dim);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-amber);
+    transition: background-color 120ms linear, color 120ms linear;
+  }
+  .so-cta:hover,
+  .so-cta:focus-visible {
+    background: rgba(232, 154, 60, 0.08);
+    color: var(--color-amber-glow);
+  }
+
+  /* ====== Motion - bands allocate left to right as the figure enters view ====== */
+  @keyframes so-band-draw {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  @supports (animation-timeline: view()) {
+    .so-band {
+      transform-origin: left center;
+      animation: so-band-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 22%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .so-band {
+      animation: none !important;
+      transform: none !important;
+    }
+    .so-top-link,
+    .so-top-arrow,
+    .so-cta {
+      transition: none;
+    }
+  }
+</style>

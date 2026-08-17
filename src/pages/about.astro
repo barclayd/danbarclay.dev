@@ -4,6 +4,7 @@ import HudFrame from "../components/HudFrame.astro";
 import DuotoneAvatar from "../components/DuotoneAvatar.astro";
 import SubPageHeader from "../components/SubPageHeader.astro";
 import SubPageFooter from "../components/SubPageFooter.astro";
+import StackOverflowPanel from "../components/StackOverflowPanel.astro";
 import podcastsRaw from "../data/podcasts.json";
 import type { Podcast } from "../lib/types";
 
@@ -31,6 +32,10 @@ const faqs = [
   {
     q: "What does Dan Barclay work on?",
     a: "Dan Barclay is focused on building two products: Promptly (promptlycms.com), the CMS powering the next wave of AI development - used in production by 100+ companies to author, version and ship LLM prompts without a code deploy - and KeepFresh (keepfre.sh), an iOS app working to end food waste for good, with 77,000+ downloads. His technical work spans TypeScript, React, Node, Python, Rust, Swift, and AI tooling including LLMs and the Model Context Protocol.",
+  },
+  {
+    q: "Is Dan Barclay active on Stack Overflow?",
+    a: "Yes. Dan Barclay has contributed on Stack Overflow since 2018 at stackoverflow.com/users/9961739/dan-barclay. His highest-scoring answers are in TypeScript, JavaScript and React, including a widely referenced answer on the \"'React' refers to a UMD global, but the current file is a module\" TypeScript error. His Stack Overflow tag scores are a community-voted record of his specialities.",
   },
   {
     q: "Is Dan Barclay the same person as the BMO Capital Markets executive?",
@@ -159,6 +164,13 @@ const faqJsonLd = {
               practices needed to ship AI features safely into production.
             </p>
             <p>
+              He has been an active contributor on{" "}
+              <a href="https://stackoverflow.com/users/9961739/dan-barclay" target="_blank" rel="noopener noreferrer me" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">Stack Overflow</a>{" "}
+              since 2018, answering TypeScript, JavaScript and React questions
+              that other engineers have voted into the site's reference
+              material.
+            </p>
+            <p>
               Dan is most motivated by hard problems and the people driven to
               solve them - work where technical vision and product judgement
               have to align with business outcomes to ship something
@@ -182,6 +194,9 @@ const faqJsonLd = {
       </div>
     </HudFrame>
 
+    <!-- Specialities, evidenced by community-scored answers. -->
+    <StackOverflowPanel />
+
     <!-- Profile graph: every property Dan controls, cross-linked. -->
     <HudFrame
       label="PROFILES"
@@ -202,6 +217,7 @@ const faqJsonLd = {
           { label: "TWITTER · X", code: "x.com/danielbarclay", href: "https://x.com/danielbarclay", desc: "Notes, links and updates." },
           { label: "TWEETS", code: "danbarclay.dev/tweets", href: "/tweets", desc: "On-site archive of @danielbarclay." },
           { label: "LINKEDIN", code: "linkedin.com/in/barclayd", href: "https://www.linkedin.com/in/barclayd/", desc: "Career history and credentials." },
+          { label: "STACK OVERFLOW", code: "stackoverflow.com/users/9961739", href: "https://stackoverflow.com/users/9961739/dan-barclay", desc: "Answers scored by other engineers." },
           { label: "EMAIL", code: "barclaysd@me.com", href: "mailto:barclaysd@me.com", desc: "Direct contact." },
           { label: "PROMPTLY", code: "promptlycms.com", href: "https://promptlycms.com", desc: "Company / SaaS founded by Dan Barclay." },
           { label: "KEEPFRESH", code: "keepfre.sh", href: "https://keepfre.sh", desc: "iOS app built by Dan Barclay." },

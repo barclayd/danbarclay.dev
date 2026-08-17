@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "bun run fetch && bun run og && astro build",
-    "fetch": "bun scripts/fetch-github.mjs",
+    "fetch": "bun scripts/fetch-github.mjs && bun scripts/fetch-stackoverflow.mjs",
     "og": "bun scripts/generate-og.mjs",
     "preview": "astro preview",
     "astro": "astro"
