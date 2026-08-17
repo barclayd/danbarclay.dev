@@ -86,11 +86,8 @@ const bandSummary = data.tags
       role="img"
       aria-label={`Answer score by tag: ${bandSummary}. Total ${totalScore}.`}
     >
-      {bands.map((b, i) => (
-        <span
-          class="so-band"
-          style={`--w:${b.width}%; --weight:${b.weight}%; --i:${i}`}
-        >
+      {bands.map((b) => (
+        <span class="so-band" style={`--w:${b.width}%; --weight:${b.weight}%`}>
           {b.showLabel && <span class="so-band-tag">{b.tag}</span>}
         </span>
       ))}
