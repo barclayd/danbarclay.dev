@@ -68,7 +68,7 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
   <main
     class="mx-auto flex w-full max-w-[1100px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
   >
-    <SubPageHeader terminal="TERMINAL/PODCASTS" current="about" />
+    <SubPageHeader current="about" />
 
     {/* SVG defs - duotone-amber filter reused by every podcast artwork. */}
     <svg
@@ -100,19 +100,17 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
     {/* INTRO + FEATURED EPISODE                                    */}
     {/* ========================================================== */}
     <HudFrame
-      label="C/PODCASTS // VOICE · INTERCEPT"
+      label="PODCASTS"
       index="ON-AIR"
       className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
     >
       <div class="page-intro">
         <div class="page-intro-eyebrow">
           <span class="rule" aria-hidden="true"></span>
-          <span>PODCASTS · DAN BARCLAY</span>
+          <span>DAN BARCLAY</span>
         </div>
         <h1 class="page-intro-title">
-          <ScrambleText client:visible text="VOICE /" duration={700} />
-          <br />
-          <ScrambleText client:visible text="INTERCEPT" duration={900} delay={140} />
+          <ScrambleText client:visible text="PODCASTS" duration={900} />
         </h1>
         <p class="page-intro-desc">
           Captured transmissions. Podcasts and live calls where
@@ -155,7 +153,7 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
     {/* ARCHIVE                                                      */}
     {/* ========================================================== */}
     <HudFrame
-      label="C/PODCASTS // ARCHIVE · TRANSMISSIONS"
+      label="PODCAST ARCHIVE"
       index={archive.length > 0 ? `${String(archive.length).padStart(2, "0")} REC.` : "STANDBY"}
       className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
     >
@@ -213,7 +211,7 @@ const showCount = new Set(podcasts.map((p) => p.show)).size;
     {/* CTA - book Dan on your show                                  */}
     {/* ========================================================== */}
     <HudFrame
-      label="C/PODCASTS // OUTBOUND · CHANNEL OPEN"
+      label="CONTACT"
       index="HAILING"
       className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
     >

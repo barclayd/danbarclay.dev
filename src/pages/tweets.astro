@@ -83,13 +83,13 @@ const totalPosts = tweets.length;
   <main
     class="mx-auto flex w-full max-w-[1100px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
   >
-    <SubPageHeader terminal="TERMINAL/X" current="about" />
+    <SubPageHeader current="about" />
 
     {/* ========================================================== */}
     {/* INTRO + HERO TWEET                                          */}
     {/* ========================================================== */}
     <HudFrame
-      label="C/TWEETS // SHORT-WAVE · INTERCEPT"
+      label="TWEETS"
       index="ON-AIR"
       className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
     >
@@ -161,7 +161,7 @@ const totalPosts = tweets.length;
     {/* ARCHIVE                                                      */}
     {/* ========================================================== */}
     <HudFrame
-      label="C/TWEETS // ARCHIVE · TRANSMISSIONS"
+      label="TWEET ARCHIVE"
       index={archive.length > 0 ? `${String(archive.length).padStart(2, "0")} REC.` : "STANDBY"}
       className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
     >
@@ -216,7 +216,7 @@ const totalPosts = tweets.length;
     {/* CTA - follow on X                                            */}
     {/* ========================================================== */}
     <HudFrame
-      label="C/TWEETS // OUTBOUND · CHANNEL OPEN"
+      label="CONTACT"
       index="HAILING"
       className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
     >
