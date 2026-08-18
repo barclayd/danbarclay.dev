@@ -40,6 +40,13 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      // Lightning CSS folds `animation-timeline: view()` into the `animation`
+      // shorthand, where `view()` is not a legal component - Chrome then drops
+      // the whole declaration and every scroll-driven animation dies silently.
+      // esbuild does not do that merge.
+      cssMinify: 'esbuild',
+    },
   },
   output: 'static',
   site: 'https://danbarclay.dev',
