@@ -1,0 +1,58 @@
+{
+  "name": "Dan Barclay",
+  "url": "https://stackoverflow.com/users/9961739/dan-barclay",
+  "reputation": 8535,
+  "badges": {
+    "bronze": 22,
+    "silver": 25,
+    "gold": 2
+  },
+  "memberSince": 2018,
+  "answers": 20,
+  "questions": 1,
+  "tags": [
+    {
+      "tag": "typescript",
+      "score": 715,
+      "answers": 3
+    },
+    {
+      "tag": "javascript",
+      "score": 699,
+      "answers": 3
+    },
+    {
+      "tag": "reactjs",
+      "score": 699,
+      "answers": 3
+    },
+    {
+      "tag": "typeorm",
+      "score": 72,
+      "answers": 3
+    },
+    {
+      "tag": "postgresql",
+      "score": 71,
+      "answers": 2
+    },
+    {
+      "tag": "ios",
+      "score": 26,
+      "answers": 3
+    }
+  ],
+  "topAnswer": {
+    "title": "'React' refers to a UMD global, but the current file is a module",
+    "score": 694,
+    "tags": [
+      "javascript",
+      "reactjs",
+      "typescript",
+      "create-react-app"
+    ],
+    "url": "https://stackoverflow.com/a/65539274",
+    "year": 2021
+  },
+  "fetchedAt": "2026-08-17T22:41:13.081Z"
+}

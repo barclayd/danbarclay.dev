@@ -112,3 +112,29 @@ export type Podcast = {
   quote?: string;
   featured?: boolean;
 };
+
+export type StackOverflowTag = {
+  tag: string;
+  /** Total answer score the community has voted onto this tag. */
+  score: number;
+  answers: number;
+};
+
+export type StackOverflowData = {
+  name: string;
+  url: string;
+  reputation: number;
+  badges: { gold: number; silver: number; bronze: number };
+  memberSince: number;
+  answers: number;
+  questions: number;
+  tags: StackOverflowTag[];
+  topAnswer: {
+    title: string;
+    score: number;
+    tags: string[];
+    url: string;
+    year: number;
+  } | null;
+  fetchedAt: string;
+};
