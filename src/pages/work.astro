@@ -11,7 +11,7 @@ const projects = projectsRaw as Project[];
 
 const title = "Work - Dan Barclay · Selected projects shipped publicly";
 const description =
-  "Selected work by Dan Barclay - engineering leader in London. Including Promptly (LLM prompt CMS, 100+ companies), KeepFresh (iOS app, 77K+ downloads) and open-source side projects.";
+  "Selected work by Dan Barclay - engineering leader in London. Including Promptly (LLM prompt CMS, 100+ companies), KeepFresh (iOS app, 77K+ downloads), Stitch (free Strava ride-combining web app) and open-source side projects.";
 
 const PERSON_ID = "https://danbarclay.dev/#person";
 
@@ -43,6 +43,22 @@ const workSchema = [
     operatingSystem: "iOS",
     description:
       "An iOS app that helps households end food waste by tracking grocery inventory and surfacing expiry alerts. 77,000+ downloads, used daily by hundreds of households.",
+    creator: { "@id": PERSON_ID },
+    author: { "@id": PERSON_ID },
+    publisher: { "@id": PERSON_ID },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "@id": "https://danbarclay.dev/stitch#app",
+    name: "Stitch",
+    alternateName: "Strava Stitch",
+    url: "https://stravastitch.com",
+    applicationCategory: "SportsApplication",
+    operatingSystem: "Web",
+    description:
+      "A free web app that combines two or more split Strava rides into a single activity. Preview the route and gaps, download a merged GPX and backups, then explicitly confirm the upload. Never deletes activities.",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "GBP" },
     creator: { "@id": PERSON_ID },
     author: { "@id": PERSON_ID },
     publisher: { "@id": PERSON_ID },
@@ -103,7 +119,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
 
     <HudFrame
       label="FEATURED WORK"
-      index="2 PRODUCTS"
+      index="3 PRODUCTS"
       className="px-6 py-10 sm:px-10 sm:py-14"
     >
       <div class="mb-8 flex flex-wrap items-baseline justify-between gap-4">
@@ -119,16 +135,16 @@ const fmtYearWindow = (created: string, pushed: string) => {
             Flagship Products
           </h2>
           <p class="mt-3 max-w-xl font-mono text-[11px] uppercase tracking-hud text-[var(--color-mute)]">
-            TWO PRODUCTS · BUILT AND SHIPPED
+            THREE PRODUCTS · BUILT AND SHIPPED
           </p>
         </div>
         <div class="flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
           <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)] pulse-dot"></span>
-          <span>BOTH LIVE</span>
+          <span>ALL LIVE</span>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 gap-px bg-[var(--color-rule)] md:grid-cols-2">
+      <div class="grid grid-cols-1 gap-px bg-[var(--color-rule)] md:grid-cols-2 lg:grid-cols-3">
         {/* PROMPTLY */}
         <a
           href="/promptly"
@@ -136,7 +152,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
         >
           <div class="mb-3 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-hud">
             <div class="flex items-center gap-3 text-[var(--color-amber)]">
-              <span>PRODUCT · 01/02</span>
+              <span>PRODUCT · 01/03</span>
               <span class="h-px w-4 bg-[var(--color-rule)]" aria-hidden="true"></span>
               <span class="text-[var(--color-mute)]">PROMPTLY</span>
             </div>
@@ -195,7 +211,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
         >
           <div class="mb-3 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-hud">
             <div class="flex items-center gap-3 text-[var(--color-amber)]">
-              <span>PRODUCT · 02/02</span>
+              <span>PRODUCT · 02/03</span>
               <span class="h-px w-4 bg-[var(--color-rule)]" aria-hidden="true"></span>
               <span class="text-[var(--color-mute)]">KEEPFRESH</span>
             </div>
@@ -243,6 +259,62 @@ const fmtYearWindow = (created: string, pushed: string) => {
             </span>
           </div>
         </a>
+
+        {/* STITCH */}
+        <a
+          href="/stitch"
+          class="og-card group relative flex flex-col gap-0 bg-[var(--color-void)] p-4 transition-colors hover:bg-[rgba(232,154,60,0.025)] sm:p-6 md:col-span-2 lg:col-span-1"
+        >
+          <div class="mb-3 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-hud">
+            <div class="flex items-center gap-3 text-[var(--color-amber)]">
+              <span>PRODUCT · 03/03</span>
+              <span class="h-px w-4 bg-[var(--color-rule)]" aria-hidden="true"></span>
+              <span class="text-[var(--color-mute)]">STITCH</span>
+            </div>
+            <span class="inline-flex items-center gap-1.5 text-[var(--color-mute)]">
+              <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)] pulse-dot"></span>
+              <span>LIVE</span>
+            </span>
+          </div>
+
+          <div class="og-frame relative aspect-[16/10] overflow-hidden border border-[var(--color-rule)] bg-[var(--color-void)]">
+            <img
+              src="https://stravastitch.com/images/stitch-social.png"
+              alt="Stitch - combine your Strava activities for free"
+              loading="lazy"
+              decoding="async"
+              width="1200"
+              height="630"
+              class="og-img absolute inset-0 h-full w-full object-cover"
+            />
+            <span class="reticle reticle-tl" aria-hidden="true"></span>
+            <span class="reticle reticle-tr" aria-hidden="true"></span>
+            <span class="reticle reticle-bl" aria-hidden="true"></span>
+            <span class="reticle reticle-br" aria-hidden="true"></span>
+            <span class="hud-tag hud-tag-tl">1200 × 630 · OG</span>
+            <span class="hud-tag hud-tag-br">STRAVASTITCH.COM</span>
+          </div>
+
+          <div class="mt-4 flex items-baseline justify-between gap-3">
+            <div class="font-display text-xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] group-hover:text-[var(--color-amber-glow)] sm:text-2xl">
+              Stitch
+            </div>
+            <div class="font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+              WEB · STRAVA
+            </div>
+          </div>
+          <p class="mt-2 text-sm leading-relaxed text-[var(--color-mute)]">
+            Combine split Strava rides into one activity, for free. Preview the
+            route and gaps, download a GPX backup, then confirm the upload.
+          </p>
+          <div class="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-rule)] pt-3 font-mono text-[10px] uppercase tracking-hud">
+            <span class="text-[var(--color-mute)]">FREE · LAUNCHED SEP 2026</span>
+            <span class="inline-flex items-center gap-1.5 text-[var(--color-amber)] group-hover:text-[var(--color-amber-glow)]">
+              <span>READ MORE</span>
+              <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">↳</span>
+            </span>
+          </div>
+        </a>
       </div>
     </HudFrame>
 
@@ -263,7 +335,7 @@ const fmtYearWindow = (created: string, pushed: string) => {
         </h1>
         <p class="mt-6 max-w-2xl font-display text-base leading-relaxed text-[var(--color-mute)] sm:text-lg">
           Side projects, products and experiments that <strong class="text-[var(--color-text-bright)]">Dan
-          Barclay</strong> has shipped publicly. Two are flagship products
+          Barclay</strong> has shipped publicly. Three are flagship products
           built and operated end-to-end; the rest are supporting libraries,
           backends and yearly traditions.
         </p>
@@ -278,7 +350,9 @@ const fmtYearWindow = (created: string, pushed: string) => {
               ? "/promptly"
               : p.slug === "keepfresh-ios" || p.slug === "keepfresh-api"
                 ? "/keepfresh"
-                : null;
+                : p.slug === "strava-stitch"
+                  ? "/stitch"
+                  : null;
           return (
             <article class="bg-[var(--color-void)] px-4 py-6 sm:px-6 sm:py-8 group transition-colors hover:bg-[rgba(232,154,60,0.025)]">
               <div class="grid gap-6 grid-cols-[minmax(0,1fr)] md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-start">

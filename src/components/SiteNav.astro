@@ -18,7 +18,7 @@ interface Props {
   terminal?: string;
   /** Omit to hide the status readout (homepage). */
   status?: string;
-  current?: "about" | "work" | "promptly" | "keepfresh" | "home";
+  current?: "about" | "work" | "promptly" | "keepfresh" | "stitch" | "home";
 }
 
 const { terminal, status, current } = Astro.props;
@@ -29,6 +29,7 @@ const navItems = [
   { key: "work", label: "WORK", href: "/work", desc: "PROJECTS" },
   { key: "promptly", label: "PROMPTLY", href: "/promptly", desc: "AI · CMS" },
   { key: "keepfresh", label: "KEEPFRESH", href: "/keepfresh", desc: "iOS" },
+  { key: "stitch", label: "STITCH", href: "/stitch", desc: "STRAVA" },
 ] as const;
 ---
 
