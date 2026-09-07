@@ -25,7 +25,8 @@ const busiestDay = contributions.days.reduce(
   (best, d) => (d.count > best.count ? d : best),
   { date: "", count: 0, level: 0 as 0 }
 );
-const avgPerDay = total / contributions.days.length;
+const activeDays = contributions.days.filter((d) => d.count > 0).length;
+const avgPerDay = activeDays ? Math.round(total / activeDays) : 0;
 ---
 
 <HudFrame
@@ -86,12 +87,7 @@ const avgPerDay = total / contributions.days.length;
         AVG · DAY
       </div>
       <div class="font-mono text-xl font-medium text-[var(--color-text)]">
-        <Counter
-          client:visible
-          value={Number(avgPerDay.toFixed(1))}
-          delay={220}
-          format={{ minimumFractionDigits: 1, maximumFractionDigits: 1 }}
-        />
+        <Counter client:visible value={avgPerDay} delay={220} />
       </div>
     </div>
     <div class="bg-[var(--color-void)] px-4 py-3">
