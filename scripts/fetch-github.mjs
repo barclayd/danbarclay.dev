@@ -34,6 +34,11 @@ const PROJECTS = [
     fallbackDescription: 'Distributable package for the Promptly toolkit.',
   },
   {
+    slug: 'strava-stitch',
+    displayName: 'STITCH',
+    fallbackDescription: 'Combine split Strava rides into one activity, for free.',
+  },
+  {
     slug: 'advent-of-code-2025',
     displayName: 'ADVENT OF CODE / 2025',
     fallbackDescription: 'Daily puzzles from the 2025 Advent of Code, solved end-to-end.',
