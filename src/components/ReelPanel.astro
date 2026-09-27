@@ -38,6 +38,7 @@ const chapters = REEL.chapters.map((c, i) => ({
         <button type="button" data-reel-sound aria-pressed="false" class="reel-btn">
           SOUND · <span data-reel-sound-label>OFF</span>
         </button>
+        <button type="button" data-reel-fs class="reel-btn">FULLSCREEN</button>
       </div>
     </div>
 
@@ -45,7 +46,7 @@ const chapters = REEL.chapters.map((c, i) => ({
 
     <div class="reel-screen relative aspect-video overflow-hidden border border-[var(--color-rule)] bg-black">
       <video
-        class="absolute inset-0 h-full w-full cursor-pointer object-cover"
+        class="absolute inset-0 h-full w-full cursor-pointer"
         poster={`${REEL.base}/reel-poster.jpg`}
         muted
         loop
@@ -216,6 +217,7 @@ const chapters = REEL.chapters.map((c, i) => ({
     const playLabel = root.querySelector<HTMLElement>("[data-reel-play-label]")!;
     const soundBtn = root.querySelector<HTMLButtonElement>("[data-reel-sound]")!;
     const soundLabel = root.querySelector<HTMLElement>("[data-reel-sound-label]")!;
+    const fsBtn = root.querySelector<HTMLButtonElement>("[data-reel-fs]")!;
     const now = root.querySelector<HTMLElement>("[data-reel-now]")!;
     const link = root.querySelector<HTMLAnchorElement>("[data-reel-link]")!;
     const linkLabel = root.querySelector<HTMLElement>("[data-reel-link-label]")!;
@@ -229,7 +231,19 @@ const chapters = REEL.chapters.map((c, i) => ({
     let raf = 0;
 
     const play = () => video.play().catch(() => {}); // e.g. iOS Low Power Mode blocks autoplay
-    const sync = () => (inView && wantsPlay ? play() : video.pause());
+    const apple = video as HTMLVideoElement & {
+      webkitEnterFullscreen?: () => void;
+      webkitPresentationMode?: string;
+    };
+    // Fullscreen or picture-in-picture: the native player owns playback, so
+    // scrolling the page underneath (e.g. on rotate) mustn't pause it.
+    const detached = () =>
+      document.fullscreenElement === video ||
+      document.pictureInPictureElement === video ||
+      (apple.webkitPresentationMode ?? "inline") !== "inline";
+    const sync = () => {
+      if (!detached()) inView && wantsPlay ? play() : video.pause();
+    };
 
     const render = () => {
       const t = video.currentTime;
@@ -276,13 +290,41 @@ const chapters = REEL.chapters.map((c, i) => ({
       wantsPlay = video.paused;
       wantsPlay ? play() : video.pause();
     };
-    playBtn.addEventListener("click", togglePlay);
-    video.addEventListener("click", togglePlay);
+    // Apple's native player on iOS/iPadOS/macOS Safari (iPhone has no
+    // Fullscreen API; this is the one that rotates to landscape), the
+    // standard API elsewhere.
+    const expand = () => {
+      wantsPlay = true;
+      play();
+      try {
+        apple.webkitEnterFullscreen!(); // throws InvalidStateError if it can't
+      } catch {
+        video.requestFullscreen?.().catch(() => {});
+      }
+    };
+    const onDetachChange = () => {
+      const d = detached();
+      video.controls = d; // native controls while fullscreen, the HUD inline
+      if (!d) {
+        wantsPlay = !video.paused; // respect a pause made in the native player
+        sync();
+      }
+    };
+    for (const ev of ["fullscreenchange", "webkitpresentationmodechanged", "enterpictureinpicture", "leavepictureinpicture"])
+      video.addEventListener(ev, onDetachChange);
 
-    soundBtn.addEventListener("click", () => {
-      video.muted = !video.muted;
+    playBtn.addEventListener("click", togglePlay);
+    fsBtn.addEventListener("click", expand);
+    // On touch, tapping a small inline video means "let me see it".
+    video.addEventListener("click", matchMedia("(pointer: coarse)").matches ? expand : togglePlay);
+
+    // Mute can also change from the native player's controls.
+    video.addEventListener("volumechange", () => {
       soundBtn.setAttribute("aria-pressed", String(!video.muted));
       soundLabel.textContent = video.muted ? "OFF" : "ON";
+    });
+    soundBtn.addEventListener("click", () => {
+      video.muted = !video.muted;
       if (!video.muted && video.paused) {
         wantsPlay = true;
         play();
