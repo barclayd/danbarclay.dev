@@ -1,0 +1,309 @@
+---
+import HudFrame from "./HudFrame.astro";
+import ScrambleText from "./ScrambleText.tsx";
+import { REEL } from "../lib/reel";
+
+const pad = (n: number) => String(n).padStart(2, "0");
+const chapters = REEL.chapters.map((c, i) => ({
+  ...c,
+  i,
+  len: (REEL.chapters[i + 1]?.start ?? REEL.duration) - c.start,
+}));
+---
+
+<HudFrame
+  label="SHOWREEL"
+  index={`00:${REEL.duration} · 1080P60`}
+  className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
+>
+  <div data-reel>
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h2 class="font-display text-2xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-3xl">
+          <ScrambleText client:visible text="THIRTY / SECONDS" duration={900} />
+        </h2>
+        <p class="mt-2 max-w-xl font-mono text-[11px] uppercase tracking-hud text-[var(--color-mute)]">
+          <ScrambleText
+            client:visible
+            text="WHAT I BUILD, IN MOTION - PROMPTLY, KEEPFRESH AND STITCH."
+            duration={1100}
+            delay={180}
+          />
+        </p>
+      </div>
+      <div class="flex items-center gap-px border border-[var(--color-rule)] bg-[var(--color-rule)] font-mono text-[10px] uppercase tracking-hud">
+        <button type="button" data-reel-play aria-pressed="false" class="reel-btn">
+          <span data-reel-play-label>PLAY</span>
+        </button>
+        <button type="button" data-reel-sound aria-pressed="false" class="reel-btn">
+          SOUND · <span data-reel-sound-label>OFF</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="my-8 h-px w-full bg-[var(--color-rule)] rule-draw"></div>
+
+    <div class="reel-screen relative aspect-video overflow-hidden border border-[var(--color-rule)] bg-black">
+      <video
+        class="absolute inset-0 h-full w-full cursor-pointer object-cover"
+        poster={`${REEL.base}/reel-poster.jpg`}
+        muted
+        loop
+        playsinline
+        preload="none"
+        aria-label="Dan Barclay showreel"
+        aria-describedby="reel-desc"
+      >
+        <source src={`${REEL.base}/reel-720.mp4`} type="video/mp4" media="(max-width: 767px)" />
+        <source src={`${REEL.base}/reel-1080.mp4`} type="video/mp4" />
+      </video>
+    </div>
+    <p id="reel-desc" class="sr-only">{REEL.description}</p>
+
+    <!-- Chapter rail: widths are proportional to each chapter's runtime. -->
+    <div
+      class="mt-px grid gap-px bg-[var(--color-rule)]"
+      style={{ gridTemplateColumns: chapters.map((c) => `${c.len}fr`).join(" ") }}
+    >
+      {
+        chapters.map((c) => (
+          <button
+            type="button"
+            class="reel-chapter"
+            data-chapter
+            data-start={c.start}
+            data-name={c.name}
+            data-href={c.href}
+            data-cta={c.cta ?? c.name}
+            aria-label={`Jump to ${c.name.toLowerCase()} (0:${pad(Math.floor(c.start))})`}
+          >
+            <span class="flex items-center gap-2 font-mono text-[9px] uppercase tracking-hud">
+              <span class="text-[var(--color-amber)]">{pad(c.i)}</span>
+              <span class="reel-chapter-name hidden truncate lg:inline">{c.name}</span>
+            </span>
+            <span class="reel-track" aria-hidden="true"><span /></span>
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="mt-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+      <span>
+        NOW / <span data-reel-now class="text-[var(--color-text)]">00 {chapters[0].name}</span>
+        <span class="ml-4 tabular-nums" data-reel-tc>TC 00:00:00:00</span>
+      </span>
+      <a
+        data-reel-link
+        href={chapters[0].href}
+        class="group inline-flex items-center gap-1 text-[var(--color-amber)] transition-colors hover:text-[var(--color-amber-glow)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-amber-glow)]"
+      >
+        <span>OPEN / <span data-reel-link-label>{chapters[0].cta ?? chapters[0].name}</span></span>
+        <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</HudFrame>
+
+<style>
+  .reel-btn {
+    background: var(--color-void);
+    padding: 0.5rem 0.75rem;
+    color: var(--color-mute);
+    transition: color 150ms, background-color 150ms;
+  }
+  .reel-btn:hover,
+  .reel-btn[aria-pressed="true"] {
+    color: var(--color-amber);
+  }
+  .reel-btn:focus-visible,
+  .reel-chapter:focus-visible {
+    outline: 1px solid var(--color-amber-glow);
+    outline-offset: -1px;
+  }
+
+  .reel-chapter {
+    --p: 0;
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: var(--color-void);
+    padding: 0.625rem 0.75rem;
+    text-align: left;
+    color: var(--color-mute);
+    transition: color 150ms, background-color 150ms;
+  }
+  .reel-chapter:hover,
+  .reel-chapter[data-active] {
+    color: var(--color-text-bright);
+    background: rgba(232, 154, 60, 0.04);
+  }
+  .reel-track {
+    display: block;
+    height: 1px;
+    background: var(--color-rule-strong);
+  }
+  .reel-track > span {
+    display: block;
+    height: 100%;
+    background: var(--color-amber);
+    transform: scaleX(var(--p));
+    transform-origin: left;
+  }
+
+  /* CRT power-on, scrubbed by scroll: a point, then a line, then the picture.
+     Mirrors the power-off the reel ends on. */
+  @keyframes reel-power-on {
+    0% {
+      clip-path: inset(50% 50% 50% 50%);
+    }
+    35% {
+      clip-path: inset(calc(50% - 1px) 0 calc(50% - 1px) 0);
+    }
+    100% {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  @keyframes reel-flash {
+    0%,
+    35% {
+      opacity: 1;
+    }
+    80%,
+    100% {
+      opacity: 0;
+    }
+  }
+  .reel-screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-amber-glow);
+    opacity: 0;
+    pointer-events: none;
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      /* Named so the ::after flash can share the screen's timeline -
+         a pseudo-element can't be a view() subject. */
+      .reel-screen {
+        view-timeline-name: --reel-screen;
+        animation-name: reel-power-on;
+      }
+      .reel-screen,
+      .reel-screen::after {
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: --reel-screen;
+        animation-range: entry 50% entry 100%;
+      }
+      .reel-screen::after {
+        animation-name: reel-flash;
+      }
+    }
+  }
+</style>
+
+<script>
+  // Autoplay (muted) while at least half the reel is on screen, pause when it
+  // leaves. The chapter rail and "NOW" readout follow the playhead.
+  const root = document.querySelector<HTMLElement>("[data-reel]");
+  if (root) {
+    const video = root.querySelector("video")!;
+    const cells = [...root.querySelectorAll<HTMLButtonElement>("[data-chapter]")];
+    const starts = cells.map((c) => Number(c.dataset.start));
+    const playBtn = root.querySelector<HTMLButtonElement>("[data-reel-play]")!;
+    const playLabel = root.querySelector<HTMLElement>("[data-reel-play-label]")!;
+    const soundBtn = root.querySelector<HTMLButtonElement>("[data-reel-sound]")!;
+    const soundLabel = root.querySelector<HTMLElement>("[data-reel-sound-label]")!;
+    const now = root.querySelector<HTMLElement>("[data-reel-now]")!;
+    const link = root.querySelector<HTMLAnchorElement>("[data-reel-link]")!;
+    const linkLabel = root.querySelector<HTMLElement>("[data-reel-link-label]")!;
+    const tc = root.querySelector<HTMLElement>("[data-reel-tc]")!;
+    const pad = (n: number) => String(n).padStart(2, "0");
+
+    // Reduced motion: never autoplay, wait for an explicit play.
+    let wantsPlay = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let inView = false;
+    let active = 0;
+    let raf = 0;
+
+    const play = () => video.play().catch(() => {}); // e.g. iOS Low Power Mode blocks autoplay
+    const sync = () => (inView && wantsPlay ? play() : video.pause());
+
+    const render = () => {
+      const t = video.currentTime;
+      const end = video.duration || Number.POSITIVE_INFINITY;
+      let i = 0;
+      cells.forEach((c, k) => {
+        const s = starts[k];
+        const e = starts[k + 1] ?? end;
+        if (t >= s) i = k;
+        c.style.setProperty("--p", String(Math.min(1, Math.max(0, (t - s) / (e - s)))));
+      });
+      if (i !== active) {
+        cells[active].removeAttribute("data-active");
+        cells[i].setAttribute("data-active", "");
+        active = i;
+        const { name = "", href = "/", cta = name } = cells[i].dataset;
+        now.textContent = `${pad(i)} ${name}`;
+        linkLabel.textContent = cta;
+        link.href = href;
+      }
+      tc.textContent = `TC 00:00:${pad(Math.floor(t))}:${pad(Math.floor((t % 1) * 60))}`;
+    };
+    const tick = () => {
+      render();
+      raf = requestAnimationFrame(tick);
+    };
+    cells[0].setAttribute("data-active", "");
+
+    video.addEventListener("play", () => {
+      playBtn.setAttribute("aria-pressed", "true");
+      playLabel.textContent = "PAUSE";
+      cancelAnimationFrame(raf);
+      tick();
+    });
+    video.addEventListener("pause", () => {
+      playBtn.setAttribute("aria-pressed", "false");
+      playLabel.textContent = "PLAY";
+      cancelAnimationFrame(raf);
+      render();
+    });
+    video.addEventListener("seeked", render);
+
+    const togglePlay = () => {
+      wantsPlay = video.paused;
+      wantsPlay ? play() : video.pause();
+    };
+    playBtn.addEventListener("click", togglePlay);
+    video.addEventListener("click", togglePlay);
+
+    soundBtn.addEventListener("click", () => {
+      video.muted = !video.muted;
+      soundBtn.setAttribute("aria-pressed", String(!video.muted));
+      soundLabel.textContent = video.muted ? "OFF" : "ON";
+      if (!video.muted && video.paused) {
+        wantsPlay = true;
+        play();
+      }
+    });
+
+    cells.forEach((c, k) =>
+      c.addEventListener("click", () => {
+        video.currentTime = starts[k];
+        wantsPlay = true;
+        play();
+        render();
+      }),
+    );
+
+    new IntersectionObserver(
+      ([e]) => {
+        inView = e.isIntersecting;
+        sync();
+      },
+      { threshold: 0.5 },
+    ).observe(video);
+  }
+</script>

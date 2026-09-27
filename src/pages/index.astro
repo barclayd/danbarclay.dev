@@ -5,9 +5,23 @@ import HeatmapPanel from "../components/HeatmapPanel.astro";
 import ProjectsPanel from "../components/ProjectsPanel.astro";
 import CommsPanel from "../components/CommsPanel.astro";
 import SiteNav from "../components/SiteNav.astro";
+import ReelPanel from "../components/ReelPanel.astro";
+import { REEL } from "../lib/reel";
+
+const reelSchema = {
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  name: "Dan Barclay - Showreel",
+  description: REEL.description,
+  thumbnailUrl: `${REEL.base}/reel-poster.jpg`,
+  contentUrl: `${REEL.base}/reel-1080.mp4`,
+  uploadDate: REEL.uploadDate,
+  duration: `PT${REEL.duration}S`,
+  creator: { "@id": "https://danbarclay.dev/#person" },
+};
 ---
 
-<Base pageType="ProfilePage">
+<Base pageType="ProfilePage" jsonLd={reelSchema}>
   <!--
     Canonical entity statement. Rendered visually-hidden but fully present in
     source order - this is the sentence LLM crawlers will extract as the
@@ -30,6 +44,7 @@ import SiteNav from "../components/SiteNav.astro";
     <SiteNav current="home" />
 
     <section id="identity"><IdentityPanel /></section>
+    <section id="reel"><ReelPanel /></section>
     <section id="signal"><HeatmapPanel /></section>
     <section id="trans"><ProjectsPanel /></section>
     <section id="comms"><CommsPanel /></section>
