@@ -1,0 +1,31 @@
+---
+// A TypeSafe claim, quoted verbatim, then tested against what we measured.
+interface Props {
+  quote: string;
+  verdict: string;
+}
+const { quote, verdict } = Astro.props;
+---
+
+<figure class="claim not-prose my-10 border border-[var(--color-rule-strong)] bg-[var(--color-panel)]">
+  <div class="flex items-center justify-between gap-3 border-b border-[var(--color-rule)] px-5 py-2.5 font-mono text-[10px] uppercase tracking-hud">
+    <span class="text-[var(--color-mute)]">CLAIM UNDER TEST</span>
+    <span class="border border-[var(--color-amber-dim)] px-2 py-0.5 text-[var(--color-amber)]">{verdict}</span>
+  </div>
+  <blockquote class="px-5 pt-5 font-display text-lg leading-snug text-[var(--color-text-bright)] sm:text-xl">
+    &ldquo;{quote}&rdquo;
+  </blockquote>
+  <figcaption class="px-5 pt-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
+    <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--color-amber-glow)]">TypeSafe · Introducing System One models and Jev ↗</a>
+  </figcaption>
+  <dl class="mt-5 grid gap-px border-t border-[var(--color-rule)] bg-[var(--color-rule)] sm:grid-cols-2">
+    <div class="bg-[var(--color-panel)] px-5 py-4">
+      <dt class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-amber)]">What held</dt>
+      <dd class="mt-2 font-display text-[15px] leading-relaxed text-[var(--color-text)]"><slot name="held" /></dd>
+    </div>
+    <div class="bg-[var(--color-panel)] px-5 py-4">
+      <dt class="font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">What it doesn't mean</dt>
+      <dd class="mt-2 font-display text-[15px] leading-relaxed text-[var(--color-text)]"><slot name="not" /></dd>
+    </div>
+  </dl>
+</figure>

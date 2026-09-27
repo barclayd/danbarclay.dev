@@ -1,0 +1,13 @@
+---
+// Anchored sub-heading inside a chapter.
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+---
+
+<h3 id={id} class="group scroll-mt-24 mt-12 font-display text-lg font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-xl">
+  <a href={`#${id}`} class="no-underline">
+    <slot /><span class="ml-2 text-[var(--color-faint)] opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100" aria-hidden="true">#</span>
+  </a>
+</h3>
