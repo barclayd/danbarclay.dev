@@ -1,0 +1,13 @@
+---
+// Caveats and asides. At xl it floats into the right gutter beside the
+// paragraph that follows it; below xl it sits inline as a boxed note.
+interface Props {
+  label?: string;
+}
+const { label = "NOTE" } = Astro.props;
+---
+
+<aside class="sidenote my-6 border-l border-[var(--color-amber-dim)] bg-[var(--color-panel)] px-4 py-3 font-display text-sm leading-relaxed text-[var(--color-mute)] xl:float-right xl:clear-right xl:my-1 xl:-mr-[292px] xl:w-[252px] xl:bg-transparent xl:px-0 xl:py-0 xl:pl-4">
+  <div class="mb-1 font-mono text-[9px] uppercase tracking-hud text-[var(--color-amber)]">{label}</div>
+  <slot />
+</aside>

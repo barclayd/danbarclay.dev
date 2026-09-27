@@ -5,6 +5,9 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  ogImageAlt?: string;
+  // Present on blog posts: switches og:type to "article" and emits published_time.
+  article?: { published: string };
   pageType?: "ProfilePage" | "AboutPage" | "CollectionPage" | "WebPage";
   noPersonGraph?: boolean;
   noindex?: boolean;
@@ -18,6 +21,8 @@ const {
   title = "Dan Barclay - Engineering Leader, Founder, London",
   description = "Dan Barclay is an engineering leader and founder based in London, focused on building Promptly - the CMS powering the next wave of AI development - KeepFresh - an iOS app working to end food waste for good - and Stitch, a free web app that combines split Strava rides into one activity. 10+ years shipping product and AI experiences to millions.",
   ogImage = "/og.png",
+  ogImageAlt = "Dan Barclay - Engineering Leader, Founder, London",
+  article,
   pageType = "WebPage",
   noPersonGraph = false,
   noindex = false,
@@ -60,7 +65,7 @@ const personGraph = {
       contentUrl: ogImageUrl,
       width: 1200,
       height: 630,
-      caption: "Dan Barclay - Engineering Leader",
+      caption: ogImageAlt,
     },
     {
       "@type": "WebSite",
@@ -190,7 +195,7 @@ const graphsToEmit = [
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
     <!-- Open Graph -->
-    <meta property="og:type" content={pageType === "ProfilePage" ? "profile" : "website"} />
+    <meta property="og:type" content={article ? "article" : pageType === "ProfilePage" ? "profile" : "website"} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
@@ -201,7 +206,13 @@ const graphsToEmit = [
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Dan Barclay - Engineering Leader, Founder, London" />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    {article && (
+      <>
+        <meta property="article:published_time" content={article.published} />
+        <meta property="article:author" content={SITE_URL + "/about"} />
+      </>
+    )}
     {pageType === "ProfilePage" && (
       <>
         <meta property="profile:first_name" content="Dan" />
@@ -215,7 +226,7 @@ const graphsToEmit = [
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
-    <meta name="twitter:image:alt" content="Dan Barclay - Engineering Leader, Founder, London" />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
     <meta name="twitter:site" content="@danielbarclay" />
     <meta name="twitter:creator" content="@danielbarclay" />
 

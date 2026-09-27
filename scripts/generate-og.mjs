@@ -9,6 +9,7 @@
  * Outputs:
  *   public/og.png   — Open Graph / Twitter primary image (1200x630)
  *   public/og.jpg   — JPG fallback for picky scrapers
+ *   public/og-jev.png — card for /blog/getting-the-best-out-of-jev
  */
 import sharp from "sharp";
 import { readFileSync, writeFileSync } from "node:fs";
@@ -38,7 +39,8 @@ const H = 630;
 
 // SVG composition. Pure SVG so sharp can rasterise without a browser.
 // Colors mirror src/styles/global.css @theme tokens exactly.
-const svg = `<?xml version="1.0" encoding="UTF-8"?>
+// Shared backdrop and top rail, reused by every card.
+const head = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
@@ -77,6 +79,9 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
     <text x="${W - 60}" y="58" text-anchor="end" fill="#e89a3c">STATUS · NOMINAL</text>
   </g>
 
+`;
+
+const svg = `${head}
   <!-- Avatar with checker frame -->
   <g>
     <!-- checker frame (12px border via two overlapping rects with offset pattern) -->
@@ -155,3 +160,29 @@ const jpgBuf = await sharp(Buffer.from(svg)).jpeg({ quality: 88, progressive: tr
 writeFileSync(resolve(publicDir, "og.jpg"), jpgBuf);
 
 console.log(`[og] wrote public/og.png (${pngBuf.length} bytes) and public/og.jpg (${jpgBuf.length} bytes)`);
+
+// Blog post card: /og-jev.png
+const jevSvg = `${head}
+  <g font-family="JetBrains Mono, ui-monospace, monospace" font-size="16" fill="#6a6d72" letter-spacing="3">
+    <rect x="60" y="150" width="28" height="2" fill="#e89a3c"/>
+    <text x="100" y="157">FIELD REPORT · JEV-1.13.0</text>
+  </g>
+  <g font-family="Chakra Petch, system-ui, sans-serif" font-size="92" font-weight="600" fill="#ecedee" letter-spacing="-1.5">
+    <text x="60" y="270">GETTING THE BEST</text>
+    <text x="60" y="366">OUT OF <tspan fill="#e89a3c">JEV</tspan></text>
+  </g>
+  <g font-family="Chakra Petch, system-ui, sans-serif" font-size="27" fill="#6a6d72">
+    <text x="60" y="432">What rebuilding an item identifier taught me about System One</text>
+    <text x="60" y="468">models, and the architecture it takes to get there.</text>
+  </g>
+  <line x1="60" y1="555" x2="${W - 60}" y2="555" stroke="#1f2429" stroke-width="1"/>
+  <g font-family="JetBrains Mono, ui-monospace, monospace" font-size="14" fill="#6a6d72" letter-spacing="3">
+    <rect x="60" y="582" width="8" height="8" fill="#e89a3c"/>
+    <text x="80" y="590">DAN BARCLAY · BLOG</text>
+    <text x="${W - 60}" y="590" text-anchor="end" fill="#d6d8da">DANBARCLAY.DEV/BLOG</text>
+  </g>
+</svg>`;
+
+const jevBuf = await sharp(Buffer.from(jevSvg)).png({ compressionLevel: 9 }).toBuffer();
+writeFileSync(resolve(publicDir, "og-jev.png"), jevBuf);
+console.log(`[og] wrote public/og-jev.png (${jevBuf.length} bytes)`);

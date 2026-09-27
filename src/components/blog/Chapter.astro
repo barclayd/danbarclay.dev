@@ -1,0 +1,22 @@
+---
+// A numbered chapter: kicker, anchored h2, body. `data-chapter` feeds the reading rail.
+interface Props {
+  id: string;
+  n: string;
+  title: string;
+}
+const { id, n, title } = Astro.props;
+---
+
+<section id={id} data-chapter={title} data-n={n} class="chapter scroll-mt-24 pt-16 sm:pt-20">
+  <div class="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-amber)]">
+    <span class="h-px w-6 bg-[var(--color-amber)]"></span>
+    <span>{n === "A" ? "APPENDIX" : `CHAPTER ${n}`}</span>
+  </div>
+  <h2 class="group font-display text-2xl font-semibold uppercase leading-tight tracking-tight text-[var(--color-text-bright)] sm:text-3xl">
+    <a href={`#${id}`} class="no-underline">
+      {title}<span class="ml-2 text-[var(--color-faint)] opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100" aria-hidden="true">#</span>
+    </a>
+  </h2>
+  <slot />
+</section>
