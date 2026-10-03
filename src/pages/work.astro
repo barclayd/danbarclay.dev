@@ -11,7 +11,7 @@ const projects = projectsRaw as Project[];
 
 const title = "Work - Dan Barclay · Selected projects shipped publicly";
 const description =
-  "Selected work by Dan Barclay - engineering leader in London. Including Promptly (LLM prompt CMS, 100+ companies), KeepFresh (iOS app, 77K+ downloads), Stitch (free Strava ride-combining web app), On Air (push-to-talk dictation for Mac) and open-source side projects.";
+  "Selected work by Dan Barclay - engineering leader in London. Including Promptly (LLM prompt CMS, 100+ companies), KeepFresh (iOS app, 77K+ downloads), Stitch (free Strava ride-combining web app), On Air (free-forever Wispr Flow alternative for Mac) and open-source side projects.";
 
 const PERSON_ID = "https://danbarclay.dev/#person";
 
@@ -73,7 +73,7 @@ const workSchema = [
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "macOS",
     description:
-      "A free native macOS app for push-to-talk dictation. Hold fn, speak and let go - the transcript is pasted into the text field you were typing in, with a soft red glow as the only interface.",
+      "A tasteful, free-forever alternative to Wispr Flow for Mac, built for developers who want to ramp up their AI-driven coding throughput with voice transcription. Hold fn, speak and let go - the transcript is pasted into the text field you were typing in, with a soft red glow as the only interface.",
     offers: { "@type": "Offer", price: "0", priceCurrency: "GBP" },
     creator: { "@id": PERSON_ID },
     author: { "@id": PERSON_ID },
@@ -376,11 +376,12 @@ const fmtYearWindow = (created: string, pushed: string) => {
             </div>
           </div>
           <p class="mt-2 text-sm leading-relaxed text-[var(--color-mute)]">
-            Push-to-talk dictation for Mac. Hold fn, speak, let go - the
-            transcript lands in whatever text field you were typing in.
+            A tasteful, free-forever Wispr Flow alternative, built for
+            developers ramping up AI-driven coding by voice. Hold fn, speak,
+            let go - the transcript lands wherever you were typing.
           </p>
           <div class="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-rule)] pt-3 font-mono text-[10px] uppercase tracking-hud">
-            <span class="text-[var(--color-mute)]">FREE · LAUNCHED OCT 2026</span>
+            <span class="text-[var(--color-mute)]">FREE FOREVER · LAUNCHED OCT 2026</span>
             <span class="inline-flex items-center gap-1.5 text-[var(--color-amber)] group-hover:text-[var(--color-amber-glow)]">
               <span>READ MORE</span>
               <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">↳</span>

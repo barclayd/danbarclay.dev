@@ -6,9 +6,9 @@ import SubPageFooter from "../components/SubPageFooter.astro";
 import LiveSiteIntercept from "../components/LiveSiteIntercept.astro";
 
 const title =
-  "On Air - Push-to-Talk Dictation for Mac · Built by Dan Barclay";
+  "On Air - Free Wispr Flow Alternative for Mac · Built by Dan Barclay";
 const description =
-  "On Air is a free macOS app built by Dan Barclay (engineering leader, London) for push-to-talk dictation. Hold fn, speak, let go - the transcript is pasted into the text field you were typing in. A soft red glow is the only interface.";
+  "On Air is a tasteful, free-forever alternative to Wispr Flow, built by Dan Barclay (engineering leader, London) for developers who want to ramp up their AI-driven coding throughput with voice transcription. Hold fn, speak, let go - the transcript is pasted into the text field you were typing in.";
 
 const PERSON_ID = "https://danbarclay.dev/#person";
 
@@ -24,7 +24,7 @@ const schema = [
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "macOS",
     description:
-      "A free native macOS app for push-to-talk dictation. Hold fn, speak and let go: audio streams to OpenAI live transcription while a red glow responds to your voice, then the finished transcript is pasted into the original text field. Audio is held only in memory, never written to disk. Built in Swift 6 and SwiftUI.",
+      "A tasteful, free-forever alternative to Wispr Flow: a native macOS app for push-to-talk dictation, built for developers who want to ramp up their AI-driven coding throughput with voice transcription. Hold fn, speak and let go: audio streams to OpenAI live transcription while a red glow responds to your voice, then the finished transcript is pasted into the original text field. Audio is held only in memory, never written to disk. Built in Swift 6 and SwiftUI.",
     offers: { "@type": "Offer", price: "0", priceCurrency: "GBP" },
     creator: { "@id": PERSON_ID },
     author: { "@id": PERSON_ID },
@@ -34,7 +34,7 @@ const schema = [
 ];
 
 const facts = [
-  { k: "TYPE", v: "FREE MAC APP · DICTATION" },
+  { k: "TYPE", v: "FREE FOREVER · MAC DICTATION" },
   { k: "FOUNDER", v: "DAN BARCLAY" },
   { k: "STACK", v: "SWIFT 6 · SWIFTUI · OPENAI" },
   { k: "STATUS", v: "LAUNCHED OCT 2026" },
@@ -75,11 +75,14 @@ const facts = [
       </h1>
       <p class="mt-6 max-w-2xl font-display text-base leading-relaxed text-[var(--color-mute)] sm:text-lg">
         <strong class="text-[var(--color-text-bright)]">On Air</strong> is a
-        free Mac app built and operated by{" "}
+        tasteful, free-forever alternative to Wispr Flow, built and operated
+        by{" "}
         <a href="/about" class="text-[var(--color-amber)] hover:text-[var(--color-amber-glow)]">Dan Barclay</a>{" "}
-        for push-to-talk dictation. Hold fn, speak, and let go - the
-        transcript lands in whatever text field you were typing in. No
-        windows, menus or timers: a soft red glow tells you it's listening.
+        for developers who want to ramp up their AI-driven coding throughput
+        with voice transcription. Hold fn, speak, and let go - the transcript
+        lands in whatever text field you were typing in, from an agent prompt
+        to your editor or terminal. No windows, menus or timers: a soft red
+        glow tells you it's listening.
       </p>
 
       <div class="my-10 h-px w-full bg-[var(--color-rule)]"></div>
@@ -114,7 +117,9 @@ const facts = [
             Problem
           </h2>
           <p class="mt-4 font-display text-base leading-relaxed text-[var(--color-mute)]">
-            Speaking is faster than typing, but most dictation tools put
+            Speaking is faster than typing, and when you're steering AI
+            coding agents all day, typing out prompts is the bottleneck. But
+            most dictation tools put
             something between you and your words - a floating window, a
             menu, a timer, a monthly subscription. Then they paste into the
             wrong place, or quietly overwrite whatever was on your clipboard.
@@ -129,7 +134,8 @@ const facts = [
             while a red glow rises with your voice. Let go, a blue line shows
             it finishing, and the text is pasted into the field you started
             in. If focus has moved, it waits in the menu bar to copy instead.
-            Your clipboard is restored, and audio never touches the disk.
+            Your clipboard is restored, audio never touches the disk, and it's
+            free forever - no subscription, just your own OpenAI key.
           </p>
         </div>
       </div>
@@ -152,8 +158,8 @@ const facts = [
           </h2>
           <p class="mt-4 font-display text-base leading-relaxed text-[var(--color-mute)]">
             <a href="/about" class="text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">Dan Barclay</a>{" "}
-            is an engineering leader based in London. On Air - push-to-talk
-            dictation for Mac - is one of four products he is focused on
+            is an engineering leader based in London. On Air - a free-forever
+            Wispr Flow alternative for Mac - is one of four products he is focused on
             building. The others are{" "}
             <a href="/promptly" class="text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">Promptly</a>,
             the CMS powering the next wave of AI development,{" "}
