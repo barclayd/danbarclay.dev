@@ -16,7 +16,7 @@ const SITE_URL = "https://danbarclay.dev";
 
 const {
   title = "Dan Barclay - Engineering Leader, Founder, London",
-  description = "Dan Barclay is an engineering leader and founder based in London, focused on building Promptly - the CMS powering the next wave of AI development - KeepFresh - an iOS app working to end food waste for good - and Stitch, a free web app that combines split Strava rides into one activity. 10+ years shipping product and AI experiences to millions.",
+  description = "Dan Barclay is an engineering leader and founder based in London, focused on building Promptly - the CMS powering the next wave of AI development - KeepFresh - an iOS app working to end food waste for good - Stitch, a free web app that combines split Strava rides into one activity - and On Air, a free-forever Wispr Flow alternative for Mac. 10+ years shipping product and AI experiences to millions.",
   ogImage = "/og.png",
   pageType = "WebPage",
   noPersonGraph = false,
@@ -81,7 +81,7 @@ const personGraph = {
       alternateName: ["Daniel Barclay", "barclayd"],
       jobTitle: "Engineering Lead",
       description:
-        "Engineering leader, full-stack product engineer and founder with 10+ years building software for millions of users. Focused on building Promptly - the CMS powering the next wave of AI development - KeepFresh, an iOS app working to end food waste for good - and Stitch, a free web app that combines split Strava rides into one activity. Based in London, UK.",
+        "Engineering leader, full-stack product engineer and founder with 10+ years building software for millions of users. Focused on building Promptly - the CMS powering the next wave of AI development - KeepFresh, an iOS app working to end food waste for good - Stitch, a free web app that combines split Strava rides into one activity - and On Air, a free-forever Wispr Flow alternative for Mac. Based in London, UK.",
       url: SITE_URL + "/",
       mainEntityOfPage: { "@id": SITE_URL + "/#page" },
       image: {
@@ -120,6 +120,7 @@ const personGraph = {
         "https://promptlycms.com",
         "https://keepfre.sh",
         "https://stravastitch.com",
+        "https://useonair.app",
       ],
       founder: [
         {
@@ -139,6 +140,12 @@ const personGraph = {
           name: "Stitch",
           url: "https://stravastitch.com",
           applicationCategory: "SportsApplication",
+        },
+        {
+          "@type": "SoftwareApplication",
+          name: "On Air",
+          url: "https://useonair.app",
+          applicationCategory: "UtilitiesApplication",
         },
       ],
     },

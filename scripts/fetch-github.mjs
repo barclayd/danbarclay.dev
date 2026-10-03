@@ -39,6 +39,11 @@ const PROJECTS = [
     fallbackDescription: 'Combine split Strava rides into one activity, for free.',
   },
   {
+    slug: 'on-air',
+    displayName: 'ON AIR',
+    fallbackDescription: 'Push-to-talk dictation for Mac. Hold fn, speak, let go.',
+  },
+  {
     slug: 'advent-of-code-2025',
     displayName: 'ADVENT OF CODE / 2025',
     fallbackDescription: 'Daily puzzles from the 2025 Advent of Code, solved end-to-end.',

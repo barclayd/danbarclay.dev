@@ -5,7 +5,7 @@
     "displayName": "KEEPFRESH / IOS",
     "description": "A modern iOS app for managing grocery inventory and tracking food expiration dates.",
     "createdAt": "2024-11-13T21:29:22Z",
-    "pushedAt": "2026-05-11T11:30:52Z",
+    "pushedAt": "2026-09-27T19:41:21Z",
     "language": "Swift",
     "url": "https://github.com/barclayd/keepfresh-ios",
     "weeks": [
@@ -392,9 +392,21 @@
       {
         "weekStart": "2026-09-06",
         "count": 0
+      },
+      {
+        "weekStart": "2026-09-13",
+        "count": 0
+      },
+      {
+        "weekStart": "2026-09-20",
+        "count": 0
+      },
+      {
+        "weekStart": "2026-09-27",
+        "count": 15
       }
     ],
-    "totalCommits": 459,
+    "totalCommits": 474,
     "index": 1
   },
   {
@@ -403,7 +415,7 @@
     "displayName": "PROMPTLY",
     "description": "This template demonstrates React Server Components with React Router.",
     "createdAt": "2025-10-14T17:49:09Z",
-    "pushedAt": "2026-06-30T18:49:47Z",
+    "pushedAt": "2026-09-27T21:58:40Z",
     "language": "TypeScript",
     "url": "https://github.com/barclayd/promptly",
     "weeks": [
@@ -598,9 +610,21 @@
       {
         "weekStart": "2026-09-06",
         "count": 0
+      },
+      {
+        "weekStart": "2026-09-13",
+        "count": 16
+      },
+      {
+        "weekStart": "2026-09-20",
+        "count": 4
+      },
+      {
+        "weekStart": "2026-09-27",
+        "count": 11
       }
     ],
-    "totalCommits": 504,
+    "totalCommits": 535,
     "index": 2
   },
   {
@@ -609,7 +633,7 @@
     "displayName": "KEEPFRESH / API",
     "description": "API to power KeepFresh mobile app",
     "createdAt": "2024-11-18T23:57:29Z",
-    "pushedAt": "2025-12-26T16:24:05Z",
+    "pushedAt": "2026-09-27T11:45:02Z",
     "language": "TypeScript",
     "url": "https://github.com/barclayd/keepfresh-api",
     "weeks": [
@@ -992,9 +1016,21 @@
       {
         "weekStart": "2026-09-06",
         "count": 0
+      },
+      {
+        "weekStart": "2026-09-13",
+        "count": 0
+      },
+      {
+        "weekStart": "2026-09-20",
+        "count": 0
+      },
+      {
+        "weekStart": "2026-09-27",
+        "count": 2
       }
     ],
-    "totalCommits": 262,
+    "totalCommits": 264,
     "index": 3
   },
   {
@@ -1003,7 +1039,7 @@
     "displayName": "PROMPTLY / PACKAGE",
     "description": "TypeScript SDK for the Promptly CMS API.",
     "createdAt": "2026-02-14T23:20:43Z",
-    "pushedAt": "2026-07-01T12:47:16Z",
+    "pushedAt": "2026-09-27T21:36:48Z",
     "language": "TypeScript",
     "url": "https://github.com/barclayd/promptly-package",
     "weeks": [
@@ -1130,28 +1166,70 @@
       {
         "weekStart": "2026-09-06",
         "count": 0
+      },
+      {
+        "weekStart": "2026-09-13",
+        "count": 0
+      },
+      {
+        "weekStart": "2026-09-20",
+        "count": 0
+      },
+      {
+        "weekStart": "2026-09-27",
+        "count": 5
       }
     ],
-    "totalCommits": 113,
+    "totalCommits": 118,
     "index": 4
   },
   {
     "slug": "strava-stitch",
     "name": "strava-stitch",
     "displayName": "STITCH",
-    "description": "A free TypeScript / Remix 3 application for combining Strava activities into one",
+    "description": "Combine your Strava activities in seconds.",
     "createdAt": "2026-09-06T15:35:55Z",
-    "pushedAt": "2026-09-07T20:40:28Z",
+    "pushedAt": "2026-10-01T20:17:51Z",
     "language": "TypeScript",
     "url": "https://github.com/barclayd/strava-stitch",
     "weeks": [
       {
         "weekStart": "2026-09-06",
-        "count": 21
+        "count": 62
+      },
+      {
+        "weekStart": "2026-09-13",
+        "count": 4
+      },
+      {
+        "weekStart": "2026-09-20",
+        "count": 10
+      },
+      {
+        "weekStart": "2026-09-27",
+        "count": 2
       }
     ],
-    "totalCommits": 21,
+    "totalCommits": 78,
     "index": 5
+  },
+  {
+    "slug": "on-air",
+    "name": "on-air",
+    "displayName": "ON AIR",
+    "description": "A native macOS dictation app with the visual design from the supplied On Air film.",
+    "createdAt": "2026-10-03T13:50:51Z",
+    "pushedAt": "2026-10-03T22:31:58Z",
+    "language": "Swift",
+    "url": "https://github.com/barclayd/on-air",
+    "weeks": [
+      {
+        "weekStart": "2026-09-27",
+        "count": 43
+      }
+    ],
+    "totalCommits": 43,
+    "index": 6
   },
   {
     "slug": "advent-of-code-2025",
@@ -1326,9 +1404,21 @@
       {
         "weekStart": "2026-09-06",
         "count": 0
+      },
+      {
+        "weekStart": "2026-09-13",
+        "count": 0
+      },
+      {
+        "weekStart": "2026-09-20",
+        "count": 0
+      },
+      {
+        "weekStart": "2026-09-27",
+        "count": 0
       }
     ],
     "totalCommits": 65,
-    "index": 6
+    "index": 7
   }
 ]
