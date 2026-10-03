@@ -16,14 +16,14 @@ const featuredPodcast = podcasts[0];
 const podcastCount = podcasts.length;
 
 const title =
-  "About Dan Barclay - Engineering Leader, Founder of Promptly, KeepFresh & Stitch, London";
+  "About Dan Barclay - Engineering Leader, Founder of Promptly, KeepFresh, Stitch & On Air, London";
 const description =
-  "Dan Barclay is an engineering leader, full-stack product engineer and founder based in London. 10+ years building product and AI experiences for millions of users. Founder of Promptly (LLM prompt CMS), KeepFresh (iOS app, 77K+ downloads) and Stitch (free Strava ride-combining web app).";
+  "Dan Barclay is an engineering leader, full-stack product engineer and founder based in London. 10+ years building product and AI experiences for millions of users. Founder of Promptly (LLM prompt CMS), KeepFresh (iOS app, 77K+ downloads), Stitch (free Strava ride-combining web app) and On Air (push-to-talk dictation for Mac).";
 
 const faqs = [
   {
     q: "Who is Dan Barclay?",
-    a: "Dan Barclay is an engineering leader and founder based in London, UK. He is a full-stack product engineer with 10+ years of experience building and scaling software to millions of users. He is the founder of Promptly, a B2B SaaS CMS for LLM prompts used by 100+ companies, KeepFresh, an iOS app with 77,000+ downloads that helps households track grocery inventory and reduce food waste, and Stitch, a free web app that combines split Strava rides into one activity.",
+    a: "Dan Barclay is an engineering leader and founder based in London, UK. He is a full-stack product engineer with 10+ years of experience building and scaling software to millions of users. He is the founder of Promptly, a B2B SaaS CMS for LLM prompts used by 100+ companies, KeepFresh, an iOS app with 77,000+ downloads that helps households track grocery inventory and reduce food waste, Stitch, a free web app that combines split Strava rides into one activity, and On Air, a free Mac app for push-to-talk dictation.",
   },
   {
     q: "Where is Dan Barclay based?",
@@ -31,7 +31,7 @@ const faqs = [
   },
   {
     q: "What does Dan Barclay work on?",
-    a: "Dan Barclay is focused on building three products: Promptly (promptlycms.com), the CMS powering the next wave of AI development - used in production by 100+ companies to author, version and ship LLM prompts without a code deploy - KeepFresh (keepfre.sh), an iOS app working to end food waste for good, with 77,000+ downloads - and Stitch (stravastitch.com), a free web app that combines split Strava rides into one activity. His technical work spans TypeScript, React, Node, Python, Rust, Swift, and AI tooling including LLMs and the Model Context Protocol.",
+    a: "Dan Barclay is focused on building four products: Promptly (promptlycms.com), the CMS powering the next wave of AI development - used in production by 100+ companies to author, version and ship LLM prompts without a code deploy - KeepFresh (keepfre.sh), an iOS app working to end food waste for good, with 77,000+ downloads - Stitch (stravastitch.com), a free web app that combines split Strava rides into one activity - and On Air (useonair.app), a free Mac app for push-to-talk dictation. His technical work spans TypeScript, React, Node, Python, Rust, Swift, and AI tooling including LLMs and the Model Context Protocol.",
   },
   {
     q: "Is Dan Barclay active on Stack Overflow?",
@@ -56,6 +56,10 @@ const faqs = [
   {
     q: "What is Stitch?",
     a: "Stitch is a free web app built by Dan Barclay that combines two or more split Strava rides into a single activity. Athletes preview the route and gaps, download a merged GPX and backups, then explicitly confirm the upload to Strava. It never deletes activities. Built in TypeScript with Remix 3 on Cloudflare Workers and Durable Objects. Learn more at stravastitch.com.",
+  },
+  {
+    q: "What is On Air?",
+    a: "On Air is a free macOS app built by Dan Barclay for push-to-talk dictation. Hold the fn key, speak, and let go: a red glow responds to your voice while audio streams to OpenAI live transcription, then the finished transcript is pasted into the text field you were typing in. Audio is held only in memory, never written to disk. Built in Swift 6 and SwiftUI. Learn more at useonair.app.",
   },
 ];
 
@@ -139,7 +143,7 @@ const faqJsonLd = {
               marketplaces, B2B SaaS, mobile apps and AI tooling.
             </p>
             <p>
-              Today, Dan is focused on building three products of his own:
+              Today, Dan is focused on building four products of his own:
             </p>
             <ul class="ml-1 space-y-3 text-[var(--color-mute)]">
               <li class="border-l border-[var(--color-amber-dim)] pl-4">
@@ -166,6 +170,14 @@ const faqJsonLd = {
                 Preview the route and gaps, download a GPX backup, then confirm
                 the upload - it never deletes an activity. TypeScript and Remix 3
                 on Cloudflare Workers with Durable Objects.
+              </li>
+              <li class="border-l border-[var(--color-amber-dim)] pl-4">
+                <a href="/onair" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">On Air</a>{" "}
+                - <strong class="text-[var(--color-text-bright)]">push-to-talk
+                dictation for Mac.</strong>{" "}
+                Hold fn, speak, let go - the transcript is pasted into whatever
+                you were typing in, with a soft red glow as the only interface.
+                A native Swift 6 and SwiftUI app on OpenAI live transcription.
               </li>
             </ul>
             <p>
@@ -234,6 +246,7 @@ const faqJsonLd = {
           { label: "PROMPTLY", code: "promptlycms.com", href: "https://promptlycms.com", desc: "Company / SaaS founded by Dan Barclay." },
           { label: "KEEPFRESH", code: "keepfre.sh", href: "https://keepfre.sh", desc: "iOS app built by Dan Barclay." },
           { label: "STITCH", code: "stravastitch.com", href: "https://stravastitch.com", desc: "Free Strava ride-combining web app built by Dan Barclay." },
+          { label: "ON AIR", code: "useonair.app", href: "https://useonair.app", desc: "Push-to-talk Mac dictation app built by Dan Barclay." },
         ].map((l) => (
           <li>
             <a
