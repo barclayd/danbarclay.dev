@@ -1,12 +1,11 @@
 ---
 import Base from "../layouts/Base.astro";
-import HudFrame from "../components/HudFrame.astro";
-import SubPageHeader from "../components/SubPageHeader.astro";
-import SubPageFooter from "../components/SubPageFooter.astro";
+import Cta from "../components/Cta.astro";
+import PageIntro from "../components/PageIntro.astro";
 import TweetCard from "../components/TweetCard.astro";
-import ScrambleText from "../components/ScrambleText.tsx";
 import tweetsRaw from "../data/tweets.json";
 import type { Tweet } from "../lib/types";
+
 
 const tweets = (tweetsRaw as Tweet[]).slice().sort((a, b) => {
   // Pinned first, then newest by postedAt.
@@ -67,6 +66,8 @@ const tweetSchema = tweets.map((t) => ({
 }));
 
 const totalPosts = tweets.length;
+const totalLikes = tweets.reduce((sum, t) => sum + (t.metrics?.likes ?? 0), 0);
+const firstYear = Math.min(new Date().getUTCFullYear(), ...tweets.map((t) => new Date(t.postedAt).getUTCFullYear()));
 ---
 
 <Base
@@ -80,546 +81,116 @@ const totalPosts = tweets.length;
     { name: "Tweets" },
   ]}
 >
-  <main
-    class="mx-auto flex w-full max-w-[1100px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
-  >
-    <SubPageHeader current="about" />
+  <PageIntro
+    eyebrow="Tweets · @danielbarclay"
+    title="Tweets"
+    dim="Archive."
+    lead="An on-site archive of posts by Dan Barclay on engineering, AI, testing, iOS and the messy parts of shipping software. Each card opens the live post on X."
+    stats={[
+      { label: "Posts", value: String(totalPosts), count: totalPosts },
+      { label: "Likes", value: String(totalLikes), count: totalLikes },
+      { label: "Since", value: String(firstYear) },
+    ]}
+  />
 
-    {/* ========================================================== */}
-    {/* INTRO + HERO TWEET                                          */}
-    {/* ========================================================== */}
-    <HudFrame
-      label="TWEETS"
-      className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
-    >
-      <div class="page-intro">
-        <div class="page-intro-eyebrow">
-          <span class="rule" aria-hidden="true"></span>
-          <span>TWEETS · @DANIELBARCLAY</span>
-        </div>
-        <h1 class="page-intro-title">
-          <ScrambleText client:visible text="TWEETS /" duration={700} />
-          <br />
-          <ScrambleText client:visible text="ARCHIVE" duration={900} delay={140} />
-        </h1>
-        <p class="page-intro-desc">
-          An on-site archive of posts by <strong>Dan Barclay</strong> -
-          engineering, AI, testing, iOS, and the messy parts of shipping
-          software. Tap any card to open the live tweet on X.
-        </p>
-
-        <ul class="page-intro-stats" aria-label="Tweet stats">
-          <li>
-            <span class="k">POSTS</span>
-            <span class="v">{String(totalPosts).padStart(2, "0")}</span>
-          </li>
-          <li>
-            <span class="k">ACCOUNT</span>
-            <span class="v amber">@danielbarclay</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="my-10 h-px w-full bg-[var(--color-rule)] rule-draw"></div>
-
-      {hero ? (
-        <>
-          <div class="featured-eyebrow">
-            <span class="dot" aria-hidden="true"></span>
-            <span>FEATURED · {hero.pinned ? "PINNED POST" : "LATEST POST"}</span>
-          </div>
-          <TweetCard tweet={hero} variant="hero" />
-        </>
-      ) : (
-        /* Hero-slot standby - keeps the panel composed when the archive is empty. */
-        <div class="hero-standby">
-          <div class="hero-standby-graphic" aria-hidden="true">
-            <span class="onair-dot"></span>
-            <span class="hs-line"></span>
-            <span class="hs-line"></span>
-            <span class="hs-line"></span>
-          </div>
-          <div class="hero-standby-text">
-            <div class="hero-standby-title">NOTHING TO SHOW YET</div>
-            <p class="hero-standby-body">
-              No posts on file yet. New posts are mirrored here
-              from <a href="https://x.com/danielbarclay" target="_blank" rel="noopener noreferrer">@danielbarclay</a>.
-              The signal will resume shortly.
-            </p>
+  {
+    hero ? (
+      <section class="featured" aria-label="Featured post">
+        <div class="wrap">
+          <div class="featured__inner" data-reveal="up">
+            <TweetCard tweet={hero} variant="hero" />
           </div>
         </div>
-      )}
-    </HudFrame>
-
-    {/* ========================================================== */}
-    {/* ARCHIVE                                                      */}
-    {/* ========================================================== */}
-    <HudFrame
-      label="TWEET ARCHIVE"
-      index={archive.length > 0 ? `${String(archive.length).padStart(2, "0")} POSTS` : undefined}
-      className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
-    >
-      <div class="archive-head">
-        <div>
-          <div class="archive-eyebrow">
-            <span class="rule" aria-hidden="true"></span>
-            <span>ARCHIVE</span>
-          </div>
-          <h2 class="archive-title">Back-catalogue</h2>
-          <p class="archive-desc">
-            Every other post, newest first. Tap a card to open the live
-            tweet on X - replies and quote-tweets carry the parent inline.
+      </section>
+    ) : (
+      <section class="featured">
+        <div class="wrap">
+          <p class="body">
+            No posts on file yet. New posts are mirrored here from{" "}
+            <a class="text-link" href="https://x.com/danielbarclay" target="_blank" rel="noopener me">
+              @danielbarclay
+            </a>
+            .
           </p>
         </div>
-        <div class="archive-meter" aria-hidden="true">
-          <span class="archive-meter-k">POSTS</span>
-          <span class="archive-meter-v">{String(archive.length).padStart(2, "0")}</span>
-        </div>
-      </div>
+      </section>
+    )
+  }
 
-      <div class="my-8 h-px w-full bg-[var(--color-rule)]"></div>
-
-      {archive.length > 0 ? (
-        <div class="archive-list">
-          {archive.map((t) => (
-            <TweetCard tweet={t} variant="row" />
-          ))}
-        </div>
-      ) : (
-        /* Archive standby - composed empty state. */
-        <div class="standby">
-          <div class="standby-graphic" aria-hidden="true">
-            <span class="onair-dot"></span>
-            <span class="standby-line"></span>
-            <span class="standby-line"></span>
-            <span class="standby-line"></span>
-          </div>
-          <div class="standby-text">
-            <div class="standby-title">NOTHING ARCHIVED YET</div>
-            <p class="standby-body">
-              {hero
-                ? "Only one post on file. Older posts will roll in as the archive backfills."
-                : "Archive is dark. Once posts land in /tweets/, they'll surface here in reverse-chronological order."}
+  {
+    archive.length > 0 && (
+      <section class="section" aria-labelledby="archive-title">
+        <div class="wrap">
+          <div class="section-head">
+            <div class="section-head__title">
+              <span class="eyebrow" data-reveal="track">Archive · {archive.length} posts</span>
+              <h2 id="archive-title" class="h2" data-reveal="up">
+                Back-catalogue
+              </h2>
+            </div>
+            <p class="section-head__copy" data-reveal="up" data-delay="120">
+              Every other post, newest first. Replies and quotes carry the parent inline.
             </p>
           </div>
+          <ul class="archive">
+            {archive.map((t) => (
+              <li data-reveal="up">
+                <TweetCard tweet={t} />
+              </li>
+            ))}
+          </ul>
         </div>
-      )}
-    </HudFrame>
+      </section>
+    )
+  }
 
-    {/* ========================================================== */}
-    {/* CTA - follow on X                                            */}
-    {/* ========================================================== */}
-    <HudFrame
-      label="CONTACT"
-      className="px-6 py-10 sm:px-10 sm:py-14 panel-reveal"
-    >
-      <div class="cta-wrap">
-        <div>
-          <div class="cta-eyebrow">
-            <span class="rule" aria-hidden="true"></span>
-            <span>WANT THE LIVE FEED?</span>
-          </div>
-          <h2 class="cta-title">Follow on X.</h2>
-          <p class="cta-body">
-            This page is an on-site mirror - punchy, curated, on-brand.
-            The live feed, replies and conversations all happen on X.
-            Hit follow if you want it as it lands.
-          </p>
-        </div>
-        <div class="cta-actions">
-          <a
-            class="cta-pri"
-            href="https://x.com/danielbarclay"
-            target="_blank"
-            rel="noopener noreferrer me"
-          >
-            <span>FOLLOW · @DANIELBARCLAY</span>
-            <span aria-hidden="true">↗</span>
-          </a>
-          <a class="cta-sec" href="/about">
-            <span>ABOUT DAN BARCLAY</span>
-            <span aria-hidden="true">↳</span>
-          </a>
-        </div>
+  <section class="section follow" aria-labelledby="follow-title">
+    <div class="wrap follow__inner">
+      <div class="section-head__title">
+        <span class="eyebrow" data-reveal="track">The live feed</span>
+        <h2 id="follow-title" class="h2" data-reveal="up">Follow on X</h2>
       </div>
-    </HudFrame>
-
-    <SubPageFooter />
-  </main>
+      <p class="body follow__copy" data-reveal="up" data-delay="120">
+        This page is a curated mirror. The live feed, replies and conversations happen on X.
+      </p>
+      <div class="cta-row" data-stagger="90" data-delay="200">
+        <Cta href="https://x.com/danielbarclay" external rel="noopener me" data-reveal="up">
+          Follow @danielbarclay
+        </Cta>
+        <Cta href="/about" variant="secondary" data-reveal="up">About Dan Barclay</Cta>
+      </div>
+    </div>
+  </section>
 </Base>
 
 <style>
-  /* ============================ PAGE INTRO ============================== */
-  .page-intro {
+  .featured__inner {
+    max-width: 1040px;
+  }
+
+  .archive {
+    columns: 2 420px;
+    column-gap: 20px;
+  }
+
+  .archive > li {
+    break-inside: avoid;
+    margin-bottom: 20px;
+  }
+
+  .follow {
+    padding-bottom: clamp(120px, 18vh, 200px);
+  }
+
+  .follow__inner {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    align-items: flex-start;
+    gap: 28px;
   }
-  .page-intro-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-mute);
-  }
-  .page-intro-eyebrow .rule {
-    height: 1px;
-    width: 24px;
-    background: var(--color-amber);
-  }
-  .page-intro-title {
-    font-family: var(--font-display);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: -0.015em;
-    line-height: 0.9;
-    color: var(--color-text-bright);
-    font-size: clamp(2.5rem, 9vw, 5rem);
-    margin: 0;
-  }
-  .page-intro-desc {
-    margin: 0;
-    max-width: 38em;
-    font-family: var(--font-display);
-    font-size: 1.0625rem;
-    line-height: 1.6;
-    color: var(--color-mute);
+
+  .follow__copy {
+    max-width: 560px;
     text-wrap: pretty;
-  }
-  .page-intro-desc strong {
-    color: var(--color-text-bright);
-    font-weight: 500;
-  }
-
-  .page-intro-stats {
-    list-style: none;
-    margin: 4px 0 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1px;
-    background: var(--color-rule);
-    border: 1px solid var(--color-rule);
-    max-width: 36rem;
-  }
-  @media (min-width: 640px) {
-    .page-intro-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  }
-  .page-intro-stats li {
-    background: var(--color-void);
-    padding: 12px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    min-width: 0;
-  }
-  .page-intro-stats .k {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--color-mute);
-  }
-  .page-intro-stats .v {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    letter-spacing: 0.06em;
-    color: var(--color-text-bright);
-    font-variant-numeric: tabular-nums;
-  }
-  .page-intro-stats .v.amber { color: var(--color-amber); }
-
-  /* ============================ FEATURED BAND ============================ */
-  .featured-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 14px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-amber);
-  }
-  .featured-eyebrow .dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    background: var(--color-amber);
-    box-shadow: 0 0 8px rgba(232, 154, 60, 0.5);
-    animation: pulse-amber 1.8s ease-in-out infinite;
-  }
-  @keyframes pulse-amber {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.45; transform: scale(0.78); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .featured-eyebrow .dot { animation: none; }
-  }
-
-  /* ============================ ARCHIVE ============================ */
-  .archive-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 16px;
-  }
-  .archive-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 6px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-mute);
-  }
-  .archive-eyebrow .rule {
-    height: 1px;
-    width: 24px;
-    background: var(--color-amber);
-  }
-  .archive-title {
-    font-family: var(--font-display);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: -0.01em;
-    color: var(--color-text-bright);
-    font-size: clamp(1.75rem, 4.5vw, 2.5rem);
-    margin: 0;
-    line-height: 0.95;
-  }
-  .archive-desc {
-    margin-top: 10px;
-    max-width: 38em;
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    line-height: 1.6;
-    color: var(--color-mute);
-  }
-  .archive-meter {
-    border: 1px solid var(--color-rule);
-    padding: 10px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--color-mute);
-  }
-  .archive-meter-v {
-    color: var(--color-amber);
-    font-size: 1.25rem;
-    line-height: 1;
-    letter-spacing: 0.06em;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .archive-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  @media (min-width: 640px) {
-    .archive-list { gap: 20px; }
-  }
-
-  /* Standby (empty state) - composed, not anemic. Shared shape with podcasts. */
-  .standby,
-  .hero-standby {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 18px;
-    align-items: center;
-    border: 1px dashed var(--color-rule-strong);
-    background:
-      repeating-linear-gradient(
-        45deg,
-        rgba(232, 154, 60, 0.025) 0,
-        rgba(232, 154, 60, 0.025) 6px,
-        transparent 6px,
-        transparent 12px
-      ),
-      var(--color-void);
-    padding: 22px 22px;
-  }
-  @media (min-width: 640px) {
-    .standby,
-    .hero-standby {
-      grid-template-columns: auto 1fr;
-      gap: 28px;
-      padding: 28px;
-    }
-  }
-  .standby-graphic,
-  .hero-standby-graphic {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .standby-graphic .onair-dot,
-  .hero-standby-graphic .onair-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 999px;
-    background: var(--color-amber);
-    box-shadow: 0 0 0 1px rgba(232, 154, 60, 0.35),
-      0 0 12px rgba(232, 154, 60, 0.6);
-    animation: pulse-amber 1.8s ease-in-out infinite;
-  }
-  .standby-line,
-  .hs-line {
-    display: inline-block;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      var(--color-amber) 0%,
-      var(--color-amber-dim) 50%,
-      transparent 100%
-    );
-    animation: standby-line 2.4s ease-in-out infinite;
-  }
-  .standby-line:nth-child(2),
-  .hs-line:nth-child(2) { width: 36px; animation-delay: 100ms; }
-  .standby-line:nth-child(3),
-  .hs-line:nth-child(3) { width: 22px; animation-delay: 240ms; }
-  .standby-line:nth-child(4),
-  .hs-line:nth-child(4) { width: 14px; animation-delay: 380ms; }
-  @keyframes standby-line {
-    0%, 100% { opacity: 0.25; transform: translateX(0); }
-    50%      { opacity: 1;    transform: translateX(4px); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .standby-graphic .onair-dot,
-    .hero-standby-graphic .onair-dot,
-    .standby-line,
-    .hs-line { animation: none; }
-  }
-  .standby-text,
-  .hero-standby-text { min-width: 0; }
-  .standby-title,
-  .hero-standby-title {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--color-amber);
-    margin-bottom: 8px;
-  }
-  .standby-body,
-  .hero-standby-body {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    line-height: 1.55;
-    color: var(--color-mute);
-    max-width: 44em;
-  }
-  .standby-body a,
-  .hero-standby-body a {
-    color: var(--color-text-bright);
-    border-bottom: 1px solid var(--color-amber-dim);
-    transition: color 200ms var(--ease-hud), border-color 200ms var(--ease-hud);
-  }
-  .standby-body a:hover,
-  .hero-standby-body a:hover {
-    color: var(--color-amber-glow);
-    border-bottom-color: var(--color-amber);
-  }
-
-  /* ============================ CTA ============================ */
-  .cta-wrap {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 24px;
-    align-items: end;
-  }
-  @media (min-width: 768px) {
-    .cta-wrap {
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-      gap: 40px;
-    }
-  }
-  .cta-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-amber);
-  }
-  .cta-eyebrow .rule {
-    height: 1px;
-    width: 24px;
-    background: var(--color-amber);
-  }
-  .cta-title {
-    font-family: var(--font-display);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: -0.01em;
-    color: var(--color-text-bright);
-    font-size: clamp(1.75rem, 5vw, 2.5rem);
-    line-height: 0.95;
-    margin: 0 0 12px;
-  }
-  .cta-body {
-    margin: 0;
-    max-width: 36em;
-    font-family: var(--font-display);
-    font-size: 1rem;
-    line-height: 1.6;
-    color: var(--color-mute);
-  }
-  .cta-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .cta-pri,
-  .cta-sec {
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 16px 18px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    transition:
-      color 200ms var(--ease-hud),
-      background-color 200ms var(--ease-hud),
-      border-color 200ms var(--ease-hud),
-      transform 200ms var(--ease-hud);
-  }
-  .cta-pri {
-    color: var(--color-amber);
-    background: rgba(232, 154, 60, 0.08);
-    border: 1px solid var(--color-amber-dim);
-  }
-  .cta-pri:hover {
-    color: var(--color-amber-glow);
-    border-color: var(--color-amber);
-    background: rgba(232, 154, 60, 0.16);
-    transform: translateY(-1px);
-  }
-  .cta-sec {
-    color: var(--color-mute);
-    border: 1px solid var(--color-rule-strong);
-  }
-  .cta-sec:hover {
-    color: var(--color-amber-glow);
-    border-color: var(--color-amber-dim);
   }
 </style>

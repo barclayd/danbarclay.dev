@@ -1,0 +1,674 @@
+---
+import Base from "./Base.astro";
+import Cta from "../components/Cta.astro";
+import projectsRaw from "../data/projects.json";
+import { PRODUCTS, buildChart, nextProduct, shotFor, type ProductKey } from "../lib/products";
+import type { Project } from "../lib/types";
+
+// Shared template for the four product pages. Copy lives in lib/products.ts;
+// each page passes its own SEO title, description and JSON-LD.
+interface Props {
+  product: ProductKey;
+  title: string;
+  description: string;
+  schema: Record<string, unknown>[];
+}
+
+const { product, title, description, schema } = Astro.props;
+const p = PRODUCTS[product];
+const next = nextProduct(product);
+const shot = shotFor(product);
+const chart = buildChart(projectsRaw as Project[], p.slugs);
+const fmt = (n: number) => n.toLocaleString("en-GB");
+---
+
+<Base
+  title={title}
+  description={description}
+  pageType="WebPage"
+  jsonLd={schema}
+  active={product}
+  breadcrumbs={[{ name: "Home", url: "/" }, { name: "Work", url: "/work" }, { name: p.name }]}
+>
+  <article class="product" style={`--accent:${p.accent}`}>
+    <section class="hero">
+      <div class="hero__glow-wrap" aria-hidden="true">
+        <div class="glow hero__glow" style={`--glow-color:${p.accent}`} data-loop="breathe"></div>
+      </div>
+      <div class="hero__inner">
+        <div class="hero__head">
+          <span class="eyebrow hero__eyebrow" data-reveal="track" data-delay="650">
+            <span class="dot" aria-hidden="true"></span>
+            {p.n} / 04 · {p.category}
+          </span>
+          <h1 class="hero__title" style={`--chars:${p.name.length}`}>
+            <span class="line-mask"><span data-reveal="rise" data-delay="420" data-dur="1500">{p.name}</span></span>
+          </h1>
+          <p class="hero__tagline" data-reveal="up" data-delay="950">{p.tagline}</p>
+          <div class="cta-row hero__ctas" data-stagger="90" data-delay="1100">
+            <Cta href={p.site} external accent={p.accent} data-reveal="up">Visit {p.siteLabel}</Cta>
+            <Cta href={p.repo} external variant="secondary" data-reveal="up">GitHub ↗</Cta>
+          </div>
+        </div>
+        <dl class="specs" data-stagger="110" data-delay="1250">
+          {
+            p.specs.map(([value, label]) => (
+              <div class="spec" data-reveal="up">
+                <dt class="spec__label">{label}</dt>
+                <dd class="spec__value">{value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </section>
+
+    <section class="screen" aria-label={`${p.name} screenshot`}>
+      <div class="screen__frame" data-scrollscale="0.84">
+        {
+          shot ? (
+            <img src={shot} alt={p.shot} width="1920" height="1080" loading="lazy" decoding="async" />
+          ) : (
+            <div class="screen__placeholder" aria-hidden="true">
+              <span class="screen__name">{p.name}</span>
+              <span class="screen__site">{p.siteLabel}</span>
+            </div>
+          )
+        }
+      </div>
+    </section>
+
+    <section class="wrap idea">
+      <span class="eyebrow" data-reveal="track">The idea</span>
+      <p class="idea__text" data-reveal="up" data-delay="120">{p.intro}</p>
+    </section>
+
+    <section class="wrap ps">
+      <span class="ps__line" data-reveal="line"></span>
+      <div class="ps__grid">
+        <div class="ps__col" data-reveal="up">
+          <span class="eyebrow">01 · Problem</span>
+          <p>{p.problem}</p>
+        </div>
+        <div class="ps__col ps__col--solution" data-reveal="up" data-delay="120">
+          <span class="eyebrow"><span class="ps__dot" aria-hidden="true"></span>02 · Solution</span>
+          <p>{p.solution}</p>
+        </div>
+      </div>
+    </section>
+
+    {
+      chart && (
+        <section class="wrap public">
+          <div class="section-head">
+            <div class="section-head__title">
+              <span class="eyebrow" data-reveal="track">
+                Built in public
+              </span>
+              <h2 class="h2" data-reveal="up">
+                Every commit
+              </h2>
+            </div>
+            <dl class="public__stats" data-stagger="100">
+              <div data-reveal="up">
+                <dt class="stat-label">Commits</dt>
+                <dd class="num public__num" data-count={chart.total}>
+                  {fmt(chart.total)}
+                </dd>
+              </div>
+              <div data-reveal="up">
+                <dt class="stat-label">Busiest week</dt>
+                <dd class="num public__num" data-count={chart.peak}>
+                  {fmt(chart.peak)}
+                </dd>
+              </div>
+              <div data-reveal="up">
+                <dt class="stat-label">Repos</dt>
+                <dd class="num public__num" data-count={chart.repos}>
+                  {chart.repos}
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <figure class="chart">
+            <div class="chart__box">
+              <svg viewBox="0 0 1000 300" preserveAspectRatio="none" role="img" aria-label={`Weekly commits to ${p.name}`}>
+                <path d={chart.area} class="chart__area" data-reveal="fade" data-dur="2400" data-delay="600" />
+                <path d={chart.line} class="chart__line" pathLength="1" data-reveal="draw" data-dur="2800" />
+              </svg>
+            </div>
+            <div class="chart__ticks" aria-hidden="true">
+              {chart.ticks.map((t) => (
+                <span style={`left:${t.left}`}>{t.label}</span>
+              ))}
+            </div>
+            <figcaption class="sr-only-seo">
+              {fmt(chart.total)} commits across {chart.repos} {chart.repos === 1 ? "repository" : "repositories"}, peaking at{" "}
+              {fmt(chart.peak)} in a single week.
+            </figcaption>
+          </figure>
+        </section>
+      )
+    }
+
+    <section class="wrap stack">
+      <div class="stack__head">
+        <span class="eyebrow" data-reveal="track">Stack</span>
+        <h2 class="h2" data-reveal="up">Under the hood</h2>
+      </div>
+      <ol class="stack__list" data-stagger="90">
+        {
+          p.stack.map((s, i) => (
+            <li class="stack__row" data-reveal="up">
+              <span class="stack__n">{String(i + 1).padStart(2, "0")}</span>
+              <span class="stack__text">{s}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="wrap visit">
+      <span class="eyebrow" data-reveal="track"><span class="dot" aria-hidden="true"></span>{p.status}</span>
+      <a href={p.site} target="_blank" rel="noopener" class="visit__link" style={`--chars:${p.siteLabel.length + 2}`} data-reveal="up"
+        >{p.siteLabel} ↗</a
+      >
+      <span class="visit__line" data-reveal="line" data-delay="200"></span>
+    </section>
+
+    <a href={next.href} class="next" style={`--accent:${next.accent}`}>
+      <span class="next__glow-wrap" aria-hidden="true">
+        <span class="glow next__glow" style={`--glow-color:${next.accent}`}></span>
+      </span>
+      <span class="wrap next__inner">
+        <span class="next__copy">
+          <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Next · {next.category}</span>
+          <span class="next__name" style={`--chars:${next.name.length}`}>{next.name}</span>
+        </span>
+        <span class="next__arrow" aria-hidden="true">→</span>
+      </span>
+    </a>
+  </article>
+</Base>
+
+<style>
+  /* ---- Hero ---- */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .hero__glow-wrap {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .hero__glow {
+    left: 50%;
+    top: 34%;
+    width: min(1400px, 160vw);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    opacity: 0.2;
+  }
+
+  .hero__inner {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 56px;
+    text-align: center;
+    padding: calc(64px + 13vh) clamp(20px, 4vw, 64px) clamp(28px, 5vh, 56px);
+  }
+
+  .hero__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    width: 100%;
+  }
+
+  .hero__eyebrow {
+    letter-spacing: 0.26em;
+    color: var(--color-ink-3);
+  }
+
+  .hero__eyebrow .dot {
+    box-shadow: 0 0 16px var(--accent);
+  }
+
+  /* Sized to the viewport, but capped so the longest name (KeepFresh) still
+     fits on one line at phone widths. */
+  .hero__title {
+    max-width: 100%;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: min(clamp(40px, 11vw, 220px), calc((100vw - 2 * clamp(20px, 4vw, 64px)) / var(--chars) / 0.96));
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .hero__title .line-mask {
+    padding: 0.06em 0 0.02em;
+  }
+
+  .hero__tagline {
+    max-width: 640px;
+    font-size: clamp(17px, 1.5vw, 22px);
+    font-weight: 350;
+    line-height: 1.5;
+    color: var(--color-ink-2);
+  }
+
+  .hero__ctas {
+    justify-content: center;
+    margin-top: 4px;
+  }
+
+  .specs {
+    width: 100%;
+    max-width: 1180px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+    row-gap: 28px;
+  }
+
+  .spec {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    border-left: 1px solid var(--color-line-4);
+  }
+
+  .spec:first-child {
+    border-left: 0;
+  }
+
+  .spec__value {
+    font-stretch: 118%;
+    font-weight: 200;
+    font-size: clamp(32px, 3.6vw, 60px);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .spec__label {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  /* Two per row on phones: drop the divider at the start of each row. */
+  @media (max-width: 559px) {
+    .specs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .spec {
+      padding: 0 8px;
+    }
+
+    .spec:nth-child(odd) {
+      border-left: 0;
+    }
+
+    .spec__value {
+      font-size: clamp(26px, 8vw, 32px);
+    }
+
+    .spec__label {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+    }
+  }
+
+  /* ---- Screen ---- */
+  .screen {
+    padding: clamp(60px, 10vh, 120px) clamp(10px, 1.6vw, 28px) 0;
+  }
+
+  .screen__frame {
+    position: relative;
+    max-width: 1720px;
+    margin: 0 auto;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #0f1114;
+  }
+
+  .screen__frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  .screen__placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background:
+      radial-gradient(60% 80% at 50% 110%, color-mix(in oklch, var(--accent) 38%, transparent), transparent 70%),
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px) 0 0 / 100% 12.5%,
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px) 0 0 / 6.25% 100%;
+  }
+
+  .screen__name {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 5vw, 80px);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(242, 242, 239, 0.16);
+  }
+
+  .screen__site {
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+
+  /* ---- The idea ---- */
+  .idea {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-top: clamp(120px, 20vh, 220px);
+  }
+
+  .idea__text {
+    max-width: 1180px;
+    font-stretch: 112%;
+    font-weight: 250;
+    font-size: clamp(26px, 3.6vw, 56px);
+    line-height: 1.22;
+    text-wrap: balance;
+  }
+
+  /* ---- Problem / solution ---- */
+  .ps {
+    padding-top: clamp(100px, 16vh, 180px);
+  }
+
+  .ps__line {
+    display: block;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.16);
+    transform-origin: left;
+  }
+
+  .ps__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: 56px clamp(40px, 6vw, 120px);
+    padding-top: 44px;
+  }
+
+  .ps__col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .ps__col p {
+    font-size: clamp(18px, 1.5vw, 22px);
+    font-weight: 350;
+    line-height: 1.6;
+    color: var(--color-ink-2b);
+  }
+
+  .ps__col--solution p {
+    color: var(--color-ink);
+  }
+
+  .ps__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+  }
+
+  /* ---- Built in public ---- */
+  .public {
+    padding-top: clamp(120px, 20vh, 220px);
+  }
+
+  .public__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px 44px;
+  }
+
+  .public__stats > div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .public__num {
+    font-size: clamp(36px, 3.6vw, 56px);
+  }
+
+  .chart {
+    margin: 0;
+  }
+
+  .chart__box {
+    height: clamp(180px, 26vw, 320px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  }
+
+  .chart__box svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .chart__area {
+    fill: var(--accent);
+    fill-opacity: 0.14;
+  }
+
+  .chart__line {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-dasharray: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .chart__ticks {
+    position: relative;
+    height: 28px;
+    margin-top: 12px;
+  }
+
+  .chart__ticks span {
+    position: absolute;
+    top: 0;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-label);
+    white-space: nowrap;
+  }
+
+  /* ---- Stack ---- */
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px clamp(40px, 6vw, 120px);
+    padding-top: clamp(120px, 20vh, 220px);
+  }
+
+  .stack__head {
+    flex: 1 1 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .stack__list {
+    flex: 2 1 560px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--color-line-3);
+  }
+
+  .stack__row {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--color-line-2);
+  }
+
+  .stack__n {
+    flex: none;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--color-label);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stack__text {
+    font-stretch: 112%;
+    font-weight: 300;
+    font-size: clamp(19px, 1.8vw, 26px);
+    line-height: 1.35;
+  }
+
+  @media (max-width: 559px) {
+    .stack__list {
+      flex-basis: 100%;
+    }
+  }
+
+  /* ---- Visit ---- */
+  .visit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    text-align: center;
+    padding-top: clamp(140px, 22vh, 260px);
+    padding-bottom: clamp(100px, 16vh, 180px);
+  }
+
+  .visit__link {
+    max-width: 100%;
+    font-family: var(--font-display);
+    font-size: min(clamp(26px, 5.6vw, 96px), calc((100vw - 2 * clamp(20px, 4vw, 64px)) / var(--chars) / 0.86));
+    line-height: 1.05;
+    letter-spacing: 0.01em;
+    text-transform: lowercase;
+    white-space: nowrap;
+    transition:
+      color 0.4s,
+      text-shadow 0.4s;
+  }
+
+  .visit__link:hover {
+    color: var(--color-ink-hi);
+    text-shadow: 0 0 40px rgba(255, 255, 255, 0.35);
+  }
+
+  .visit__line {
+    display: block;
+    width: min(420px, 60%);
+    height: 1px;
+    background: var(--accent);
+    box-shadow: 0 0 18px 1px var(--accent);
+  }
+
+  /* ---- Next ---- */
+  .next {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-top: 1px solid var(--color-line-1);
+    transition: background-color 0.5s;
+  }
+
+  .next:hover {
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .next__glow-wrap {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .next__glow {
+    right: -20vw;
+    top: -30vw;
+    width: 70vw;
+    aspect-ratio: 1;
+    opacity: 0.16;
+    transition: opacity 0.6s;
+  }
+
+  .next:hover .next__glow {
+    opacity: 0.26;
+  }
+
+  .next__inner {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    padding-top: clamp(56px, 10vh, 110px);
+    padding-bottom: clamp(56px, 10vh, 110px);
+  }
+
+  .next__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  .next__name {
+    font-family: var(--font-display);
+    font-size: min(clamp(32px, 6.4vw, 112px), calc((100vw - 2 * clamp(20px, 4vw, 64px)) / var(--chars) / 0.96));
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .next__arrow {
+    font-size: clamp(28px, 3vw, 44px);
+    font-weight: 200;
+    line-height: 1;
+    transition: transform 0.6s var(--ease-out-expo);
+  }
+
+  .next:hover .next__arrow {
+    transform: translate3d(8px, 0, 0);
+  }
+</style>

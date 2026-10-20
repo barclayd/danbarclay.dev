@@ -1,19 +1,16 @@
 ---
 import Base from "../layouts/Base.astro";
-import HudFrame from "../components/HudFrame.astro";
-import DuotoneAvatar from "../components/DuotoneAvatar.astro";
-import SubPageHeader from "../components/SubPageHeader.astro";
-import SubPageFooter from "../components/SubPageFooter.astro";
-import StackOverflowPanel from "../components/StackOverflowPanel.astro";
+import Cta from "../components/Cta.astro";
 import podcastsRaw from "../data/podcasts.json";
-import type { Podcast } from "../lib/types";
+import soRaw from "../data/stackoverflow.json";
+import { PRODUCT_LIST } from "../lib/products";
+import type { Podcast, StackOverflowData } from "../lib/types";
 
 const podcasts = (podcastsRaw as Podcast[]).slice().sort((a, b) => {
   if (a.featured !== b.featured) return a.featured ? -1 : 1;
   return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
 });
 const featuredPodcast = podcasts[0];
-const podcastCount = podcasts.length;
 
 const title =
   "About Dan Barclay - Engineering Leader, Founder of Promptly, KeepFresh, Stitch & On Air, London";
@@ -74,6 +71,47 @@ const faqJsonLd = {
   })),
   about: { "@id": "https://danbarclay.dev/#person" },
 };
+
+const fmt = (n: number) => n.toLocaleString("en-GB");
+const pad = (n: number) => String(n).padStart(2, "0");
+
+const facts = [
+  { value: "London", label: "Based" },
+  { value: "Eng lead", label: "Role" },
+  { value: "10+ yrs", count: 10, suffix: "+ yrs", label: "Experience" },
+  { value: "Product + AI", label: "Focus" },
+];
+
+const stack = ["TypeScript", "React", "Node", "Python", "Rust", "Swift", "LLMs", "MCP"];
+
+// Stack Overflow: bars are scaled to the top tag; the top three read brightest.
+const so = soRaw as StackOverflowData;
+const totalScore = so.tags.reduce((n, t) => n + t.score, 0);
+const maxScore = Math.max(...so.tags.map((t) => t.score));
+const tagBars = so.tags.map((t, i) => ({
+  ...t,
+  width: `${((t.score / maxScore) * 100).toFixed(1)}%`,
+  dim: i >= 3,
+}));
+
+const episode = featuredPodcast;
+const episodeMeta = [
+  episode.show,
+  episode.role,
+  new Date(episode.publishedAt).toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "UTC" }),
+  `${Math.round(episode.durationSeconds / 60)} min`,
+].join(" · ");
+
+const profiles: { label: string; value: string; href: string; accent?: string }[] = [
+  { label: "GitHub", value: "github.com/barclayd", href: "https://github.com/barclayd" },
+  { label: "X", value: "x.com/danielbarclay", href: "https://x.com/danielbarclay" },
+  { label: "LinkedIn", value: "linkedin.com/in/barclayd", href: "https://www.linkedin.com/in/barclayd/" },
+  { label: "Stack Overflow", value: "users/9961739", href: so.url },
+  { label: "Tweets archive", value: "danbarclay.dev/tweets", href: "/tweets" },
+  { label: "Email", value: "barclaysd@me.com", href: "mailto:barclaysd@me.com" },
+  ...PRODUCT_LIST.map((p) => ({ label: p.name, value: p.siteLabel, href: p.site, accent: p.accent })),
+];
+const isExternal = (href: string) => href.startsWith("http");
 ---
 
 <Base
@@ -81,579 +119,1093 @@ const faqJsonLd = {
   description={description}
   pageType="AboutPage"
   jsonLd={faqJsonLd}
+  active="about"
   breadcrumbs={[
     { name: "Home", url: "/" },
     { name: "About" },
   ]}
 >
-  <main
-    class="mx-auto flex w-full max-w-[1100px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
-  >
-    <SubPageHeader current="about" />
+  <!-- ====== Intro ====== -->
+  <section class="intro" aria-labelledby="about-title">
+    <div class="intro__glow" aria-hidden="true">
+      <div class="glow" style="--glow-color:rgba(242,242,239,0.08)" data-loop="breathe"></div>
+    </div>
 
-    <HudFrame
-      label="ABOUT"
-      className="px-6 py-10 sm:px-10 sm:py-14"
-    >
-      <div class="grid gap-10 md:grid-cols-[220px_1fr] md:gap-14">
-        <!-- Left rail: avatar + meta -->
-        <div class="flex flex-col items-start gap-4">
-          <DuotoneAvatar
-            src="/dan-barclay.webp"
-            alt="Dan Barclay - engineering leader and founder, London"
-            class="w-40 sm:w-52 md:w-[200px]"
-          />
-          <div class="flex w-40 sm:w-52 md:w-[200px] flex-col gap-1 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
-            <div class="flex items-center justify-between">
-              <span>NAME</span><span class="text-[var(--color-text)]">DAN BARCLAY</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span>ROLE</span><span class="text-[var(--color-text)]">ENG LEAD</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span>BASED</span><span class="text-[var(--color-text)]">LON · UK</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span>YRS</span><span class="text-[var(--color-amber)]">10+</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right column: biography -->
-        <div class="flex flex-col gap-8">
-          <div>
-            <div class="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
-              <span class="h-px w-6 bg-[var(--color-amber)]"></span>
-              <span>BIOGRAPHY · DAN BARCLAY</span>
-            </div>
-            <h1
-              class="font-display font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)]"
-              style="font-size: clamp(2.25rem, 7.5vw, 4rem);"
-            >
-              About<br />Dan Barclay
-            </h1>
-          </div>
-
-          <div class="space-y-5 font-display text-base leading-relaxed text-[var(--color-text)] sm:text-[1.0625rem]">
-            <p>
-              <strong class="text-[var(--color-text-bright)]">Dan Barclay</strong>{" "}
-              is an engineering leader, full-stack product engineer and founder
-              based in London, United Kingdom. He has spent 10+ years building
-              and scaling software for millions of users - across consumer
-              marketplaces, B2B SaaS, mobile apps and AI tooling.
-            </p>
-            <p>
-              Today, Dan is focused on building four products of his own:
-            </p>
-            <ul class="ml-1 space-y-3 text-[var(--color-mute)]">
-              <li class="border-l border-[var(--color-amber-dim)] pl-4">
-                <a href="/promptly" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">Promptly</a>{" "}
-                - <strong class="text-[var(--color-text-bright)]">the CMS
-                powering the next wave of AI development.</strong> A B2B SaaS
-                that hands LLM prompts back to the domain experts who write
-                them, used in production by 100+ companies. Built in TypeScript
-                on a typed prompt-fetching SDK.
-              </li>
-              <li class="border-l border-[var(--color-amber-dim)] pl-4">
-                <a href="/keepfresh" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">KeepFresh</a>{" "}
-                - <strong class="text-[var(--color-text-bright)]">a Swift-built
-                iOS app working to end food waste for good.</strong> Tracks
-                grocery inventory and surfaces expiry alerts before things
-                spoil. 77,000+ downloads, used daily by hundreds of households.
-                The async backend runs on Hono.js on Cloudflare Workers with
-                D1 storage.
-              </li>
-              <li class="border-l border-[var(--color-amber-dim)] pl-4">
-                <a href="/stitch" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">Stitch</a>{" "}
-                - <strong class="text-[var(--color-text-bright)]">a free web
-                app that combines split Strava rides into one activity.</strong>{" "}
-                Preview the route and gaps, download a GPX backup, then confirm
-                the upload - it never deletes an activity. TypeScript and Remix 3
-                on Cloudflare Workers with Durable Objects.
-              </li>
-              <li class="border-l border-[var(--color-amber-dim)] pl-4">
-                <a href="/onair" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">On Air</a>{" "}
-                - <strong class="text-[var(--color-text-bright)]">a free-forever
-                Wispr Flow alternative for Mac.</strong>{" "}
-                Built for developers ramping up their AI-driven coding by voice:
-                hold fn, speak, let go - the transcript is pasted into whatever
-                you were typing in, with a soft red glow as the only interface.
-                A native Swift 6 and SwiftUI app on OpenAI live transcription.
-              </li>
-            </ul>
-            <p>
-              His stack of choice runs the gamut: <strong class="text-[var(--color-text-bright)]">TypeScript,
-              React, Node, Python, Rust, Swift</strong>, plus a deep working
-              focus on <strong class="text-[var(--color-text-bright)]">Large Language Models,
-              the Model Context Protocol (MCP)</strong>, and the engineering
-              practices needed to ship AI features safely into production.
-            </p>
-            <p>
-              He has been an active contributor on{" "}
-              <a href="https://stackoverflow.com/users/9961739/dan-barclay" target="_blank" rel="noopener noreferrer me" class="font-semibold text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)]">Stack Overflow</a>{" "}
-              since 2018, answering TypeScript, JavaScript and React questions
-              that other engineers have voted into the site's reference
-              material.
-            </p>
-            <p>
-              Dan is most motivated by hard problems and the people driven to
-              solve them - work where technical vision and product judgement
-              have to align with business outcomes to ship something
-              mission-critical.
-            </p>
-          </div>
-
-          <!--
-            Disambiguation note - kept in source order for LLMs and Google to
-            extract, but hidden visually via .sr-only-seo (no on-screen impact).
-            Mirrors the FAQ Q&A so the entity disambiguation reads consistently
-            across rendered FAQ + visually-hidden plain prose.
-          -->
+    <div class="wrap intro__inner">
+      <div class="intro__row">
+        <div class="intro__text">
+          <span class="eyebrow intro__eyebrow" data-reveal="track" data-delay="600">About</span>
+          <h1 id="about-title" class="intro__title">
+            <span class="line-mask"><span data-reveal="rise" data-delay="420">Dan</span></span>{" "}
+            <span class="line-mask"><span data-reveal="rise" data-delay="540">Barclay</span></span>
+          </h1>
+          <p class="intro__lead" data-reveal="up" data-delay="900">
+            Engineering leader, full-stack product engineer and founder, based in London. I've spent ten years
+            building and scaling software for millions of people across consumer marketplaces, B2B SaaS, mobile apps
+            and AI tooling.
+          </p>
+          <p class="body intro__body" data-reveal="up" data-delay="1000">
+            I do my best work on hard problems, where technical vision and product judgement have to line up with
+            business outcomes to ship something mission-critical.
+          </p>
+          <!-- Disambiguation for crawlers and LLMs; mirrors the FAQ answer below. -->
           <aside class="sr-only-seo">
-            Note - disambiguation: This Dan Barclay is a London-based software
-            engineer and founder. He is unrelated to Dan Barclay, the retired
-            CEO of BMO Capital Markets in Toronto, Canada. They share a name
-            and nothing else.
+            Note - disambiguation: This Dan Barclay is a London-based software engineer and founder. He is unrelated to
+            Dan Barclay, the retired CEO of BMO Capital Markets in Toronto, Canada. They share a name and nothing else.
           </aside>
         </div>
+
+        <div class="intro__portrait" data-reveal="wipe" data-delay="500" data-dur="1800">
+          <div class="intro__parallax" data-parallax="0.06">
+            <img
+              src="/dan-barclay.webp"
+              alt="Dan Barclay - engineering leader and founder, London"
+              width="512"
+              height="512"
+              fetchpriority="high"
+              decoding="async"
+            />
+          </div>
+        </div>
       </div>
-    </HudFrame>
 
-    <!-- Specialities, evidenced by community-scored answers. -->
-    <StackOverflowPanel />
-
-    <!-- Profile graph: every property Dan controls, cross-linked. -->
-    <HudFrame
-      label="PROFILES"
-      className="px-6 py-10 sm:px-10 sm:py-14"
-    >
-      <h2 class="font-display text-2xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-3xl">
-        Where to find Dan Barclay
-      </h2>
-      <p class="mt-2 max-w-xl font-mono text-[11px] uppercase tracking-hud text-[var(--color-mute)]">
-        Every profile below belongs to the same Dan Barclay - engineering leader, London.
-      </p>
-
-      <div class="my-8 h-px w-full bg-[var(--color-rule)]"></div>
-
-      <ul class="grid grid-cols-1 gap-px bg-[var(--color-rule)] sm:grid-cols-2">
-        {[
-          { label: "GITHUB", code: "github.com/barclayd", href: "https://github.com/barclayd", desc: "Source code and side projects." },
-          { label: "TWITTER · X", code: "x.com/danielbarclay", href: "https://x.com/danielbarclay", desc: "Notes, links and updates." },
-          { label: "TWEETS", code: "danbarclay.dev/tweets", href: "/tweets", desc: "On-site archive of @danielbarclay." },
-          { label: "LINKEDIN", code: "linkedin.com/in/barclayd", href: "https://www.linkedin.com/in/barclayd/", desc: "Career history and credentials." },
-          { label: "STACK OVERFLOW", code: "stackoverflow.com/users/9961739", href: "https://stackoverflow.com/users/9961739/dan-barclay", desc: "Answers scored by other engineers." },
-          { label: "EMAIL", code: "barclaysd@me.com", href: "mailto:barclaysd@me.com", desc: "Direct contact." },
-          { label: "PROMPTLY", code: "promptlycms.com", href: "https://promptlycms.com", desc: "Company / SaaS founded by Dan Barclay." },
-          { label: "KEEPFRESH", code: "keepfre.sh", href: "https://keepfre.sh", desc: "iOS app built by Dan Barclay." },
-          { label: "STITCH", code: "stravastitch.com", href: "https://stravastitch.com", desc: "Free Strava ride-combining web app built by Dan Barclay." },
-          { label: "ON AIR", code: "useonair.app", href: "https://useonair.app", desc: "Free-forever Wispr Flow alternative for Mac, built by Dan Barclay." },
-        ].map((l) => (
-          <li>
-            <a
-              href={l.href}
-              rel={l.href.startsWith("http") ? "noopener noreferrer me" : "me"}
-              target={l.href.startsWith("http") ? "_blank" : undefined}
-              class="group flex min-h-[80px] items-center justify-between gap-4 bg-[var(--color-void)] px-4 py-5 transition-colors hover:bg-[rgba(232,154,60,0.04)] sm:px-5 sm:py-6"
-            >
-              <div class="flex min-w-0 flex-col">
-                <span class="font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
-                  {l.label}
-                </span>
-                <span class="mt-1 truncate font-display text-base uppercase tracking-tight text-[var(--color-text-bright)] group-hover:text-[var(--color-amber-glow)] sm:text-lg">
-                  {l.code}
-                </span>
-                <span class="mt-0.5 font-display text-xs text-[var(--color-mute)]">{l.desc}</span>
+      <div class="facts">
+        <div class="facts__rule" data-reveal="line" aria-hidden="true"></div>
+        <dl class="facts__grid" data-stagger="100">
+          {
+            facts.map((f) => (
+              <div class="facts__item" data-reveal="up">
+                <dt class="stat-label">{f.label}</dt>
+                {f.count !== undefined ? (
+                  <dd class="facts__value" data-count={f.count} data-suffix={f.suffix}>{f.value}</dd>
+                ) : (
+                  <dd class="facts__value">{f.value}</dd>
+                )}
               </div>
-              <span aria-hidden="true" class="shrink-0 font-mono text-xl text-[var(--color-mute)] transition-transform group-hover:translate-x-1 group-hover:text-[var(--color-amber)]">↗</span>
-            </a>
-          </li>
-        ))}
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Now building ====== -->
+  <section class="section" aria-labelledby="building-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-head__title">
+          <span class="eyebrow" data-reveal="track">Now building</span>
+          <h2 id="building-title" class="h2" data-reveal="up">Four products</h2>
+        </div>
+        <p class="section-head__copy" data-reveal="up" data-delay="120">
+          Each one designed, built and operated end to end.
+        </p>
+      </div>
+
+      <ul class="builds">
+        {
+          PRODUCT_LIST.map((p) => (
+            <li>
+              <a class="build" href={p.href} style={`--accent:${p.accent}`} data-reveal="up">
+                <div class="build__main">
+                  <span class="build__idx" aria-hidden="true">{p.n}</span>
+                  <div class="build__text">
+                    <span class="build__name">
+                      <span class="dot build__dot" aria-hidden="true" />
+                      {p.name}
+                    </span>
+                    <span class="build__desc">{p.row.desc}</span>
+                  </div>
+                </div>
+                <div class="build__side">
+                  <div class="build__metric">
+                    <span class="num build__num">{p.row.metric}</span>
+                    <span class="stat-label">{p.row.label}</span>
+                  </div>
+                  <span class="build__arrow" aria-hidden="true">→</span>
+                </div>
+              </a>
+            </li>
+          ))
+        }
       </ul>
-    </HudFrame>
+    </div>
+  </section>
 
-    <!-- Voice / Intercept - link out to the podcasts archive. -->
-    {featuredPodcast && (
-      <HudFrame
-        label="PODCASTS"
-        className="px-6 py-10 sm:px-10 sm:py-14"
-      >
-        {/* Inline SVG defs scoped to this card so the duotone preview works. */}
-        <svg
-          width="0"
-          height="0"
-          aria-hidden="true"
-          class="pointer-events-none absolute"
-          style="position:absolute; left:-9999px; top:-9999px;"
-        >
-          <defs>
-            <filter id="duotone-amber-about" color-interpolation-filters="sRGB">
-              <feColorMatrix
-                type="matrix"
-                values="0.2126 0.7152 0.0722 0 0
-                        0.2126 0.7152 0.0722 0 0
-                        0.2126 0.7152 0.0722 0 0
-                        0      0      0      1 0"
-              />
-              <feComponentTransfer>
-                <feFuncR type="table" tableValues="0.055 0.910" />
-                <feFuncG type="table" tableValues="0.067 0.604" />
-                <feFuncB type="table" tableValues="0.078 0.235" />
-              </feComponentTransfer>
-            </filter>
-          </defs>
-        </svg>
+  <!-- ====== Stack ====== -->
+  <section class="section" aria-labelledby="stack-title">
+    <div class="wrap stack">
+      <div class="section-head__title">
+        <span class="eyebrow" data-reveal="track">Stack</span>
+        <h2 id="stack-title" class="h2" data-reveal="up">Tools of choice</h2>
+      </div>
+      <ul class="stack__list" data-stagger="70">
+        {
+          stack.map((word, i) => (
+            <>
+              {i > 0 && (
+                <li class="stack__sep" aria-hidden="true" data-reveal="fade">
+                  /
+                </li>
+              )}
+              <li data-reveal="up">{word}</li>
+            </>
+          ))
+        }
+      </ul>
+      <p class="body stack__copy" data-reveal="up">
+        Alongside the languages, a deep working focus on large language models, the Model Context Protocol and the
+        engineering practices needed to ship AI features safely into production.
+      </p>
+    </div>
+  </section>
 
-        <a href="/podcasts" class="voice-card group">
-          <div class="voice-card-meta">
-            <div class="voice-eyebrow">
-              <span class="voice-onair" aria-hidden="true"></span>
-              <span>{String(podcastCount).padStart(2, "0")} {podcastCount === 1 ? "EPISODE" : "EPISODES"}</span>
+  <!-- ====== Stack Overflow ====== -->
+  <section class="section" aria-labelledby="so-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-head__title">
+          <span class="eyebrow" data-reveal="track">Stack Overflow · Since {so.memberSince}</span>
+          <h2 id="so-title" class="h2" data-reveal="up">Specialities, scored</h2>
+        </div>
+        <p class="section-head__copy" data-reveal="up" data-delay="120">
+          Answers on TypeScript, JavaScript and React that other engineers have voted into the site's reference
+          material.
+        </p>
+      </div>
+
+      <div class="so">
+        <div class="so__left">
+          <div class="so__rep" data-reveal="up">
+            <span class="num so__rep-num" data-count={so.reputation}>{fmt(so.reputation)}</span>
+            <span class="stat-label">Reputation</span>
+          </div>
+          <dl class="so__facts" data-stagger="90">
+            <div data-reveal="up">
+              <dt class="stat-label">Answers</dt>
+              <dd class="num so__fact">{so.answers}</dd>
             </div>
-            <h2 class="voice-title">
-              Podcast Appearances
-            </h2>
-            <p class="voice-desc">
-              Podcast appearances and live calls. Conversations on
-              engineering leadership, AI, testing and the messy business
-              of shipping software.
-            </p>
-            <div class="voice-latest">
-              <span class="voice-latest-k">LATEST</span>
-              <span class="voice-latest-v">
-                <span class="voice-show">{featuredPodcast.show.toUpperCase()}</span>
-                <span class="voice-sep" aria-hidden="true">·</span>
-                <span class="voice-name">{featuredPodcast.title}</span>
-              </span>
+            <div data-reveal="up">
+              <dt class="stat-label">Gold · Silver · Bronze</dt>
+              <dd class="num so__fact">{`${so.badges.gold} · ${so.badges.silver} · ${so.badges.bronze}`}</dd>
             </div>
-            <span class="voice-cta">
-              <span>OPEN PODCASTS</span>
-              <span class="voice-cta-arrow" aria-hidden="true">↳</span>
-            </span>
+          </dl>
+        </div>
+
+        <div class="so__right">
+          <div class="so__bars-head stat-label">
+            <span>Share of answer score</span>
+            <span>{fmt(totalScore)} total</span>
+          </div>
+          <ul class="so__bars" data-stagger="90">
+            {
+              tagBars.map((t) => (
+                <li class="so__bar">
+                  <div class="so__bar-row">
+                    <span>{t.tag}</span>
+                    <span class="so__bar-meta">
+                      {`${fmt(t.score)} · ${t.answers} ${t.answers === 1 ? "answer" : "answers"}`}
+                    </span>
+                  </div>
+                  <div class="so__track" aria-hidden="true">
+                    <div class:list={["so__fill", t.dim && "is-dim"]} style={`width:${t.width}`} data-reveal="line" />
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      <a class="so__top" href={so.topAnswer.url} target="_blank" rel="noopener" data-reveal="up">
+        <div class="so__top-main">
+          <span class="num so__top-score">+{so.topAnswer.score}</span>
+          <div class="so__top-text">
+            <span class="stat-label">Highest-scoring answer</span>
+            <span class="so__top-title">{so.topAnswer.title}</span>
+            <span class="so__top-meta">Answered {so.topAnswer.year} · {so.topAnswer.tags.join(" · ")}</span>
+          </div>
+        </div>
+        <span class="so__top-cta">Read the answer ↗</span>
+      </a>
+      <a class="text-link so__profile" href={so.url} target="_blank" rel="noopener me" data-reveal="up">
+        Full profile ↗
+      </a>
+    </div>
+  </section>
+
+  <!-- ====== Podcasts ====== -->
+  {
+    episode && (
+      <section class="section" aria-labelledby="pod-title">
+        <div class="wrap">
+          <div class="section-head">
+            <div class="section-head__title">
+              <span class="eyebrow" data-reveal="track">Podcasts</span>
+              <h2 id="pod-title" class="h2" data-reveal="up">On the mic</h2>
+            </div>
           </div>
 
-          <div class="voice-card-art">
-            <div class="voice-art">
+          <div class="pod">
+            <div class="pod__art" data-reveal="wipe">
               <img
-                src={featuredPodcast.artworkUrl}
-                alt=""
+                src={episode.artworkUrl}
+                alt={`${episode.show} artwork`}
+                width="640"
+                height="640"
                 loading="lazy"
                 decoding="async"
-                width="300"
-                height="300"
-                aria-hidden="true"
               />
-              <span class="voice-reticle voice-reticle-tl" aria-hidden="true"></span>
-              <span class="voice-reticle voice-reticle-tr" aria-hidden="true"></span>
-              <span class="voice-reticle voice-reticle-bl" aria-hidden="true"></span>
-              <span class="voice-reticle voice-reticle-br" aria-hidden="true"></span>
             </div>
-            <div class="voice-wave" aria-hidden="true">
-              {Array.from({ length: 24 }).map((_, i) => (
-                <span style={`--i:${i}`} />
-              ))}
+            <div class="pod__text">
+              <span class="stat-label pod__meta" data-reveal="up">{episodeMeta}</span>
+              <h3 class="pod__title" data-reveal="up">{episode.title}</h3>
+              <p class="body pod__copy" data-reveal="up">{episode.description}</p>
+              <div class="cta-row pod__ctas" data-stagger="90">
+                <Cta href={episode.spotifyUrl} external data-reveal="up">
+                  Listen on Spotify
+                </Cta>
+                {episode.showUrl && (
+                  <Cta href={episode.showUrl} external variant="secondary" data-reveal="up">
+                    The show ↗
+                  </Cta>
+                )}
+              </div>
+              <a class="text-link pod__all" href="/podcasts" data-reveal="up">
+                All episodes →
+              </a>
             </div>
           </div>
-        </a>
-      </HudFrame>
-    )}
+        </div>
+      </section>
+    )
+  }
 
-    <!-- FAQ - pure-prose Q&A, mirrored in FAQPage JSON-LD for AI overviews. -->
-    <HudFrame
-      label="FAQ"
-      className="px-6 py-10 sm:px-10 sm:py-14"
-    >
-      <h2 class="font-display text-2xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] sm:text-3xl">
-        Dan Barclay - FAQ
-      </h2>
-
-      <div class="my-8 h-px w-full bg-[var(--color-rule)]"></div>
-
-      <div class="flex flex-col gap-px bg-[var(--color-rule)]">
-        {faqs.map((f, i) => (
-          <article class="bg-[var(--color-void)] px-4 py-6 sm:px-6 sm:py-8">
-            <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-hud text-[var(--color-amber)]">
-              <span>{String(i + 1).padStart(2, "0")}</span>
-              <span class="h-px flex-1 bg-[var(--color-rule)]" aria-hidden="true" />
-            </div>
-            <h3 class="mt-3 font-display text-lg font-semibold text-[var(--color-text-bright)] sm:text-xl">
-              {f.q}
-            </h3>
-            <p class="mt-3 max-w-3xl font-display text-base leading-relaxed text-[var(--color-mute)]">
-              {f.a}
-            </p>
-          </article>
-        ))}
+  <!-- ====== Profiles ====== -->
+  <section class="section" aria-labelledby="profiles-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-head__title">
+          <span class="eyebrow" data-reveal="track">Profiles</span>
+          <h2 id="profiles-title" class="h2" data-reveal="up">Find me</h2>
+        </div>
+        <p class="section-head__copy" data-reveal="up" data-delay="120">
+          Every profile below belongs to the same Dan Barclay, engineering leader in London.
+        </p>
       </div>
-    </HudFrame>
 
-    <SubPageFooter />
-  </main>
+      <ul class="profiles" data-stagger="50">
+        {
+          profiles.map((pr) => (
+            <li data-reveal="up">
+              <a
+                class="profile"
+                href={pr.href}
+                style={pr.accent ? `--accent:${pr.accent}` : undefined}
+                {...(isExternal(pr.href) ? { target: "_blank", rel: pr.accent ? "noopener" : "noopener me" } : {})}
+              >
+                <span class="profile__label">
+                  {pr.accent && <span class="dot profile__dot" aria-hidden="true" />}
+                  {pr.label}
+                </span>
+                <span class="profile__value">
+                  {pr.value}
+                  <span aria-hidden="true">{pr.href.startsWith("/") ? " →" : " ↗"}</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ====== FAQ ======
+       Native exclusive accordion: <details name> keeps one item open without JS. -->
+  <section class="section faq" id="faq" aria-labelledby="faq-title">
+    <div class="wrap faq__inner">
+      <div class="faq__head section-head__title">
+        <span class="eyebrow" data-reveal="track">FAQ</span>
+        <h2 id="faq-title" class="h2" data-reveal="up">Questions</h2>
+      </div>
+      <div class="faq__list" data-reveal="up" data-delay="120">
+        {
+          faqs.map((f, i) => (
+            <details class="faq__item" name="faq" open={i === 0}>
+              <summary class="faq__q">
+                <span class="faq__q-text">
+                  <span class="faq__idx" aria-hidden="true">{pad(i + 1)}</span>
+                  <span>{f.q}</span>
+                </span>
+                <span class="faq__plus" aria-hidden="true">+</span>
+              </summary>
+              <div class="faq__a">
+                <p>{f.a}</p>
+                {f.q.startsWith("How can I contact") && (
+                  <Cta enquire size="sm">
+                    Work with me
+                  </Cta>
+                )}
+              </div>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
 </Base>
 
 <style>
-  /* ============================ PODCAST CARD ============================= */
-  .voice-card {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 24px;
+  /* ---- Intro ---- */
+  .intro {
     position: relative;
-    color: inherit;
-    text-decoration: none;
-  }
-  @media (min-width: 768px) {
-    .voice-card {
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-      gap: 36px;
-      align-items: center;
-    }
+    padding-top: calc(64px + 12vh);
+    /* Clip the glow sideways only. A vertical clip hides the facts' 56px reveal
+       offset at the bottom edge, so the observer never sees them arrive. */
+    overflow-x: clip;
   }
 
-  .voice-card-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    min-width: 0;
-  }
-
-  .voice-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-amber);
-  }
-  .voice-onair {
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    border-radius: 999px;
-    background: var(--color-amber);
-    box-shadow: 0 0 0 1px rgba(232, 154, 60, 0.35),
-      0 0 10px rgba(232, 154, 60, 0.55);
-    animation: voice-onair 1.6s ease-in-out infinite;
-  }
-  @keyframes voice-onair {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.45; transform: scale(0.78); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .voice-onair { animation: none; }
-  }
-
-  .voice-title {
-    font-family: var(--font-display);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: -0.01em;
-    color: var(--color-text-bright);
-    font-size: clamp(1.75rem, 5vw, 2.5rem);
-    line-height: 0.95;
-    margin: 0;
-    text-wrap: balance;
-    transition: color 200ms var(--ease-hud);
-  }
-  .voice-card:hover .voice-title,
-  .voice-card:focus-visible .voice-title {
-    color: var(--color-amber-glow);
-  }
-
-  .voice-desc {
-    margin: 0;
-    max-width: 38em;
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    line-height: 1.6;
-    color: var(--color-mute);
-  }
-
-  .voice-latest {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 12px 14px;
-    border: 1px solid var(--color-rule);
-    background: rgba(20, 24, 28, 0.4);
-    min-width: 0;
-  }
-  .voice-latest-k {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--color-mute);
-  }
-  .voice-latest-v {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    flex-wrap: wrap;
-    min-width: 0;
-  }
-  .voice-show {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-amber);
-  }
-  .voice-sep { color: var(--color-faint); }
-  .voice-name {
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    color: var(--color-text-bright);
-    line-height: 1.3;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .voice-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 4px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-amber);
-    transition: color 200ms var(--ease-hud);
-  }
-  .voice-card:hover .voice-cta,
-  .voice-card:focus-visible .voice-cta {
-    color: var(--color-amber-glow);
-  }
-  .voice-cta-arrow {
-    transition: transform 220ms var(--ease-hud);
-  }
-  .voice-card:hover .voice-cta-arrow,
-  .voice-card:focus-visible .voice-cta-arrow {
-    transform: translateX(4px);
-  }
-
-  /* Right column - artwork + small waveform. */
-  .voice-card-art {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    min-width: 0;
-  }
-  .voice-art {
-    position: relative;
-    aspect-ratio: 1 / 1;
-    width: 100%;
-    max-width: 280px;
-    margin: 0 auto;
-    border: 1px solid var(--color-rule);
-    overflow: hidden;
-    isolation: isolate;
-    box-shadow:
-      inset 0 0 0 1px rgba(232, 154, 60, 0.06),
-      0 0 28px -10px rgba(0, 0, 0, 0.7);
-  }
-  .voice-art img {
+  .intro__glow {
     position: absolute;
+    right: -20vw;
+    top: -10vw;
+    width: 70vw;
+    height: 70vw;
+    pointer-events: none;
+  }
+
+  .intro__glow > .glow {
     inset: 0;
+  }
+
+  .intro__inner {
+    position: relative;
+  }
+
+  .intro__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 56px clamp(40px, 6vw, 120px);
+  }
+
+  .intro__text {
+    flex: 1 1 560px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 28px;
+  }
+
+  .intro__eyebrow {
+    letter-spacing: 0.28em;
+    color: var(--color-muted);
+  }
+
+  .intro__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(44px, 7.4vw, 140px);
+    line-height: 0.98;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+
+  .intro__lead {
+    max-width: 620px;
+    font-size: clamp(18px, 1.5vw, 22px);
+    font-weight: 350;
+    line-height: 1.55;
+    color: var(--color-ink-2);
+    text-wrap: pretty;
+  }
+
+  .intro__body {
+    max-width: 620px;
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+
+  .intro__portrait {
+    position: relative;
+    flex: 0 1 420px;
+    min-width: 260px;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 2px;
+    background: #121418;
+  }
+
+  .intro__parallax {
+    position: absolute;
+    inset: -6% 0;
+  }
+
+  .intro__parallax img {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: url(#duotone-amber-about) contrast(1.06) brightness(0.92);
-    transform: scale(1.01);
-    transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1),
-      filter 400ms ease;
-  }
-  .voice-card:hover .voice-art img,
-  .voice-card:focus-visible .voice-art img {
-    transform: scale(1.04);
-    filter: url(#duotone-amber-about) contrast(1.12) brightness(1);
-  }
-  .voice-art::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    background-image: repeating-linear-gradient(
-      to bottom,
-      rgba(14, 17, 20, 0) 0,
-      rgba(14, 17, 20, 0) 2px,
-      rgba(14, 17, 20, 0.4) 3px,
-      rgba(14, 17, 20, 0) 4px
-    );
-    mix-blend-mode: multiply;
-    pointer-events: none;
-  }
-  .voice-art::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    background: radial-gradient(
-      ellipse at 50% 40%,
-      transparent 55%,
-      rgba(0, 0, 0, 0.55) 100%
-    );
+    object-position: 50% 30%;
+    filter: grayscale(1) contrast(1.1) brightness(0.85);
   }
 
-  .voice-reticle {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    z-index: 3;
-    pointer-events: none;
+  .facts {
+    max-width: 1440px;
+    margin-top: clamp(56px, 9vh, 96px);
   }
-  .voice-reticle::before,
-  .voice-reticle::after { content: ""; position: absolute; background: var(--color-amber); }
-  .voice-reticle::before { width: 100%; height: 1px; }
-  .voice-reticle::after  { width: 1px; height: 100%; }
-  .voice-reticle-tl { top: -1px; left: -1px; }
-  .voice-reticle-tl::before { top: 0; left: 0; }
-  .voice-reticle-tl::after  { top: 0; left: 0; }
-  .voice-reticle-tr { top: -1px; right: -1px; }
-  .voice-reticle-tr::before { top: 0; right: 0; }
-  .voice-reticle-tr::after  { top: 0; right: 0; }
-  .voice-reticle-bl { bottom: -1px; left: -1px; }
-  .voice-reticle-bl::before { bottom: 0; left: 0; }
-  .voice-reticle-bl::after  { bottom: 0; left: 0; }
-  .voice-reticle-br { bottom: -1px; right: -1px; }
-  .voice-reticle-br::before { bottom: 0; right: 0; }
-  .voice-reticle-br::after  { bottom: 0; right: 0; }
 
-  /* Tiny waveform under the artwork - bars idle continuously. */
-  .voice-wave {
+  .facts__rule {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.18);
+    transform-origin: 0 50%;
+  }
+
+  .facts__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: 28px 32px;
+    padding-top: 28px;
+  }
+
+  .facts__item {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .facts__item .stat-label {
+    font-size: 12px;
+  }
+
+  .facts__value {
+    font-stretch: 118%;
+    font-weight: 220;
+    font-size: clamp(26px, 2.6vw, 40px);
+    line-height: 1.05;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink);
+  }
+
+  /* ---- Now building ---- */
+  .builds {
+    border-top: 1px solid var(--color-line-3);
+  }
+
+  .build {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px 48px;
+    padding: 34px 4px;
+    border-bottom: 1px solid var(--color-line-2);
+    transition: background-color 0.5s var(--ease-out-expo);
+  }
+
+  .build:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .build__main {
+    flex: 1 1 440px;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+  }
+
+  .build__idx {
+    flex: none;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--color-label);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .build__text {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .build__name {
     display: flex;
     align-items: center;
-    gap: 3px;
-    height: 18px;
-    max-width: 280px;
-    margin: 0 auto;
+    gap: 14px;
+    font-family: var(--font-display);
+    font-size: clamp(20px, 2.2vw, 30px);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--color-ink-hi);
+  }
+
+  .build__dot {
+    width: 8px;
+    height: 8px;
+    box-shadow: 0 0 16px var(--accent);
+  }
+
+  .build__desc {
+    max-width: 620px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--color-muted);
+    text-wrap: pretty;
+  }
+
+  .build__side {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .build__metric {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .build__num {
+    font-weight: 220;
+    font-size: 32px;
+  }
+
+  .build__arrow {
+    font-size: 20px;
+    color: var(--color-ink-3);
+    transition:
+      transform 0.6s var(--ease-out-expo),
+      color 0.4s;
+  }
+
+  .build:hover .build__arrow {
+    transform: translateX(6px);
+    color: var(--color-ink-hi);
+  }
+
+  /* ---- Stack ---- */
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(36px, 5vw, 64px);
+  }
+
+  .stack__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 0;
+    font-stretch: 125%;
+    font-weight: 200;
+    font-size: clamp(34px, 5.6vw, 92px);
+    line-height: 1.12;
+    color: var(--color-ink);
+  }
+
+  .stack__sep {
+    padding: 0 0.32em;
+    color: var(--color-slash);
+  }
+
+  .stack__copy {
+    max-width: 640px;
+    text-wrap: pretty;
+  }
+
+  /* ---- Stack Overflow ---- */
+  .so {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 56px clamp(40px, 6vw, 120px);
+    padding-top: 40px;
+    border-top: 1px solid var(--color-line-3);
+  }
+
+  .so__left {
+    flex: 1 1 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .so__rep {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .so__rep-num {
+    font-stretch: 120%;
+    font-weight: 180;
+    font-size: clamp(64px, 8vw, 132px);
+    line-height: 0.95;
+  }
+
+  .so__facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 32px;
+  }
+
+  .so__facts > div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .so__fact {
+    font-weight: 220;
+    font-size: 32px;
+  }
+
+  .so__right {
+    flex: 1 1 480px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .so__bars-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    color: var(--color-label);
+  }
+
+  .so__bars {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .so__bar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .so__bar-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 15px;
+  }
+
+  .so__bar-meta {
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .so__track {
+    height: 2px;
+    background: var(--color-line-2);
+  }
+
+  .so__fill {
+    height: 100%;
+    background: var(--color-ink);
+    transform-origin: 0 50%;
+  }
+
+  .so__fill.is-dim {
+    background: var(--color-ink-3);
+  }
+
+  .so__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px 40px;
+    margin-top: 56px;
+    padding: 28px clamp(20px, 3vw, 36px);
+    border: 1px solid var(--color-line-4);
+    border-radius: 6px;
+    transition:
+      border-color 0.4s,
+      background-color 0.4s;
+  }
+
+  .so__top:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .so__top-main {
+    flex: 1 1 420px;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .so__top-score {
+    flex: none;
+    font-weight: 220;
+    font-size: 44px;
+  }
+
+  .so__top-text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .so__top-title {
+    font-size: 18px;
+    line-height: 1.4;
+    text-wrap: pretty;
+  }
+
+  .so__top-meta {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+
+  .so__top-cta {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .so__profile {
+    display: inline-flex;
+    margin-top: 28px;
+  }
+
+  /* ---- Podcasts ---- */
+  .pod {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 40px clamp(40px, 5vw, 80px);
+    padding-top: 40px;
+    border-top: 1px solid var(--color-line-3);
+  }
+
+  .pod__art {
+    position: relative;
+    flex: 0 0 auto;
+    width: min(240px, 100%);
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 4px;
+    background: #121418;
+  }
+
+  .pod__art img {
+    display: block;
     width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.05);
   }
-  .voice-wave span {
-    flex: 1 1 0;
-    height: 30%;
-    background: linear-gradient(
-      180deg,
-      var(--color-amber-glow) 0%,
-      var(--color-amber) 60%,
-      var(--color-amber-dim) 100%
-    );
-    transform-origin: center;
-    transform: scaleY(0.4);
-    opacity: 0.7;
-    animation: voice-wave 1800ms ease-in-out infinite;
-    animation-delay: calc(var(--i) * -83ms);
+
+  .pod__text {
+    flex: 1 1 460px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
   }
-  @keyframes voice-wave {
-    0%, 100% { transform: scaleY(0.25); opacity: 0.55; }
-    20%      { transform: scaleY(0.95); opacity: 1; }
-    45%      { transform: scaleY(0.35); opacity: 0.7; }
-    70%      { transform: scaleY(0.7);  opacity: 0.9; }
+
+  .pod__meta {
+    font-size: 12px;
+    line-height: 1.6;
   }
+
+  .pod__title {
+    margin: 0;
+    font-stretch: 115%;
+    font-weight: 300;
+    font-size: clamp(24px, 2.6vw, 38px);
+    line-height: 1.15;
+    color: var(--color-ink-hi);
+    text-wrap: balance;
+  }
+
+  .pod__copy {
+    max-width: 640px;
+    font-size: 16px;
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+
+  .pod__ctas {
+    margin-top: 6px;
+  }
+
+  .pod__all {
+    margin-top: 4px;
+  }
+
+  /* ---- Profiles ---- */
+  .profiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    column-gap: 32px;
+    border-top: 1px solid var(--color-line-3);
+  }
+
+  .profile {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px 20px 24px 0;
+    border-bottom: 1px solid var(--color-line-2);
+    transition: border-color 0.4s;
+  }
+
+  .profile:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .profile__label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+
+  .profile__dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .profile__value {
+    font-size: 17px;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
+    transition: color 0.4s;
+  }
+
+  .profile:hover .profile__value {
+    color: var(--color-ink-hi);
+  }
+
+  /* ---- FAQ ---- */
+  .faq {
+    padding-bottom: clamp(120px, 18vh, 200px);
+  }
+
+  .faq__inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px clamp(40px, 6vw, 120px);
+  }
+
+  .faq__head {
+    flex: 1 1 320px;
+    align-self: flex-start;
+  }
+
+  .faq__list {
+    flex: 2 1 560px;
+    min-width: 0;
+    border-top: 1px solid var(--color-line-3);
+    interpolate-size: allow-keywords;
+  }
+
+  .faq__item {
+    border-bottom: 1px solid var(--color-line-2);
+  }
+
+  .faq__q {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 26px 0;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .faq__q::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq__q-text {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    font-size: clamp(17px, 1.5vw, 21px);
+    font-weight: 450;
+    line-height: 1.4;
+    color: var(--color-ink);
+  }
+
+  .faq__idx {
+    flex: none;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--color-label);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .faq__plus {
+    flex: none;
+    font-size: 22px;
+    font-weight: 200;
+    line-height: 1;
+    transition: rotate 0.5s var(--ease-out-expo);
+  }
+
+  .faq__item[open] .faq__plus {
+    rotate: 45deg;
+  }
+
+  .faq__item::details-content {
+    block-size: 0;
+    overflow-y: clip;
+    transition:
+      block-size 0.6s var(--ease-out-expo),
+      content-visibility 0.6s allow-discrete;
+  }
+
+  .faq__item[open]::details-content {
+    block-size: auto;
+  }
+
+  .faq__a {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 0 0 28px 40px;
+  }
+
+  .faq__a p {
+    max-width: 720px;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--color-muted);
+    text-wrap: pretty;
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .voice-wave span { animation: none; }
+    .faq__plus,
+    .faq__item::details-content {
+      transition: none;
+    }
+  }
+
+  /* ---- Phones ---- */
+  @media (max-width: 639px) {
+    .intro {
+      padding-top: calc(64px + 8vh);
+    }
+
+    .intro__row {
+      gap: 40px;
+    }
+
+    .intro__text {
+      gap: 22px;
+    }
+
+    .intro__lead {
+      font-size: 18px;
+    }
+
+    .intro__portrait {
+      flex-basis: 100%;
+      min-width: 0;
+      max-width: 420px;
+    }
+
+    .facts__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px 20px;
+    }
+
+    .facts__value {
+      font-size: 24px;
+    }
+
+    .build {
+      padding: 26px 0;
+    }
+
+    .build__main {
+      flex-basis: 100%;
+      gap: 16px;
+    }
+
+    .build__idx {
+      display: none;
+    }
+
+    .build__side {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .build__metric {
+      flex-direction: row;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .build__num {
+      font-size: 26px;
+    }
+
+    .stack__sep {
+      padding: 0 0.24em;
+    }
+
+    .so__left {
+      gap: 32px;
+    }
+
+    .so__fact {
+      font-size: 26px;
+    }
+
+    .so__top-main {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .so__top-score {
+      font-size: 36px;
+    }
+
+    .pod__art {
+      width: min(180px, 100%);
+    }
+
+    .profile {
+      padding: 20px 0;
+    }
+
+    .faq__q {
+      padding: 22px 0;
+      gap: 16px;
+    }
+
+    .faq__q-text {
+      gap: 14px;
+    }
+
+    .faq__a {
+      padding-left: 0;
+    }
   }
 </style>

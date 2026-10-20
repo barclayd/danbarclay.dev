@@ -1,0 +1,68 @@
+---
+interface Props {
+  current?: string;
+}
+
+const { current } = Astro.props;
+
+const links = [
+  { key: "home", label: "Home", href: "/" },
+  { key: "about", label: "About", href: "/about" },
+  { key: "work", label: "Work", href: "/work" },
+  { key: "github", label: "GitHub", href: "https://github.com/barclayd", external: true },
+  { key: "x", label: "X", href: "https://x.com/danielbarclay", external: true },
+  { key: "linkedin", label: "LinkedIn", href: "https://www.linkedin.com/in/barclayd/", external: true },
+  { key: "email", label: "Email", href: "mailto:barclaysd@me.com" },
+].filter((l) => l.key !== current);
+---
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <span>© 2026 Dan Barclay · London</span>
+    <nav aria-label="Footer" class="footer__nav">
+      {
+        links.map((l) => (
+          <a href={l.href} target={l.external ? "_blank" : undefined} rel={l.external ? "noopener me" : undefined}>
+            {l.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--color-line-1);
+  }
+
+  .footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 32px;
+    padding-top: 28px;
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+
+  .footer__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+  }
+
+  .footer__nav a {
+    padding: 6px 0;
+    transition: color 0.3s;
+  }
+
+  .footer__nav a:hover {
+    color: var(--color-ink-hi);
+  }
+</style>

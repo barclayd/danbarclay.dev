@@ -1,13 +1,10 @@
 ---
 import Base from "../layouts/Base.astro";
-import HudFrame from "../components/HudFrame.astro";
-import SubPageHeader from "../components/SubPageHeader.astro";
-import SubPageFooter from "../components/SubPageFooter.astro";
-import CommitChart from "../components/CommitChart.tsx";
+import Cta from "../components/Cta.astro";
+import PageIntro from "../components/PageIntro.astro";
 import projectsRaw from "../data/projects.json";
+import { PRODUCT_LIST, buildProjects, shotFor } from "../lib/products";
 import type { Project } from "../lib/types";
-
-const projects = projectsRaw as Project[];
 
 const title = "Work - Dan Barclay · Selected projects shipped publicly";
 const description =
@@ -81,11 +78,8 @@ const workSchema = [
   },
 ];
 
-const fmtYearWindow = (created: string, pushed: string) => {
-  const a = created ? new Date(created).getUTCFullYear().toString() : "-";
-  const b = pushed ? new Date(pushed).getUTCFullYear().toString() : "-";
-  return a === b ? a : `${a}–${b.slice(2)}`;
-};
+const bands = PRODUCT_LIST.map((p) => ({ ...p, img: shotFor(p.key, "bg") }));
+const repos = buildProjects(projectsRaw as Project[]);
 ---
 
 <Base
@@ -93,646 +87,494 @@ const fmtYearWindow = (created: string, pushed: string) => {
   description={description}
   pageType="CollectionPage"
   jsonLd={workSchema}
+  active="work"
   breadcrumbs={[
     { name: "Home", url: "/" },
     { name: "Work" },
   ]}
 >
-  <main
-    class="mx-auto flex w-full max-w-[1300px] flex-col gap-12 py-10 sm:gap-16 sm:py-14 lg:gap-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
+  <!-- ====== Intro ====== -->
+  <PageIntro
+    eyebrow="Work"
+    title="Four products."
+    dim="All live."
+    lead="Built and operated end to end, alongside the libraries, backends and yearly traditions that support them."
+    tall
   >
-    <SubPageHeader current="work" />
+    <nav aria-label="On this page">
+      <ul class="intro__jumps" data-stagger="70" data-delay="1000">
+        {
+          bands.map((p) => (
+            <li data-reveal="up">
+              <a href={`#${p.key}`} style={`--accent:${p.accent}`}>
+                <span class="dot intro__dot" aria-hidden="true" />
+                {p.name}
+              </a>
+            </li>
+          ))
+        }
+        <li data-reveal="up"><a href="#repos">Repos ↓</a></li>
+      </ul>
+    </nav>
+  </PageIntro>
 
-    {/* Inline SVG filter chain used to duotone the captured OG frames into
-        the site's amber-on-void palette. Black maps to --color-void, white
-        maps to --color-amber. Defined once and referenced from CSS below. */}
-    <svg
-      width="0"
-      height="0"
-      aria-hidden="true"
-      class="pointer-events-none absolute"
-      style="position:absolute; left:-9999px; top:-9999px;"
-    >
-      <defs>
-        <filter id="duotone-amber" color-interpolation-filters="sRGB">
-          {/* 1. Desaturate to luminance. */}
-          <feColorMatrix
-            type="matrix"
-            values="0.2126 0.7152 0.0722 0 0
-                    0.2126 0.7152 0.0722 0 0
-                    0.2126 0.7152 0.0722 0 0
-                    0      0      0      1 0"
-          />
-          {/* 2. Remap black (0) -> void, white (1) -> amber. */}
-          <feComponentTransfer>
-            <feFuncR type="table" tableValues="0.055 0.910" />
-            <feFuncG type="table" tableValues="0.067 0.604" />
-            <feFuncB type="table" tableValues="0.078 0.235" />
-          </feComponentTransfer>
-        </filter>
-      </defs>
-    </svg>
-
-    <HudFrame
-      label="FEATURED WORK"
-      index="4 PRODUCTS"
-      className="px-6 py-10 sm:px-10 sm:py-14"
-    >
-      <div class="mb-8 flex flex-wrap items-baseline justify-between gap-4">
-        <div>
-          <div class="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
-            <span class="h-px w-6 bg-[var(--color-amber)]"></span>
-            <span>CURRENT FOCUS</span>
+  <!-- ====== Product bands ====== -->
+  {
+    bands.map((p, i) => (
+      <section id={p.key} class="band" style={`--accent:${p.accent}`} aria-labelledby={`band-${p.key}`}>
+        <div class="band__media" aria-hidden="true" data-reveal="scale" data-dur="2400">
+          <div class="band__parallax" data-parallax="0.08">
+            {p.img ? (
+              <img
+                src={p.img}
+                alt=""
+                width="1920"
+                height="1080"
+                loading={i ? "lazy" : "eager"}
+                decoding="async"
+                style={`object-position:${p.shotFocus}`}
+              />
+            ) : (
+              <div class="band__ph" />
+            )}
           </div>
-          <h2
-            class="font-display font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)]"
-            style="font-size: clamp(1.75rem, 4.5vw, 2.5rem);"
-          >
-            Flagship Products
+        </div>
+        <div class="band__scrim" aria-hidden="true" />
+        <div class:list={["band__glow", i % 2 ? "is-right" : "is-left"]} aria-hidden="true">
+          <div class="glow" style={`--glow-color:${p.accent}`} data-loop="breathe" />
+        </div>
+
+        <div class="wrap band__content">
+          <span class="eyebrow band__eyebrow" data-reveal="track">
+            <span class="dot" aria-hidden="true" />
+            {p.n} / 04 · {p.band.category}
+          </span>
+          <h2 id={`band-${p.key}`} class="band__name" style={`--chars:${p.name.length}`}>
+            <span class="line-mask"><span data-reveal="rise">{p.name}</span></span>
           </h2>
-          <p class="mt-3 max-w-xl font-mono text-[11px] uppercase tracking-hud text-[var(--color-mute)]">
-            FOUR PRODUCTS · BUILT AND SHIPPED
-          </p>
+          <div class="band__row">
+            <p class="band__copy" data-reveal="up" data-delay="120">{p.band.copy}</p>
+            <dl class="band__stats" data-stagger="90" data-delay="200">
+              {p.band.stats.map(([value, label]) => (
+                <div class="band__stat" data-reveal="up">
+                  <dt class="stat-label">{label}</dt>
+                  <dd class="num band__num">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+          <div class="cta-row" data-stagger="90" data-delay="260">
+            <Cta href={p.href} accent={p.accent} data-reveal="up">
+              Explore {p.name}
+            </Cta>
+            <Cta href={p.site} external variant="secondary" data-reveal="up">
+              {p.siteLabel} ↗
+            </Cta>
+          </div>
         </div>
-        <div class="flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
-          <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)] pulse-dot"></span>
-          <span>ALL LIVE</span>
+      </section>
+    ))
+  }
+
+  <!-- ====== Repositories ====== -->
+  <section id="repos" class="repos">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-head__title">
+          <span class="eyebrow" data-reveal="track">Repositories</span>
+          <h2 class="h2" data-reveal="up">Shipped in public</h2>
         </div>
-      </div>
-
-      <div class="grid grid-cols-1 gap-px bg-[var(--color-rule)] md:grid-cols-2">
-        {/* PROMPTLY */}
-        <a
-          href="/promptly"
-          class="og-card group relative flex flex-col gap-0 bg-[var(--color-void)] p-4 transition-colors hover:bg-[rgba(232,154,60,0.025)] sm:p-6"
-        >
-          <div class="mb-3 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-hud">
-            <div class="flex items-center gap-3 text-[var(--color-amber)]">
-              <span>PRODUCT · 01/04</span>
-              <span class="h-px w-4 bg-[var(--color-rule)]" aria-hidden="true"></span>
-              <span class="text-[var(--color-mute)]">PROMPTLY</span>
-            </div>
-            <span class="inline-flex items-center gap-1.5 text-[var(--color-mute)]">
-              <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)] pulse-dot"></span>
-              <span>LIVE</span>
-            </span>
-          </div>
-
-          <div class="og-frame relative aspect-[16/10] overflow-hidden border border-[var(--color-rule)] bg-[var(--color-void)]">
-            <img
-              src="https://images.keepfre.sh/app/images/og-image.png"
-              alt="Promptly - the CMS powering the next wave of AI development"
-              loading="lazy"
-              decoding="async"
-              width="1200"
-              height="630"
-              class="og-img absolute inset-0 h-full w-full object-cover"
-            />
-            {/* Scanlines + tint + vignette + scan-line sweep are CSS overlays. */}
-            {/* Corner reticles. */}
-            <span class="reticle reticle-tl" aria-hidden="true"></span>
-            <span class="reticle reticle-tr" aria-hidden="true"></span>
-            <span class="reticle reticle-bl" aria-hidden="true"></span>
-            <span class="reticle reticle-br" aria-hidden="true"></span>
-            {/* HUD overlay labels. */}
-            <span class="hud-tag hud-tag-tl">1200 × 630 · OG</span>
-            <span class="hud-tag hud-tag-br">PROMPTLYCMS.COM</span>
-          </div>
-
-          <div class="mt-4 flex items-baseline justify-between gap-3">
-            <div class="font-display text-xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] group-hover:text-[var(--color-amber-glow)] sm:text-2xl">
-              Promptly
-            </div>
-            <div class="font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
-              CMS · LLM
-            </div>
-          </div>
-          <p class="mt-2 text-sm leading-relaxed text-[var(--color-mute)]">
-            The CMS powering the next wave of AI development. Domain experts
-            author, version and ship prompts - without a code deploy.
-          </p>
-          <div class="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-rule)] pt-3 font-mono text-[10px] uppercase tracking-hud">
-            <span class="text-[var(--color-mute)]">B2B SAAS · 100+ COMPANIES</span>
-            <span class="inline-flex items-center gap-1.5 text-[var(--color-amber)] group-hover:text-[var(--color-amber-glow)]">
-              <span>READ MORE</span>
-              <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">↳</span>
-            </span>
-          </div>
-        </a>
-
-        {/* KEEPFRESH */}
-        <a
-          href="/keepfresh"
-          class="og-card group relative flex flex-col gap-0 bg-[var(--color-void)] p-4 transition-colors hover:bg-[rgba(232,154,60,0.025)] sm:p-6"
-        >
-          <div class="mb-3 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-hud">
-            <div class="flex items-center gap-3 text-[var(--color-amber)]">
-              <span>PRODUCT · 02/04</span>
-              <span class="h-px w-4 bg-[var(--color-rule)]" aria-hidden="true"></span>
-              <span class="text-[var(--color-mute)]">KEEPFRESH</span>
-            </div>
-            <span class="inline-flex items-center gap-1.5 text-[var(--color-mute)]">
-              <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)] pulse-dot"></span>
-              <span>LIVE</span>
-            </span>
-          </div>
-
-          <div class="og-frame relative aspect-[16/10] overflow-hidden border border-[var(--color-rule)] bg-[var(--color-void)]">
-            <img
-              src="https://images.keepfre.sh/app/icons/app-icon-background.webp"
-              alt="KeepFresh - iOS app working to end food waste"
-              loading="lazy"
-              decoding="async"
-              width="1024"
-              height="1024"
-              class="og-img absolute inset-0 h-full w-full object-cover"
-            />
-            <span class="reticle reticle-tl" aria-hidden="true"></span>
-            <span class="reticle reticle-tr" aria-hidden="true"></span>
-            <span class="reticle reticle-bl" aria-hidden="true"></span>
-            <span class="reticle reticle-br" aria-hidden="true"></span>
-            <span class="hud-tag hud-tag-tl">1024 × 1024 · ICON</span>
-            <span class="hud-tag hud-tag-br">KEEPFRE.SH</span>
-          </div>
-
-          <div class="mt-4 flex items-baseline justify-between gap-3">
-            <div class="font-display text-xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] group-hover:text-[var(--color-amber-glow)] sm:text-2xl">
-              KeepFresh
-            </div>
-            <div class="font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
-              iOS · LIFESTYLE
-            </div>
-          </div>
-          <p class="mt-2 text-sm leading-relaxed text-[var(--color-mute)]">
-            An iOS app working to end food waste for good. Households track
-            groceries and catch what's about to expire - used daily.
-          </p>
-          <div class="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-rule)] pt-3 font-mono text-[10px] uppercase tracking-hud">
-            <span class="text-[var(--color-mute)]">77,000+ DOWNLOADS</span>
-            <span class="inline-flex items-center gap-1.5 text-[var(--color-amber)] group-hover:text-[var(--color-amber-glow)]">
-              <span>READ MORE</span>
-              <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">↳</span>
-            </span>
-          </div>
-        </a>
-
-        {/* STITCH */}
-        <a
-          href="/stitch"
-          class="og-card group relative flex flex-col gap-0 bg-[var(--color-void)] p-4 transition-colors hover:bg-[rgba(232,154,60,0.025)] sm:p-6"
-        >
-          <div class="mb-3 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-hud">
-            <div class="flex items-center gap-3 text-[var(--color-amber)]">
-              <span>PRODUCT · 03/04</span>
-              <span class="h-px w-4 bg-[var(--color-rule)]" aria-hidden="true"></span>
-              <span class="text-[var(--color-mute)]">STITCH</span>
-            </div>
-            <span class="inline-flex items-center gap-1.5 text-[var(--color-mute)]">
-              <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)] pulse-dot"></span>
-              <span>LIVE</span>
-            </span>
-          </div>
-
-          <div class="og-frame relative aspect-[16/10] overflow-hidden border border-[var(--color-rule)] bg-[var(--color-void)]">
-            <img
-              src="https://stravastitch.com/images/stitch-social.png"
-              alt="Stitch - combine your Strava activities for free"
-              loading="lazy"
-              decoding="async"
-              width="1200"
-              height="630"
-              class="og-img absolute inset-0 h-full w-full object-cover"
-            />
-            <span class="reticle reticle-tl" aria-hidden="true"></span>
-            <span class="reticle reticle-tr" aria-hidden="true"></span>
-            <span class="reticle reticle-bl" aria-hidden="true"></span>
-            <span class="reticle reticle-br" aria-hidden="true"></span>
-            <span class="hud-tag hud-tag-tl">1200 × 630 · OG</span>
-            <span class="hud-tag hud-tag-br">STRAVASTITCH.COM</span>
-          </div>
-
-          <div class="mt-4 flex items-baseline justify-between gap-3">
-            <div class="font-display text-xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] group-hover:text-[var(--color-amber-glow)] sm:text-2xl">
-              Stitch
-            </div>
-            <div class="font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
-              WEB · STRAVA
-            </div>
-          </div>
-          <p class="mt-2 text-sm leading-relaxed text-[var(--color-mute)]">
-            Combine split Strava rides into one activity, for free. Preview the
-            route and gaps, download a GPX backup, then confirm the upload.
-          </p>
-          <div class="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-rule)] pt-3 font-mono text-[10px] uppercase tracking-hud">
-            <span class="text-[var(--color-mute)]">FREE · LAUNCHED SEP 2026</span>
-            <span class="inline-flex items-center gap-1.5 text-[var(--color-amber)] group-hover:text-[var(--color-amber-glow)]">
-              <span>READ MORE</span>
-              <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">↳</span>
-            </span>
-          </div>
-        </a>
-
-        {/* ON AIR */}
-        <a
-          href="/onair"
-          class="og-card group relative flex flex-col gap-0 bg-[var(--color-void)] p-4 transition-colors hover:bg-[rgba(232,154,60,0.025)] sm:p-6"
-        >
-          <div class="mb-3 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-hud">
-            <div class="flex items-center gap-3 text-[var(--color-amber)]">
-              <span>PRODUCT · 04/04</span>
-              <span class="h-px w-4 bg-[var(--color-rule)]" aria-hidden="true"></span>
-              <span class="text-[var(--color-mute)]">ON AIR</span>
-            </div>
-            <span class="inline-flex items-center gap-1.5 text-[var(--color-mute)]">
-              <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)] pulse-dot"></span>
-              <span>LIVE</span>
-            </span>
-          </div>
-
-          <div class="og-frame relative aspect-[16/10] overflow-hidden border border-[var(--color-rule)] bg-[var(--color-void)]">
-            <img
-              src="https://useonair.app/og.png"
-              alt="On Air - a MacBook with fn held down and a red glow rising up the screen as you speak"
-              loading="lazy"
-              decoding="async"
-              width="1200"
-              height="630"
-              class="og-img absolute inset-0 h-full w-full object-cover"
-            />
-            <span class="reticle reticle-tl" aria-hidden="true"></span>
-            <span class="reticle reticle-tr" aria-hidden="true"></span>
-            <span class="reticle reticle-bl" aria-hidden="true"></span>
-            <span class="reticle reticle-br" aria-hidden="true"></span>
-            <span class="hud-tag hud-tag-tl">1200 × 630 · OG</span>
-            <span class="hud-tag hud-tag-br">USEONAIR.APP</span>
-          </div>
-
-          <div class="mt-4 flex items-baseline justify-between gap-3">
-            <div class="font-display text-xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] group-hover:text-[var(--color-amber-glow)] sm:text-2xl">
-              On Air
-            </div>
-            <div class="font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
-              MACOS · DICTATION
-            </div>
-          </div>
-          <p class="mt-2 text-sm leading-relaxed text-[var(--color-mute)]">
-            A tasteful, free-forever Wispr Flow alternative, built for
-            developers ramping up AI-driven coding by voice. Hold fn, speak,
-            let go - the transcript lands wherever you were typing.
-          </p>
-          <div class="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-rule)] pt-3 font-mono text-[10px] uppercase tracking-hud">
-            <span class="text-[var(--color-mute)]">FREE FOREVER · LAUNCHED OCT 2026</span>
-            <span class="inline-flex items-center gap-1.5 text-[var(--color-amber)] group-hover:text-[var(--color-amber-glow)]">
-              <span>READ MORE</span>
-              <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">↳</span>
-            </span>
-          </div>
-        </a>
-      </div>
-    </HudFrame>
-
-    <HudFrame
-      label="SELECTED WORK"
-      className="px-6 py-10 sm:px-10 sm:py-14"
-    >
-      <div class="mb-8">
-        <div class="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
-          <span class="h-px w-6 bg-[var(--color-amber)]"></span>
-          <span>WORK · DAN BARCLAY</span>
-        </div>
-        <h1
-          class="font-display font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)]"
-          style="font-size: clamp(2.25rem, 7.5vw, 4rem);"
-        >
-          Selected<br />Work
-        </h1>
-        <p class="mt-6 max-w-2xl font-display text-base leading-relaxed text-[var(--color-mute)] sm:text-lg">
-          Side projects, products and experiments that <strong class="text-[var(--color-text-bright)]">Dan
-          Barclay</strong> has shipped publicly. Four are flagship products
-          built and operated end-to-end; the rest are supporting libraries,
-          backends and yearly traditions.
+        <p class="section-head__copy" data-reveal="up" data-delay="120">
+          Every repo behind the products, plus the yearly Advent of Code. Lines show weekly commits over each repo's lifetime.
         </p>
       </div>
 
-      <div class="my-8 h-px w-full bg-[var(--color-rule)]"></div>
-
-      <div class="flex flex-col gap-px bg-[var(--color-rule)]">
-        {projects.map((p) => {
-          const internalHref =
-            p.slug === "promptly" || p.slug === "promptly-package"
-              ? "/promptly"
-              : p.slug === "keepfresh-ios" || p.slug === "keepfresh-api"
-                ? "/keepfresh"
-                : p.slug === "strava-stitch"
-                  ? "/stitch"
-                  : p.slug === "on-air"
-                    ? "/onair"
-                    : null;
-          return (
-            <article class="bg-[var(--color-void)] px-4 py-6 sm:px-6 sm:py-8 group transition-colors hover:bg-[rgba(232,154,60,0.025)]">
-              <div class="grid gap-6 grid-cols-[minmax(0,1fr)] md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-start">
-                <div class="flex flex-col gap-3">
-                  <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-hud text-[var(--color-amber)]">
-                    <span>{String(p.index).padStart(2, "0")}</span>
-                    <span class="h-px flex-1 bg-[var(--color-rule)]" aria-hidden="true" />
-                    <span>{p.language ?? "-"}</span>
-                  </div>
-                  <a
-                    href={internalHref ?? p.url}
-                    target={internalHref ? undefined : "_blank"}
-                    rel={internalHref ? undefined : "noopener noreferrer"}
-                    class="font-display text-xl font-semibold uppercase tracking-tight text-[var(--color-text-bright)] hover:text-[var(--color-amber-glow)] sm:text-2xl"
-                  >
-                    {p.displayName}
-                  </a>
-                  <p class="max-w-md text-sm leading-relaxed text-[var(--color-mute)]">
-                    {p.description}
-                  </p>
-                  <div class="mt-2 grid grid-cols-3 gap-px border border-[var(--color-rule)] bg-[var(--color-rule)] max-w-md">
-                    <div class="bg-[var(--color-void)] px-3 py-2">
-                      <div class="font-mono text-[8px] uppercase tracking-hud text-[var(--color-mute)]">COMMITS</div>
-                      <div class="font-mono text-base text-[var(--color-text)]">{p.totalCommits}</div>
-                    </div>
-                    <div class="bg-[var(--color-void)] px-3 py-2">
-                      <div class="font-mono text-[8px] uppercase tracking-hud text-[var(--color-mute)]">WINDOW</div>
-                      <div class="font-mono text-base tabular-nums text-[var(--color-text)]">{fmtYearWindow(p.createdAt, p.pushedAt)}</div>
-                    </div>
-                    <div class="bg-[var(--color-void)] px-3 py-2">
-                      <div class="font-mono text-[8px] uppercase tracking-hud text-[var(--color-mute)]">AUTHOR</div>
-                      <div class="font-mono text-[11px] uppercase tabular-nums text-[var(--color-amber)]">BARCLAY</div>
-                    </div>
-                  </div>
-                  <div class="mt-2 flex flex-wrap gap-3">
-                    {internalHref && (
-                      <a
-                        href={internalHref}
-                        class="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-hud text-[var(--color-amber)] transition-colors hover:text-[var(--color-amber-glow)]"
-                      >
-                        <span>↳</span><span>READ MORE</span>
-                      </a>
-                    )}
-                    <a
-                      href={p.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-hud text-[var(--color-mute)] transition-colors hover:text-[var(--color-amber-glow)]"
-                    >
-                      <span class="transition-transform group-hover:translate-x-0.5">↗</span>
-                      <span>github.com/barclayd/{p.slug}</span>
-                    </a>
+      <ul class="repos__list">
+        {
+          repos.map((r) => (
+            <li>
+              <a
+                class="repo"
+                href={r.href}
+                style={`--accent:${r.accent}`}
+                data-reveal="up"
+                {...(r.external ? { target: "_blank", rel: "noopener" } : {})}
+              >
+                <div class="repo__main">
+                  <span class="repo__idx" aria-hidden="true">{r.idx}</span>
+                  <div class="repo__text">
+                    <span class="repo__name">
+                      <span class="dot" aria-hidden="true" />
+                      {r.name}
+                    </span>
+                    <span class="repo__desc">{r.desc}</span>
                   </div>
                 </div>
-                <div class="relative min-w-0">
-                  <div class="mb-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-hud text-[var(--color-mute)]">
-                    <span>COMMITS · WEEKLY</span>
-                    <span>BY DAN BARCLAY</span>
+                <dl class="repo__stats">
+                  <div>
+                    <dt class="stat-label">Commits</dt>
+                    <dd class="repo__num">{r.commits}</dd>
                   </div>
-                  <div class="relative border border-[var(--color-rule)] bg-[rgba(20,24,28,0.4)] p-3">
-                    <CommitChart client:visible weeks={p.weeks} height={150} />
+                  <div>
+                    <dt class="stat-label">Years</dt>
+                    <dd class="repo__num">{r.years}</dd>
                   </div>
+                  <div>
+                    <dt class="stat-label">Language</dt>
+                    <dd class="repo__num">{r.language}</dd>
+                  </div>
+                </dl>
+                <div class="repo__chart">
+                  <svg viewBox="0 0 300 60" preserveAspectRatio="none" aria-hidden="true">
+                    <path d={r.area} class="repo__area" />
+                    <path d={r.line} class="repo__line" pathLength="1" data-reveal="draw" />
+                  </svg>
+                  <span class="repo__arrow" aria-hidden="true">{r.external ? "↗" : "→"}</span>
+                  {r.external && <span class="sr-only-seo">(opens GitHub in a new tab)</span>}
                 </div>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-    </HudFrame>
-
-    <SubPageFooter />
-  </main>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
 </Base>
 
 <style>
-  /* === Captured-frame OG cards ============================================ */
-
-  .og-frame {
-    isolation: isolate;
-    box-shadow:
-      inset 0 0 0 1px rgba(232, 154, 60, 0.06),
-      0 0 24px -8px rgba(0, 0, 0, 0.6);
+  /* ---- Intro jump links (slotted into PageIntro) ---- */
+  .intro__jumps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
   }
 
-  /* True duotone via SVG filter chain (defined in markup above). */
-  .og-img {
-    filter: url(#duotone-amber) contrast(1.05) brightness(0.95);
-    transform: scale(1.01);
-    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
-      filter 400ms ease;
+  .intro__jumps a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 32px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+    transition: color 0.3s;
   }
 
-  .og-card:hover .og-img {
-    transform: scale(1.04);
-    filter: url(#duotone-amber) contrast(1.1) brightness(1.02);
+  .intro__jumps a:hover {
+    color: var(--color-ink-hi);
   }
 
-  /* Horizontal scanlines - Black Mirror CRT trace. */
-  .og-frame::before {
-    content: "";
+  .intro__dot {
+    width: 6px;
+    height: 6px;
+    box-shadow: 0 0 10px var(--accent);
+  }
+
+  /* ---- Bands ---- */
+  .band {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 92svh;
+    overflow: hidden;
+  }
+
+  .band__media {
     position: absolute;
     inset: 0;
-    background-image: repeating-linear-gradient(
-      to bottom,
-      rgba(14, 17, 20, 0) 0,
-      rgba(14, 17, 20, 0) 2px,
-      rgba(14, 17, 20, 0.35) 3px,
-      rgba(14, 17, 20, 0) 4px
-    );
-    mix-blend-mode: multiply;
-    pointer-events: none;
-    z-index: 2;
+    overflow: hidden;
   }
 
-  /* Vignette + amber tint wash. */
-  .og-frame::after {
-    content: "";
+  .band__parallax {
+    position: absolute;
+    top: -8%;
+    bottom: -8%;
+    left: 0;
+    right: 0;
+    opacity: 0.7;
+  }
+
+  .band__parallax img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .band__ph {
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(
-        ellipse at center,
-        transparent 55%,
-        rgba(14, 17, 20, 0.55) 100%
-      ),
-      linear-gradient(
-        180deg,
-        rgba(232, 154, 60, 0.05) 0%,
-        transparent 30%,
-        transparent 70%,
-        rgba(232, 154, 60, 0.04) 100%
-      );
-    pointer-events: none;
-    z-index: 3;
+      radial-gradient(70% 60% at 72% 30%, color-mix(in oklch, var(--accent) 34%, transparent), transparent 70%),
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 100% 12.5%,
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 6.25% 100%;
   }
 
-  /* === Corner reticles ==================================================== */
-  .reticle {
+  .band__scrim {
     position: absolute;
-    width: 14px;
-    height: 14px;
-    z-index: 5;
+    inset: 0;
     pointer-events: none;
-  }
-  .reticle-tl {
-    top: 6px;
-    left: 6px;
-    border-top: 1px solid var(--color-amber);
-    border-left: 1px solid var(--color-amber);
-  }
-  .reticle-tr {
-    top: 6px;
-    right: 6px;
-    border-top: 1px solid var(--color-amber);
-    border-right: 1px solid var(--color-amber);
-  }
-  .reticle-bl {
-    bottom: 6px;
-    left: 6px;
-    border-bottom: 1px solid var(--color-amber);
-    border-left: 1px solid var(--color-amber);
-  }
-  .reticle-br {
-    bottom: 6px;
-    right: 6px;
-    border-bottom: 1px solid var(--color-amber);
-    border-right: 1px solid var(--color-amber);
+    background: linear-gradient(0deg, #08090b 0%, rgba(8, 9, 11, 0.75) 32%, rgba(8, 9, 11, 0) 70%);
   }
 
-  /* === HUD overlay labels ================================================= */
-  .hud-tag {
+  .band__glow {
     position: absolute;
-    z-index: 6;
+    bottom: -45vw;
+    width: 85vw;
+    height: 85vw;
+    opacity: 0.24;
     pointer-events: none;
-    font-family: var(--font-mono);
-    font-size: 9px;
-    line-height: 1;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-amber);
-    background: rgba(14, 17, 20, 0.78);
-    border: 1px solid var(--color-rule-strong);
-    padding: 4px 6px;
-    white-space: nowrap;
-    backdrop-filter: blur(2px);
-  }
-  .hud-tag-tl {
-    top: 22px;
-    left: 22px;
-  }
-  .hud-tag-br {
-    bottom: 22px;
-    right: 22px;
   }
 
-  /* === Scan-line sweep on hover =========================================== */
-  .og-frame .scan-sweep,
-  .og-card .og-frame::after {
-    /* placeholder for stack order - scan sweep uses a dedicated layer below */
+  .band__glow.is-left {
+    left: -25vw;
   }
 
-  .og-card .og-frame {
+  .band__glow.is-right {
+    right: -25vw;
+  }
+
+  .band__glow > .glow {
+    inset: 0;
+  }
+
+  .band__content {
     position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-bottom: clamp(48px, 9vh, 96px);
   }
 
-  /* Animated horizontal scan sweep - fires on hover. */
-  .og-card::before {
-    content: none;
+  .band__eyebrow {
+    gap: 12px;
+    color: var(--color-ink-3);
   }
 
-  .og-card .og-frame > .og-img + .reticle-tl::before,
-  .og-card .og-frame > .og-img + .reticle-tl::after {
-    content: none;
+  /* Fitted to the line so long names never overflow a phone. */
+  .band__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: min(clamp(40px, 9vw, 168px), calc((100vw - 2 * clamp(20px, 4vw, 64px)) / var(--chars) / 0.96));
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    white-space: nowrap;
   }
 
-  /* Dedicated sweep element via ::before on the frame itself, layered above
-     scanlines but below reticles/tags. */
-  .og-frame > .og-img {
-    z-index: 1;
+  .band__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 28px 48px;
   }
 
-  .og-card:hover .og-frame {
-    box-shadow:
-      inset 0 0 0 1px rgba(232, 154, 60, 0.18),
-      0 0 32px -6px rgba(232, 154, 60, 0.18),
-      0 0 24px -8px rgba(0, 0, 0, 0.6);
+  .band__copy {
+    max-width: 520px;
+    font-size: clamp(16px, 1.3vw, 19px);
+    line-height: 1.6;
+    color: var(--color-ink-2);
+    text-wrap: pretty;
   }
 
-  /* Sweep band - implemented as an extra positioned element on hover via
-     :hover with a pseudo-element layered above the image, below the
-     scanlines. We use the og-card hover state to trigger a translateY
-     animation on a dedicated band. */
-  .og-card:hover .og-frame::before {
-    background-image:
-      repeating-linear-gradient(
-        to bottom,
-        rgba(14, 17, 20, 0) 0,
-        rgba(14, 17, 20, 0) 2px,
-        rgba(14, 17, 20, 0.25) 3px,
-        rgba(14, 17, 20, 0) 4px
-      ),
-      linear-gradient(
-        to bottom,
-        transparent 0%,
-        transparent 45%,
-        rgba(232, 154, 60, 0.16) 49%,
-        rgba(232, 154, 60, 0.28) 50%,
-        rgba(232, 154, 60, 0.16) 51%,
-        transparent 55%,
-        transparent 100%
-      );
-    background-size: 100% 100%, 100% 200%;
-    background-repeat: repeat, no-repeat;
-    background-position: 0 0, 0 -100%;
-    animation: og-scan 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  .band__stats {
+    display: flex;
+    gap: 40px;
   }
 
-  @keyframes og-scan {
-    0% {
-      background-position: 0 0, 0 -100%;
+  .band__stat {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .band__num {
+    font-size: clamp(34px, 3.4vw, 52px);
+  }
+
+  @media (max-width: 639px) {
+    .band__content {
+      gap: 22px;
+      padding-bottom: max(40px, env(safe-area-inset-bottom));
     }
-    100% {
-      background-position: 0 0, 0 100%;
-    }
-  }
 
-  /* === Pulse dot ========================================================== */
-  .pulse-dot {
-    animation: pulse-dot 1.8s ease-in-out infinite;
-    box-shadow: 0 0 6px var(--color-amber);
-  }
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.45; transform: scale(0.85); }
-  }
+    .band__copy {
+      font-size: 16px;
+    }
 
-  /* === Reduced motion ===================================================== */
-  @media (prefers-reduced-motion: reduce) {
-    .og-img,
-    .og-card:hover .og-img {
-      transition: none;
-      transform: none;
-    }
-    .og-card:hover .og-frame::before {
-      animation: none;
-      background-image: repeating-linear-gradient(
-        to bottom,
-        rgba(14, 17, 20, 0) 0,
-        rgba(14, 17, 20, 0) 2px,
-        rgba(14, 17, 20, 0.35) 3px,
-        rgba(14, 17, 20, 0) 4px
-      );
-    }
-    .pulse-dot {
-      animation: none;
+    .band__stats {
+      width: 100%;
+      gap: 32px;
     }
   }
 
-  /* === Small-screen polish ================================================ */
-  @media (max-width: 640px) {
-    .hud-tag {
-      font-size: 8px;
-      padding: 3px 5px;
+  /* ---- Repositories ---- */
+  .repos {
+    padding: clamp(120px, 20vh, 240px) 0 clamp(120px, 18vh, 200px);
+  }
+
+  .repos__list {
+    border-top: 1px solid var(--color-line-3);
+  }
+
+  .repo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px 40px;
+    padding: 30px 4px;
+    border-bottom: 1px solid var(--color-line-2);
+    transition: background-color 0.4s;
+  }
+
+  .repo:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .repo__main {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    flex: 1 1 380px;
+    min-width: 0;
+  }
+
+  .repo__idx {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--color-label);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .repo__text {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .repo__name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-display);
+    font-size: clamp(15px, 1.5vw, 20px);
+    letter-spacing: 0.04em;
+    overflow-wrap: anywhere;
+  }
+
+  .repo__desc {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--color-muted);
+    text-wrap: pretty;
+  }
+
+  .repo__stats {
+    display: flex;
+    gap: 36px;
+    flex: 0 0 auto;
+  }
+
+  .repo__stats > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .repo__stats .stat-label {
+    color: var(--color-label);
+  }
+
+  .repo__num {
+    font-stretch: 115%;
+    font-weight: 250;
+    font-size: 26px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .repo__chart {
+    flex: 1 1 220px;
+    min-width: 180px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .repo__chart svg {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .repo__area {
+    fill: var(--accent);
+    fill-opacity: 0.1;
+  }
+
+  .repo__line {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .repo__arrow {
+    flex: none;
+    font-size: 18px;
+    color: var(--color-ink-3);
+    transition: transform 0.4s var(--ease-out-expo);
+  }
+
+  .repo:hover .repo__arrow {
+    transform: translate3d(4px, 0, 0);
+  }
+
+  /* Phones: the index drops out and the stats share the row evenly. */
+  @media (max-width: 639px) {
+    .repo {
+      gap: 22px;
+      padding: 26px 0;
     }
-    .hud-tag-tl { top: 18px; left: 18px; }
-    .hud-tag-br { bottom: 18px; right: 18px; }
+
+    .repo__main {
+      flex-basis: 100%;
+    }
+
+    .repo__idx {
+      display: none;
+    }
+
+    .repo__stats {
+      flex: 1 1 100%;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .repo__stats .stat-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+    }
+
+    .repo__num {
+      font-size: 22px;
+    }
+
+    .repo__chart {
+      flex-basis: 100%;
+      height: 48px;
+    }
   }
 </style>

@@ -1,138 +1,441 @@
 @import "tailwindcss";
-@import "@fontsource/chakra-petch/400.css";
-@import "@fontsource/chakra-petch/500.css";
-@import "@fontsource/chakra-petch/600.css";
-@import "@fontsource/jetbrains-mono/400.css";
-@import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/michroma/latin-400.css";
+@import "@fontsource-variable/archivo/wdth.css";
 
-@theme {
+@theme static {
   /* Surfaces */
-  --color-void: #0e1114;
-  --color-panel: #14181c;
-  --color-rule: #1f2429;
-  --color-rule-strong: #2b3138;
+  --color-bg: #08090b;
+  --color-bg-raised: #0c0d10;
+  --color-field: #121418;
+  --color-btn: #111214;
+  --color-btn-hover: #17191c;
 
   /* Ink */
-  --color-text: #d6d8da;
-  --color-text-bright: #ecedee;
-  --color-mute: #6a6d72;
-  --color-faint: #2e343a;
+  --color-ink: #f2f2ef;
+  --color-ink-hi: #ffffff;
+  --color-ink-2: #e2e3e5;
+  --color-ink-2b: #d4d6d9;
+  --color-ink-3: #c4c7cc;
+  --color-muted: #a4a8ae;
+  --color-label: #8b8f96;
+  --color-placeholder: #6f737a;
+  --color-slash: #4a4e55;
 
-  /* Accents */
-  --color-amber: #e89a3c;
-  --color-amber-dim: #8c5e24;
-  --color-amber-glow: #ffb44c;
-  --color-amber-faint: #4a3920;
+  /* Lines */
+  --color-line-1: rgba(255, 255, 255, 0.08);
+  --color-line-2: rgba(255, 255, 255, 0.1);
+  --color-line-3: rgba(255, 255, 255, 0.12);
+  --color-line-4: rgba(255, 255, 255, 0.14);
 
-  /* Heatmap intensities */
-  --color-cell-0: #181c20;
-  --color-cell-1: #4a3920;
-  --color-cell-2: #8c5e24;
-  --color-cell-3: #c0822f;
-  --color-cell-4: #ffb44c;
+  /* Product accents - nothing else on the site uses colour */
+  --color-promptly: oklch(0.72 0.16 285);
+  --color-keepfresh: oklch(0.72 0.16 150);
+  --color-stitch: oklch(0.72 0.16 70);
+  --color-onair: oklch(0.72 0.16 25);
+  --color-cta-glow: oklch(0.74 0.09 70);
 
-  /* Typography */
-  --font-display: "Chakra Petch", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* Typography. --font-display is overridden from Base when a licensed
+     Hyperspace Race file is present in public/fonts/hyperspace-race/. */
+  --font-display: Michroma, sans-serif;
+  --font-body: "Archivo Variable", Archivo, system-ui, sans-serif;
 
-  /* Easing */
-  --ease-hud: cubic-bezier(0.2, 0.7, 0.1, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ====== Base reset ====== */
-* {
-  border-color: var(--color-rule);
-}
-
+/* ====== Base ====== */
 html {
-  background: var(--color-void);
-  color: var(--color-text);
-  font-family: var(--font-display);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
   font-weight: 400;
-  font-feature-settings: "ss01", "ss02", "tnum";
   -webkit-font-smoothing: antialiased;
-  text-rendering: geometricPrecision;
-  scrollbar-color: var(--color-rule-strong) var(--color-void);
-  scrollbar-width: thin;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+  scrollbar-color: rgba(255, 255, 255, 0.16) var(--color-bg);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  /* Clip horizontal overflow on the root so nothing - overlays, marquees,
-     iframe mirrors - can ever introduce a horizontal scrollbar on mobile.
-     `clip` is preferable to `hidden` because it does not establish a new
-     scroll container, so `position: sticky` etc. still work normally. */
+  /* clip, not hidden: the products sequence relies on position: sticky. */
   overflow-x: clip;
 }
 
 body {
-  background: var(--color-void);
-  color: var(--color-text);
+  background: var(--color-bg);
+  color: var(--color-ink);
   min-height: 100dvh;
-  position: relative;
   overflow-x: clip;
 }
 
+/* The mobile menu and the enquiry dialog lock the page behind them. */
+html.menu-open,
+html.enquiry-open {
+  overflow: hidden;
+}
+
 ::selection {
-  background: var(--color-amber);
-  color: var(--color-void);
+  background: var(--color-ink);
+  color: var(--color-bg);
 }
 
-/* ====== Global atmospheric overlays ====== */
-/* Scanline texture - very subtle 2px repeating gradient over everything. */
-body::before {
-  content: "";
+::placeholder {
+  color: var(--color-placeholder);
+  opacity: 1;
+}
+
+:focus-visible {
+  outline: 1px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ====== Layout ====== */
+.wrap {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 64px);
+}
+
+.section {
+  padding-top: clamp(120px, 20vh, 240px);
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px 48px;
+  margin-bottom: clamp(40px, 5vw, 72px);
+}
+
+.section-head__title {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section-head__copy {
+  max-width: 420px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+/* ====== Type ====== */
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(30px, 4.4vw, 64px);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-label);
+}
+
+.lead {
+  font-size: clamp(16px, 1.3vw, 19px);
+  line-height: 1.6;
+  color: var(--color-ink-3);
+}
+
+.body {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.num {
+  font-stretch: 118%;
+  font-weight: 200;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* A clipped line for `rise` reveals. Padding stops descenders being cut. */
+.line-mask {
+  display: block;
+  overflow: hidden;
+  padding: 0.08em 0 0.04em;
+}
+
+.line-mask > span {
+  display: block;
+}
+
+.dot {
+  display: inline-block;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent, var(--color-ink));
+  box-shadow: 0 0 14px var(--accent, var(--color-ink));
+}
+
+.text-link {
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(242, 242, 239, 0.35);
+  transition: border-color 0.3s;
+}
+
+.text-link:hover {
+  border-color: var(--color-ink);
+}
+
+/* ====== Background glow ======
+   Opacity lives on the element; the breathe loop animates scale only. */
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, var(--glow-color, var(--color-ink)) 0%, rgba(8, 9, 11, 0) 60%);
+}
+
+/* ====== CTA ======
+   Primary is modelled on the glow button; the glow layer is rendered by Cta.astro. */
+.cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  /* A fixed min-width (not min(260px, 100%)) so shrink-to-fit rows count it
+     when sizing; a percentage min-width is ignored there and the row wraps. */
+  min-width: 260px;
+  max-width: 100%;
+  padding: 0 36px;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--color-btn);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  isolation: isolate;
+  cursor: pointer;
+  transition:
+    background-color 0.4s,
+    border-color 0.4s,
+    color 0.4s,
+    opacity 0.3s;
+}
+
+.cta:hover {
+  background: var(--color-btn-hover);
+  border-color: rgba(255, 255, 255, 0.26);
+  color: var(--color-ink-hi);
+}
+
+.cta__glow {
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+}
+
+.cta__glow > span {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.cta__glow > span:first-child {
+  background: radial-gradient(110% 170% at 0% 100%, var(--glow-fill) 0%, rgba(17, 18, 20, 0) 58%);
+}
+
+.cta__glow > span:last-child {
+  border: 1px solid var(--glow-edge);
+  -webkit-mask: radial-gradient(65% 150% at 0% 100%, #000 0%, rgba(0, 0, 0, 0) 72%);
+  mask: radial-gradient(65% 150% at 0% 100%, #000 0%, rgba(0, 0, 0, 0) 72%);
+}
+
+.cta__label {
+  position: relative;
+}
+
+.cta--secondary {
+  background: rgba(17, 18, 20, 0.35);
+  border-color: rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.cta--secondary:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.cta--sm {
+  height: 38px;
+  min-width: 0;
+  padding: 0 18px;
+  font-size: 11px;
+}
+
+.cta[aria-disabled="true"] {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* On phones, CTAs in a row share the width rather than overflow. */
+@media (max-width: 560px) {
+  .cta-row > .cta {
+    flex: 1 1 100%;
+  }
+}
+
+/* On the narrowest phones a long label wraps instead of clipping. */
+@media (max-width: 400px) {
+  .cta {
+    height: auto;
+    min-height: 56px;
+    padding-block: 14px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.35;
+  }
+
+  .cta--sm {
+    min-height: 38px;
+    padding-block: 8px;
+  }
+}
+
+/* ====== Grain ====== */
+.grain {
   position: fixed;
   inset: 0;
+  z-index: 95;
   pointer-events: none;
-  z-index: 60;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.012) 0px,
-    rgba(255, 255, 255, 0.012) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  mix-blend-mode: overlay;
+  opacity: 0.05;
+  background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22 stitchTiles=%22stitch%22/%3E%3CfeColorMatrix values=%220 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22/%3E%3C/svg%3E');
 }
 
-/* Vignette - focuses the eye, very subtle. */
-body::after {
-  content: "";
+/* ====== Page curtain ======
+   Static so it covers the first paint. It only shows when JS is running
+   (html.js, set inline in <head>) and motion is allowed. The lift runs on
+   CSS keyframes; motion.ts re-lifts on bfcache restore and lowers it on
+   internal navigation. */
+.curtain {
+  display: none;
   position: fixed;
   inset: 0;
+  z-index: 2147483000;
+  background: var(--color-bg);
   pointer-events: none;
-  z-index: 59;
-  background: radial-gradient(
-    ellipse at center,
-    transparent 50%,
-    rgba(0, 0, 0, 0.4) 100%
-  );
 }
 
-/* Touch-device overlays: dial back the screen texture for clarity on small screens. */
-@media (pointer: coarse) {
-  body::before {
-    background-image: repeating-linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.008) 0px,
-      rgba(255, 255, 255, 0.008) 1px,
-      transparent 1px,
-      transparent 3px
-    );
+.curtain__line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--color-ink);
+  box-shadow: 0 0 28px 3px rgba(242, 242, 239, 0.5);
+}
+
+html.js .curtain {
+  display: block;
+  animation: curtain-lift 1200ms var(--ease-out-expo) 480ms both;
+}
+
+html.js .curtain__line {
+  animation: curtain-line 1000ms var(--ease-out-expo) both;
+}
+
+@keyframes curtain-lift {
+  from {
+    clip-path: inset(0 0 0 0);
   }
-  body::after {
-    background: radial-gradient(
-      ellipse at center,
-      transparent 60%,
-      rgba(0, 0, 0, 0.3) 100%
-    );
+  to {
+    clip-path: inset(0 0 100% 0);
   }
 }
 
+@keyframes curtain-line {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  55% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
 
-/* ====== SEO / accessibility helpers ====== */
-/* Visually hidden but present in source for crawlers and screen readers.
-   Use sparingly - only for canonical entity statements that LLM crawlers
-   extract as factoid summaries. */
+/* Reveal targets stay hidden until motion.ts has paused them on their first
+   frame, so nothing flashes in and then snaps back. A timer in <head> adds
+   .motion-ready anyway if the script never runs. */
+html.js:not(.motion-ready) [data-reveal] {
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  html.js .curtain {
+    display: none;
+  }
+
+  html.js:not(.motion-ready) [data-reveal] {
+    visibility: visible;
+  }
+}
+
+/* ====== SEO helper ======
+   Visually hidden but present in the DOM for crawlers and screen readers. */
 .sr-only-seo {
   position: absolute;
   width: 1px;
@@ -145,487 +448,23 @@ body::after {
   border: 0;
 }
 
-/* ====== HUD utilities ====== */
-.font-display {
-  font-family: var(--font-display);
-}
-.font-mono {
-  font-family: var(--font-mono);
-}
-
-.tracking-hud {
-  letter-spacing: 0.18em;
-}
-
-.tracking-hud-tight {
-  letter-spacing: 0.08em;
-}
-
-/* Checkered border edges - used on avatar frame and tagged panels. */
-.checker-edge {
-  --c: var(--color-rule-strong);
-  background-image:
-    linear-gradient(45deg, var(--c) 25%, transparent 25%),
-    linear-gradient(-45deg, var(--c) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, var(--c) 75%),
-    linear-gradient(-45deg, transparent 75%, var(--c) 75%);
-  background-size: 4px 4px;
-  background-position:
-    0 0,
-    0 2px,
-    2px -2px,
-    -2px 0px;
-}
-
-/* Pixelated mask gradient used for ticker/edge fade. */
-.fade-mask-r {
-  mask-image: linear-gradient(to right, black 80%, transparent 100%);
-}
-
-/* ====== Scroll progress bar ====== */
-.scroll-progress {
+/* ====== Skip link ====== */
+.skip-link {
   position: fixed;
-  inset-inline: 0;
-  top: 0;
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    var(--color-amber-dim) 0%,
-    var(--color-amber) 50%,
-    var(--color-amber-glow) 100%
-  );
-  box-shadow: 0 0 8px rgba(232, 154, 60, 0.45);
-  transform-origin: 0 50%;
-  transform: scaleX(0);
-  z-index: 80;
-  pointer-events: none;
-  transition: transform 80ms linear;
+  top: 12px;
+  left: 12px;
+  z-index: 2147483001;
+  padding: 12px 16px;
+  border-radius: 2px;
+  background: var(--color-ink);
+  color: var(--color-bg);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transform: translate3d(0, -200%, 0);
 }
 
-/* ====== Cursor radial glow (desktop, fine pointer only) ====== */
-.cursor-glow {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 480px;
-  height: 480px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 50;
-  mix-blend-mode: screen;
-  opacity: 0;
-  transition: opacity 240ms var(--ease-hud);
-  background: radial-gradient(
-    circle,
-    rgba(232, 154, 60, 0.08) 0%,
-    rgba(232, 154, 60, 0.04) 28%,
-    rgba(232, 154, 60, 0) 65%
-  );
-  filter: blur(2px);
-  will-change: transform;
-}
-@media (pointer: coarse) {
-  .cursor-glow {
-    display: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .cursor-glow {
-    display: none;
-  }
-}
-
-/* ====== Number-flow tuning ====== */
-number-flow-react,
-number-flow {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
-  --number-flow-mask-height: 0.18em;
-  --number-flow-mask-width: 0.4em;
-}
-
-/* ====== Boot scanline ====== */
-@keyframes scanline-sweep {
-  0% {
-    transform: translateY(-2px);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100dvh);
-    opacity: 0;
-  }
-}
-
-.boot-scanline {
-  position: fixed;
-  inset-inline: 0;
-  top: 0;
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    var(--color-amber) 20%,
-    var(--color-amber-glow) 50%,
-    var(--color-amber) 80%,
-    transparent 100%
-  );
-  box-shadow: 0 0 14px 1px var(--color-amber);
-  z-index: 100;
-  pointer-events: none;
-  animation: scanline-sweep 900ms var(--ease-hud) forwards;
-}
-
-@keyframes boot-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.boot-stagger > * {
-  opacity: 0;
-  animation: boot-fade-in 600ms var(--ease-hud) forwards;
-}
-
-.boot-stagger > *:nth-child(1) {
-  animation-delay: 180ms;
-}
-.boot-stagger > *:nth-child(2) {
-  animation-delay: 260ms;
-}
-.boot-stagger > *:nth-child(3) {
-  animation-delay: 340ms;
-}
-.boot-stagger > *:nth-child(4) {
-  animation-delay: 420ms;
-}
-.boot-stagger > *:nth-child(5) {
-  animation-delay: 500ms;
-}
-.boot-stagger > *:nth-child(6) {
-  animation-delay: 580ms;
-}
-
-/* ====== Scroll-driven reveals (CSS scroll-driven animations) ====== */
-@keyframes panel-reveal {
-  0% {
-    opacity: 0;
-    transform: translateY(28px);
-    filter: blur(6px) saturate(0.6);
-  }
-  60% {
-    filter: blur(0) saturate(1);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0) saturate(1);
-  }
-}
-
-@supports (animation-timeline: view()) {
-  .panel-reveal {
-    animation: panel-reveal linear both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 30%;
-  }
-}
-
-/* Rule line - draws left to right as it enters view. */
-@keyframes rule-draw {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-@supports (animation-timeline: view()) {
-  .rule-draw {
-    transform-origin: left center;
-    animation: rule-draw linear both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 20%;
-  }
-}
-
-/* Cascaded stagger for children of a container (stat blocks, project rows, etc.). */
-@keyframes cascade-up {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-    filter: blur(3px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-}
-@supports (animation-timeline: view()) {
-  .cascade-children > * {
-    animation: cascade-up linear both;
-    animation-timeline: view();
-  }
-  .cascade-children > *:nth-child(1) {
-    animation-range: entry 0% cover 14%;
-  }
-  .cascade-children > *:nth-child(2) {
-    animation-range: entry 3% cover 17%;
-  }
-  .cascade-children > *:nth-child(3) {
-    animation-range: entry 6% cover 20%;
-  }
-  .cascade-children > *:nth-child(4) {
-    animation-range: entry 9% cover 23%;
-  }
-  .cascade-children > *:nth-child(5) {
-    animation-range: entry 12% cover 26%;
-  }
-  .cascade-children > *:nth-child(6) {
-    animation-range: entry 15% cover 29%;
-  }
-  .cascade-children > *:nth-child(7) {
-    animation-range: entry 18% cover 32%;
-  }
-  .cascade-children > *:nth-child(8) {
-    animation-range: entry 21% cover 35%;
-  }
-}
-
-/* Panel scan-sweep - a thin amber light sweeps across each hud-frame as it
-   enters view, suggesting the panel is being decoded line-by-line.
-   Uses background-position so the stripe stays clipped to the element box
-   without affecting the parent's overflow (preserves floating labels). */
-@keyframes panel-sweep {
-  0% {
-    background-position: 100% 0;
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  85% {
-    opacity: 1;
-  }
-  100% {
-    background-position: 0% 0;
-    opacity: 0;
-  }
-}
-@supports (animation-timeline: view()) {
-  .panel-reveal::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 2;
-    background-image: linear-gradient(
-      90deg,
-      transparent 0%,
-      transparent 44%,
-      rgba(232, 154, 60, 0.14) 49%,
-      rgba(255, 180, 76, 0.28) 50%,
-      rgba(232, 154, 60, 0.14) 51%,
-      transparent 56%,
-      transparent 100%
-    );
-    background-size: 200% 100%;
-    background-repeat: no-repeat;
-    background-position: 100% 0;
-    mix-blend-mode: screen;
-    animation: panel-sweep linear both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 35%;
-  }
-}
-
-/* Heatmap cell reveal - column-based stagger. */
-@keyframes cell-reveal {
-  from {
-    opacity: 0;
-    transform: scale(0.6);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@supports (animation-timeline: view()) {
-  .heatmap-cell {
-    opacity: 0;
-    animation: cell-reveal 400ms var(--ease-hud) both;
-    animation-timeline: view();
-    animation-range: entry 5% cover 40%;
-    animation-delay: calc(var(--col-index, 0) * 8ms);
-  }
-}
-
-/* Chart path draw-in via stroke-dashoffset. pathLength=100 normalises the path. */
-@keyframes chart-draw {
-  0% {
-    stroke-dashoffset: 100;
-    filter: drop-shadow(0 0 6px rgba(232, 154, 60, 0.55));
-  }
-  85% {
-    stroke-dashoffset: 0;
-    filter: drop-shadow(0 0 6px rgba(232, 154, 60, 0.55));
-  }
-  100% {
-    stroke-dashoffset: 0;
-    filter: drop-shadow(0 0 0 rgba(232, 154, 60, 0));
-  }
-}
-
-@keyframes chart-fill {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@supports (animation-timeline: view()) {
-  .chart-line {
-    stroke-dasharray: 100;
-    stroke-dashoffset: 100;
-    animation: chart-draw linear both;
-    animation-timeline: view();
-    /* Scrub the line left→right across the full time the chart is visible. */
-    animation-range: cover 0% cover 100%;
-  }
-  .chart-area {
-    opacity: 0;
-    animation: chart-fill linear both;
-    animation-timeline: view();
-    animation-range: cover 10% cover 85%;
-  }
-}
-
-/* Fallback when animation-timeline is unsupported: render fully drawn. */
-@supports not (animation-timeline: view()) {
-  .heatmap-cell,
-  .chart-line,
-  .chart-area,
-  .cascade-children > * {
-    opacity: 1;
-    transform: none;
-    filter: none;
-  }
-  .rule-draw {
-    transform: none;
-  }
-  .chart-line {
-    stroke-dasharray: none;
-    stroke-dashoffset: 0;
-  }
-}
-
-/* ====== Reduced motion ====== */
-@media (prefers-reduced-motion: reduce) {
-  .boot-scanline {
-    animation: none;
-    display: none;
-  }
-  .boot-stagger > * {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-  .panel-reveal,
-  .panel-reveal::after,
-  .heatmap-cell,
-  .chart-line,
-  .chart-area,
-  .rule-draw,
-  .cascade-children > * {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-    stroke-dashoffset: 0 !important;
-    stroke-dasharray: none !important;
-  }
-  .panel-reveal::after {
-    display: none;
-  }
-}
-
-/* ====== Links ====== */
-a {
-  color: inherit;
-  text-decoration: none;
-  transition: color 120ms var(--ease-hud);
-}
-
-a:hover,
-a:focus-visible {
-  color: var(--color-amber-glow);
-}
-
-a:focus-visible {
-  outline: 1px solid var(--color-amber);
-  outline-offset: 4px;
-}
-
-/* Focusable cells (heatmap) */
-.hud-cell {
-  transition:
-    fill 120ms var(--ease-hud),
-    stroke 120ms var(--ease-hud);
-}
-.hud-cell:hover,
-.hud-cell:focus-visible {
-  stroke: var(--color-amber-glow);
-  stroke-width: 1;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-void);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-rule-strong);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-amber-dim);
-}
-
-/* Heatmap scroller - slimmer, amber-tinted scrollbar that fits the HUD chrome. */
-.heatmap-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-amber-dim) transparent;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-  overscroll-behavior-x: contain;
-}
-.heatmap-scroll::-webkit-scrollbar {
-  height: 4px;
-}
-.heatmap-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-.heatmap-scroll::-webkit-scrollbar-thumb {
-  background: var(--color-amber-dim);
-  border-radius: 0;
-}
-.heatmap-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--color-amber);
+.skip-link:focus {
+  transform: none;
 }

@@ -6,7 +6,7 @@ const title = "Fuel Plan - Macros";
 const description = "Personal nutrition cockpit - daily calorie and macro targets by training phase and day type.";
 ---
 
-<Base title={title} description={description} noindex noPersonGraph>
+<Base title={title} description={description} noindex noPersonGraph bare>
   {/* client:only - the cockpit depends on the visitor's date and localStorage,
       so it renders entirely client-side to avoid hydration mismatches. */}
   <NutritionCockpit client:only="react" />
