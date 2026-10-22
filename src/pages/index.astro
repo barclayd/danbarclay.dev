@@ -150,7 +150,6 @@ const profiles = [
                 </span>
                 <span class="seq__tag">
                   <span class="seq__dot" aria-hidden="true" />
-                  <span class="seq__n">{p.n}</span>
                   <span class="seq__lname">{p.name}</span>
                 </span>
               </a>
@@ -555,11 +554,6 @@ const profiles = [
     background: var(--accent);
   }
 
-  .seq__n {
-    display: none;
-    font-variant-numeric: tabular-nums;
-  }
-
   .seq__panel {
     position: absolute;
     inset: 0;
@@ -695,13 +689,9 @@ const profiles = [
     transform: translate3d(0, calc(var(--dir) * -190px), 0);
   }
 
-  /* Phones: numbers in the rail, a compact stat row and tighter copy so a
-     whole panel fits a short screen. */
+  /* Phones: just the coloured dots in the rail, a compact stat row and
+     tighter copy so a whole panel fits a short screen. */
   @media (max-width: 639px) {
-    .seq__n {
-      display: inline;
-    }
-
     .seq__lname {
       display: none;
     }
