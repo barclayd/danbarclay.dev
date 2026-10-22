@@ -32,6 +32,12 @@ export type Product = {
   shot: string;
   /** object-position for the shot when a full-bleed crop cuts it down, e.g. on phones. */
   shotFocus: string;
+  /** Ellipse, as `<radii> at <centre>`, that lights the product in the shot on
+      Home and lets the shot's own headline fall away into the dark. */
+  shotSpot: string;
+  /** Top and bottom of the product in the shot, as fractions of its height, so
+      Home can centre it in the space above the copy. */
+  shotSubject: [number, number];
   /** Home products sequence. */
   seq: { category: string; copy: string; stats: Stat[] };
   /** Work page band. */
@@ -76,6 +82,8 @@ export const PRODUCTS: Record<ProductKey, Product> = {
     slugs: ["promptly", "promptly-package"],
     shot: "Promptly's prompt editor, with system and user prompts and their variables",
     shotFocus: "78% 50%",
+    shotSpot: "34% 40% at 78% 44%",
+    shotSubject: [0.21, 0.79],
     seq: {
       category: "B2B SaaS · LLM prompt CMS",
       copy: "The CMS powering the next wave of AI development. Domain experts author, version and ship prompts without a code deploy.",
@@ -131,6 +139,8 @@ export const PRODUCTS: Record<ProductKey, Product> = {
     slugs: ["keepfresh-ios", "keepfresh-api"],
     shot: "The KeepFresh app icon, a halved avocado",
     shotFocus: "73% 46%",
+    shotSpot: "30% 58% at 80% 41%",
+    shotSubject: [0.18, 0.74],
     seq: {
       category: "iOS · Lifestyle",
       copy: "An iOS app working to end food waste for good. Households track groceries and catch what's about to expire.",
@@ -187,6 +197,8 @@ export const PRODUCTS: Record<ProductKey, Product> = {
     slugs: ["strava-stitch"],
     shot: "Stitch joining two activity routes into one",
     shotFocus: "50% 70%",
+    shotSpot: "60% 24% at 50% 71%",
+    shotSubject: [0.52, 0.88],
     seq: {
       category: "Free web app · Strava",
       copy: "Combine split Strava rides into one activity. Preview the route and gaps, download a GPX backup, then confirm the upload.",
@@ -243,6 +255,8 @@ export const PRODUCTS: Record<ProductKey, Product> = {
     slugs: ["on-air"],
     shot: "On Air dictating into Notes on a MacBook",
     shotFocus: "72% 50%",
+    shotSpot: "40% 72% at 78% 50%",
+    shotSubject: [0.07, 0.9],
     seq: {
       category: "macOS · Dictation",
       copy: "A free-forever Wispr Flow alternative for Mac. Hold fn, speak, let go, and the transcript lands wherever you were typing.",
