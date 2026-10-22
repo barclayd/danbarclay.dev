@@ -47,7 +47,7 @@ const fmt = (n: number) => n.toLocaleString("en-GB");
           <p class="hero__tagline" data-reveal="up" data-delay="950">{p.tagline}</p>
           <div class="cta-row hero__ctas" data-stagger="90" data-delay="1100">
             <Cta href={p.site} external accent={p.accent} data-reveal="up">Visit {p.siteLabel}</Cta>
-            <Cta href={p.repo} external variant="secondary" data-reveal="up">GitHub ↗</Cta>
+            <Cta href={p.repo} external variant="secondary" data-reveal="up">GitHub</Cta>
           </div>
         </div>
         <dl class="specs" data-stagger="110" data-delay="1250">
@@ -170,8 +170,8 @@ const fmt = (n: number) => n.toLocaleString("en-GB");
 
     <section class="wrap visit">
       <span class="eyebrow" data-reveal="track"><span class="dot" aria-hidden="true"></span>{p.status}</span>
-      <a href={p.site} target="_blank" rel="noopener" class="visit__link" style={`--chars:${p.siteLabel.length + 2}`} data-reveal="up"
-        >{p.siteLabel} ↗</a
+      <a href={p.site} target="_blank" rel="noopener" class="visit__link" style={`--chars:${p.siteLabel.length}`} data-reveal="up"
+        >{p.siteLabel}</a
       >
       <span class="visit__line" data-reveal="line" data-delay="200"></span>
     </section>

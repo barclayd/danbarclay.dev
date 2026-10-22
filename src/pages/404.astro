@@ -49,7 +49,7 @@ const links: { label: string; value: string; href: string; accent?: string }[] =
                 </span>
                 <span class="link__value">
                   {l.value}
-                  <span aria-hidden="true">{l.href.startsWith("/") ? " →" : " ↗"}</span>
+                  {l.href.startsWith("/") && <span aria-hidden="true"> →</span>}
                 </span>
               </a>
             </li>

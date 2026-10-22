@@ -229,7 +229,7 @@ const repos = buildProjects(projectsRaw as Project[]);
                     <path d={r.area} class="repo__area" />
                     <path d={r.line} class="repo__line" pathLength="1" data-reveal="draw" />
                   </svg>
-                  <span class="repo__arrow" aria-hidden="true">{r.external ? "↗" : "→"}</span>
+                  <span class="repo__arrow" aria-hidden="true">{!r.external && "→"}</span>
                   {r.external && <span class="sr-only-seo">(opens GitHub in a new tab)</span>}
                 </div>
               </a>
@@ -530,8 +530,10 @@ const repos = buildProjects(projectsRaw as Project[]);
     vector-effect: non-scaling-stroke;
   }
 
+  /* Fixed width so every row's chart lines up, arrow or not. */
   .repo__arrow {
     flex: none;
+    width: 1em;
     font-size: 18px;
     color: var(--color-ink-3);
     transition: transform 0.4s var(--ease-out-expo);

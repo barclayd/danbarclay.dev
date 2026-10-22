@@ -326,10 +326,10 @@ const isExternal = (href: string) => href.startsWith("http");
             <span class="so__top-meta">Answered {so.topAnswer.year} · {so.topAnswer.tags.join(" · ")}</span>
           </div>
         </div>
-        <span class="so__top-cta">Read the answer ↗</span>
+        <span class="so__top-cta">Read the answer</span>
       </a>
       <a class="text-link so__profile" href={so.url} target="_blank" rel="noopener me" data-reveal="up">
-        Full profile ↗
+        Full profile
       </a>
     </div>
   </section>
@@ -367,7 +367,7 @@ const isExternal = (href: string) => href.startsWith("http");
                 </Cta>
                 {episode.showUrl && (
                   <Cta href={episode.showUrl} external variant="secondary" data-reveal="up">
-                    The show ↗
+                    The show
                   </Cta>
                 )}
               </div>
@@ -410,7 +410,7 @@ const isExternal = (href: string) => href.startsWith("http");
                 </span>
                 <span class="profile__value">
                   {pr.value}
-                  <span aria-hidden="true">{pr.href.startsWith("/") ? " →" : " ↗"}</span>
+                  {pr.href.startsWith("/") && <span aria-hidden="true"> →</span>}
                 </span>
               </a>
             </li>
