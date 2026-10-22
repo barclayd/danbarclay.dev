@@ -10,7 +10,6 @@ type Stat = [value: string, label: string];
 
 export type Product = {
   key: ProductKey;
-  n: string;
   name: string;
   href: `/${ProductKey}`;
   accent: string;
@@ -46,7 +45,6 @@ export const ORDER: ProductKey[] = ["promptly", "keepfresh", "stitch", "onair"];
 export const PRODUCTS: Record<ProductKey, Product> = {
   promptly: {
     key: "promptly",
-    n: "01",
     name: "Promptly",
     href: "/promptly",
     accent: "oklch(0.72 0.16 285)",
@@ -103,7 +101,6 @@ export const PRODUCTS: Record<ProductKey, Product> = {
   },
   keepfresh: {
     key: "keepfresh",
-    n: "02",
     name: "KeepFresh",
     href: "/keepfresh",
     accent: "oklch(0.72 0.16 150)",
@@ -159,7 +156,6 @@ export const PRODUCTS: Record<ProductKey, Product> = {
   },
   stitch: {
     key: "stitch",
-    n: "03",
     name: "Stitch",
     href: "/stitch",
     accent: "oklch(0.72 0.16 70)",
@@ -216,7 +212,6 @@ export const PRODUCTS: Record<ProductKey, Product> = {
   },
   onair: {
     key: "onair",
-    n: "04",
     name: "On Air",
     href: "/onair",
     accent: "oklch(0.72 0.16 25)",
