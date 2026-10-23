@@ -1,0 +1,159 @@
+---
+// Opening block for the inner pages: eyebrow, a two-tone display title, a lead
+// and optional stats. The slot sits beside the lead for page-level links.
+interface Props {
+  eyebrow: string;
+  title: string;
+  /** Second title line, set in the dimmer label colour. */
+  dim?: string;
+  lead?: string;
+  stats?: { label: string; value: string; count?: number }[];
+  /** Fill most of the first screen instead of sitting at content height. */
+  tall?: boolean;
+}
+
+const { eyebrow, title, dim, lead, stats, tall = false } = Astro.props;
+---
+
+<section class:list={["intro", tall && "intro--tall"]}>
+  <div class="intro__glow" aria-hidden="true">
+    <div data-loop="breathe"></div>
+  </div>
+  <div class="wrap intro__inner">
+    <span class="eyebrow intro__eyebrow" data-reveal="track" data-delay="600">{eyebrow}</span>
+    <h1 class="intro__title">
+      <span class="line-mask"><span data-reveal="rise" data-delay="420">{title}</span></span>
+      {
+        dim && (
+          <>
+            {" "}
+            <span class="line-mask intro__dim">
+              <span data-reveal="rise" data-delay="540">{dim}</span>
+            </span>
+          </>
+        )
+      }
+    </h1>
+    <div class="intro__foot">
+      {lead && <p class="lead intro__lead" data-reveal="up" data-delay="900">{lead}</p>}
+      {
+        stats && (
+          <dl class="intro__stats" data-stagger="90" data-delay="1000">
+            {stats.map((s) => (
+              <div class="intro__stat" data-reveal="up">
+                <dt class="stat-label">{s.label}</dt>
+                {s.count !== undefined ? (
+                  <dd class="num intro__num" data-count={s.count}>{s.value}</dd>
+                ) : (
+                  <dd class="num intro__num">{s.value}</dd>
+                )}
+              </div>
+            ))}
+          </dl>
+        )
+      }
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .intro {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: calc(64px + 12vh) 0 clamp(48px, 8vh, 96px);
+    /* Clip the glow sideways only, so reveals near the bottom edge still
+       register with the observer while they sit at their start offset. */
+    overflow-x: clip;
+  }
+
+  .intro--tall {
+    min-height: 78svh;
+    padding-top: calc(64px + 10vh);
+    padding-bottom: clamp(56px, 10vh, 120px);
+  }
+
+  .intro__glow {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    width: 120vw;
+    height: 60vw;
+    margin: -30vw 0 0 -60vw;
+    pointer-events: none;
+  }
+
+  .intro__glow > div {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(242, 242, 239, 0.08) 0%, rgba(8, 9, 11, 0) 60%);
+  }
+
+  .intro__inner {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(24px, 4vh, 40px);
+  }
+
+  .intro__eyebrow {
+    letter-spacing: 0.28em;
+    color: var(--color-muted);
+  }
+
+  .intro__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(34px, 7.4vw, 140px);
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+
+  .intro__dim {
+    color: var(--color-label);
+  }
+
+  .intro__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 28px 48px;
+  }
+
+  .intro__lead {
+    max-width: 560px;
+    text-wrap: pretty;
+  }
+
+  .intro__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px clamp(32px, 4vw, 64px);
+  }
+
+  .intro__stat {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .intro__num {
+    font-size: clamp(26px, 2.6vw, 40px);
+    font-weight: 220;
+  }
+
+  @media (max-width: 639px) {
+    .intro__stats {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

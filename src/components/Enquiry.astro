@@ -1,0 +1,892 @@
+---
+import { PRODUCTS, withAlpha } from "../lib/products";
+
+// "Work with me" dialog. Any element with [data-enquire] opens it (the value,
+// if set, pre-selects an enquiry type). Without JS those triggers are plain
+// mailto: links, and the final step composes a mailto: so nothing needs a backend.
+const TYPES = [
+  { id: "role", title: "Engineering leadership", desc: "Head of engineering, staff-plus and founding-engineer roles." },
+  { id: "advisory", title: "Advisory", desc: "Architecture reviews, AI strategy and technical due diligence." },
+  { id: "build", title: "Build together", desc: "Product partnerships, prototypes and collaborations." },
+  { id: "promptly", title: "Promptly", desc: "Demos, onboarding and questions about the prompt CMS." },
+  { id: "speaking", title: "Speaking and podcasts", desc: "Talks, panels and guest spots." },
+  { id: "hello", title: "Just saying hello", desc: "No agenda. Happy to talk shop." },
+];
+const TIMELINES = ["Right away", "Within 3 months", "In 3–6 months", "Just exploring"];
+const STEPS = ["01 Enquiry", "02 Timeline", "03 Details"];
+
+const glow = "oklch(0.74 0.09 70)";
+const ctaStyle = `--glow-fill:${withAlpha(glow, 0.24)};--glow-edge:${withAlpha(glow, 0.95)}`;
+---
+
+<dialog class="enq" aria-labelledby="enq-title" data-enquiry data-promptly={PRODUCTS.promptly.accent}>
+  <div class="enq__top">
+    <span class="enq__brand">DAN BARCLAY</span>
+    <button type="button" class="enq__close" data-enq-close>Close</button>
+  </div>
+
+  <form class="enq__form" novalidate data-enq-form>
+    <div class="enq__body">
+      <div class="enq__intro">
+        <div class="enq__glow-wrap" aria-hidden="true">
+          <div class="glow enq__glow" data-enq-glow data-loop="breathe"></div>
+        </div>
+        <div class="enq__head">
+          <span class="eyebrow enq__eyebrow" data-enq-in="track" data-enq-delay="120">Enquiry</span>
+          <h2 id="enq-title" class="enq__title">
+            <span class="line-mask"><span data-enq-in="rise" data-enq-delay="160">Work</span></span>
+            <span class="line-mask"><span data-enq-in="rise" data-enq-delay="260">with me</span></span>
+          </h2>
+          <p class="enq__lede" data-enq-in="up" data-enq-delay="420">
+            Three short steps. Everything lands in my inbox and I reply within 24 hours.
+          </p>
+        </div>
+        <dl class="enq__sum">
+          <div data-enq-in="up" data-enq-delay="520"><dt>Enquiry</dt><dd data-sum="type">—</dd></div>
+          <div data-enq-in="up" data-enq-delay="610"><dt>Timeline</dt><dd data-sum="timeline">—</dd></div>
+          <div data-enq-in="up" data-enq-delay="700"><dt>From</dt><dd data-sum="from">—</dd></div>
+        </dl>
+      </div>
+
+      <div class="enq__panel" data-enq-panel>
+        <ol class="enq__bars" data-enq-bars>
+          {
+            STEPS.map((label) => (
+              <li class="enq__bar">
+                <span class="enq__track">
+                  <span class="enq__fill" />
+                </span>
+                <span class="enq__bar-label">{label}</span>
+              </li>
+            ))
+          }
+        </ol>
+
+        <fieldset class="enq__step" data-step="0">
+          <legend class="enq__h3" tabindex="-1">What can I help with?</legend>
+          <div class="enq__types">
+            {
+              TYPES.map((t) => (
+                <label class="enq__opt">
+                  <input type="radio" name="type" value={t.id} class="enq__input" required />
+                  <span class="enq__opt-copy">
+                    <span class="enq__opt-title">{t.title}</span>
+                    <span class="enq__opt-desc">{t.desc}</span>
+                  </span>
+                  <span class="enq__radio" aria-hidden="true" />
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="enq__step" data-step="1" hidden>
+          <legend class="enq__h3" tabindex="-1">When are you thinking?</legend>
+          <div class="enq__times">
+            {
+              TIMELINES.map((label, i) => (
+                <label class="enq__opt enq__opt--time">
+                  <input type="radio" name="timeline" value={label} class="enq__input" required />
+                  <span class="enq__time-n">{String(i + 1).padStart(2, "0")}</span>
+                  <span class="enq__time-label">{label}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="enq__step enq__fields" data-step="2" hidden>
+          <legend class="enq__h3" tabindex="-1">Your details</legend>
+          <label class="enq__field">
+            <span>Name</span>
+            <input type="text" name="name" autocomplete="name" placeholder="Your name" required />
+          </label>
+          <label class="enq__field">
+            <span>Email</span>
+            <input type="email" name="email" autocomplete="email" placeholder="you@company.com" required />
+          </label>
+          <label class="enq__field">
+            <span>Company <span class="enq__optional">· optional</span></span>
+            <input type="text" name="company" autocomplete="organization" placeholder="Company" />
+          </label>
+          <label class="enq__field">
+            <span>Message</span>
+            <textarea name="message" rows="5" placeholder="A few lines on what you have in mind"></textarea>
+          </label>
+        </fieldset>
+
+        <div class="enq__step enq__done" data-step="3" hidden>
+          <span class="enq__done-line"></span>
+          <h3 class="enq__done-title" tabindex="-1">Enquiry ready</h3>
+          <p>
+            Your email app should have opened with everything filled in. Press send there and I'll reply within 24 hours.
+          </p>
+          <a class="text-link" href="mailto:barclaysd@me.com" data-enq-fallback>Didn't open? Email barclaysd@me.com</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="enq__foot">
+      <div class="enq__summary">
+        <span class="enq__summary-label">Summary</span>
+        <span class="enq__summary-text" data-enq-summary>Choose an enquiry type</span>
+      </div>
+      <div class="enq__actions">
+        <button type="button" class="cta cta--secondary enq__btn" data-enq-back hidden>
+          <span class="cta__label">Back</span>
+        </button>
+        <button type="submit" class="cta enq__btn" style={ctaStyle} data-enq-next>
+          <span class="cta__glow" aria-hidden="true" data-loop="glow"><span></span><span></span></span>
+          <span class="cta__label" data-enq-next-label>Continue</span>
+        </button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<style>
+  .enq {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--color-bg);
+    color: var(--color-ink);
+    overflow: hidden;
+  }
+
+  .enq[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Transparent so the page shows through while the dialog wipes in. */
+  .enq::backdrop {
+    background: transparent;
+  }
+
+  .enq__top {
+    flex: 0 0 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 max(clamp(20px, 3vw, 44px), env(safe-area-inset-right)) 0 max(clamp(20px, 3vw, 44px), env(safe-area-inset-left));
+    border-bottom: 1px solid var(--color-line-1);
+  }
+
+  .enq__brand {
+    font-family: var(--font-display);
+    font-size: 13px;
+    letter-spacing: 0.34em;
+  }
+
+  .enq__close {
+    height: 36px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 4px;
+    background: var(--color-line-1);
+    color: var(--color-ink);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .enq__close:hover {
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .enq__form {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .enq__body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+  }
+
+  /* ---- Left: title and live summary (desktop only) ---- */
+  .enq__intro {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 48px;
+    padding: clamp(40px, 7vh, 88px) clamp(28px, 4vw, 72px);
+    overflow: hidden;
+  }
+
+  .enq__glow-wrap {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .enq__glow {
+    left: 50%;
+    top: 62%;
+    width: 72vw;
+    aspect-ratio: 1;
+    margin: -36vw 0 0 -36vw;
+    opacity: 0.2;
+    --glow-color: rgba(242, 242, 239, 0.9);
+  }
+
+  .enq__head {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .enq__eyebrow {
+    color: var(--color-ink-3);
+  }
+
+  .enq__title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(40px, 5.4vw, 96px);
+    line-height: 1.02;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+
+  .enq__lede {
+    max-width: 440px;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+
+  .enq__sum {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .enq__sum > div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-line-3);
+    min-width: 0;
+  }
+
+  .enq__sum dt {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+
+  .enq__sum dd {
+    font-size: 20px;
+    font-stretch: 112%;
+    font-weight: 300;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ---- Right: the steps ---- */
+  .enq__panel {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 540px;
+    border-left: 1px solid var(--color-line-1);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: clamp(28px, 5vh, 48px) clamp(20px, 3vw, 48px);
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  @media (max-width: 1019px) {
+    .enq__intro {
+      display: none;
+    }
+
+    .enq__panel {
+      max-width: none;
+      border-left: 0;
+      padding-left: max(clamp(20px, 3vw, 48px), env(safe-area-inset-left));
+      padding-right: max(clamp(20px, 3vw, 48px), env(safe-area-inset-right));
+    }
+  }
+
+  .enq__bars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .enq__bars[hidden] {
+    display: none;
+  }
+
+  .enq__bar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .enq__track {
+    display: block;
+    height: 2px;
+    background: var(--color-line-3);
+    overflow: hidden;
+  }
+
+  .enq__fill {
+    display: block;
+    height: 100%;
+    width: var(--fill, 0%);
+    background: var(--color-ink);
+    transition: width 0.9s var(--ease-out-expo);
+  }
+
+  .enq__bar-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-label);
+    transition: color 0.4s;
+  }
+
+  .enq__bar.is-on .enq__bar-label {
+    color: var(--color-ink);
+  }
+
+  .enq__step {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .enq__step[hidden] {
+    display: none;
+  }
+
+  .enq__h3 {
+    float: left;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 4px;
+    font-family: var(--font-display);
+    font-size: 20px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    outline: none;
+  }
+
+  .enq__types {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .enq__opt {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 20px;
+    border-radius: 6px;
+    border: 1px solid var(--color-line-4);
+    background: rgba(255, 255, 255, 0);
+    cursor: pointer;
+    transition:
+      border-color 0.3s,
+      background-color 0.3s;
+  }
+
+  .enq__opt:hover {
+    border-color: rgba(255, 255, 255, 0.32);
+  }
+
+  .enq__opt:has(:checked) {
+    border-color: var(--color-ink);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .enq__opt:has(:focus-visible) {
+    outline: 1px solid var(--color-ink);
+    outline-offset: 3px;
+  }
+
+  .enq__input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 1px;
+    height: 1px;
+  }
+
+  .enq__opt-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .enq__opt-title {
+    font-size: 16px;
+    font-weight: 550;
+  }
+
+  .enq__opt-desc {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+
+  .enq__radio {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid var(--color-line-4);
+    transition: border-color 0.3s;
+  }
+
+  .enq__radio::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-ink);
+    transform: scale(0);
+    transition: transform 0.4s var(--ease-out-expo);
+  }
+
+  .enq__opt:has(:checked) .enq__radio {
+    border-color: var(--color-ink);
+  }
+
+  .enq__opt:has(:checked) .enq__radio::after {
+    transform: scale(1);
+  }
+
+  .enq__times {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .enq__opt--time {
+    min-height: 120px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .enq__time-n {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--color-label);
+  }
+
+  .enq__time-label {
+    font-size: 19px;
+    font-stretch: 112%;
+    font-weight: 350;
+    line-height: 1.25;
+  }
+
+  .enq__fields {
+    gap: 18px;
+  }
+
+  .enq__field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .enq__field > span {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .enq__optional {
+    color: var(--color-label);
+  }
+
+  .enq__field input,
+  .enq__field textarea {
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid var(--color-line-3);
+    background: var(--color-field);
+    color: var(--color-ink);
+    font: inherit;
+    /* 16px stops iOS zooming into the field on focus. */
+    font-size: 16px;
+    transition: border-color 0.3s;
+  }
+
+  .enq__field input {
+    height: 48px;
+    padding: 0 16px;
+  }
+
+  .enq__field textarea {
+    padding: 14px 16px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  .enq__field input:focus,
+  .enq__field textarea:focus {
+    outline: none;
+    border-color: var(--color-ink);
+  }
+
+  .enq__field.is-invalid input {
+    border-color: oklch(0.72 0.16 25);
+  }
+
+  .enq__done {
+    min-height: 50vh;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  .enq__done-line {
+    display: block;
+    width: 64px;
+    height: 1px;
+    background: var(--color-ink);
+    transform-origin: left;
+  }
+
+  .enq__done-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(26px, 3vw, 36px);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    outline: none;
+  }
+
+  .enq__done p {
+    max-width: 420px;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+
+  .enq__done .text-link {
+    align-self: flex-start;
+  }
+
+  /* ---- Bottom bar ---- */
+  .enq__foot {
+    flex: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px 24px;
+    padding: 14px max(clamp(20px, 3vw, 44px), env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom))
+      max(clamp(20px, 3vw, 44px), env(safe-area-inset-left));
+    border-top: 1px solid var(--color-line-1);
+    background: var(--color-bg-raised);
+  }
+
+  .enq__summary {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .enq__summary-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+
+  .enq__summary-text {
+    font-size: 15px;
+    color: var(--color-ink-2);
+  }
+
+  .enq__actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .enq__btn {
+    min-width: 0;
+  }
+
+  .enq__btn[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 1019px) {
+    .enq__summary {
+      display: none;
+    }
+
+    .enq__actions {
+      flex: 1;
+    }
+
+    .enq__btn {
+      flex: 1;
+      padding: 0 20px;
+    }
+
+    /* Back takes only what it needs so the primary label stays on one line. */
+    .enq__btn[data-enq-back] {
+      flex: none;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .enq__btn {
+      padding: 0 14px;
+      letter-spacing: 0.02em;
+    }
+  }
+</style>
+
+<script>
+  const root = document.documentElement;
+  const dialog = document.querySelector<HTMLDialogElement>("[data-enquiry]")!;
+  const form = dialog.querySelector<HTMLFormElement>("[data-enq-form]")!;
+  const steps = [...dialog.querySelectorAll<HTMLElement>(".enq__step")];
+  const bars = dialog.querySelector<HTMLElement>("[data-enq-bars]")!;
+  const barItems = [...bars.children] as HTMLElement[];
+  const back = dialog.querySelector<HTMLButtonElement>("[data-enq-back]")!;
+  const next = dialog.querySelector<HTMLButtonElement>("[data-enq-next]")!;
+  const nextLabel = dialog.querySelector<HTMLElement>("[data-enq-next-label]")!;
+  const summary = dialog.querySelector<HTMLElement>("[data-enq-summary]")!;
+  const fallback = dialog.querySelector<HTMLAnchorElement>("[data-enq-fallback]")!;
+  const glow = dialog.querySelector<HTMLElement>("[data-enq-glow]")!;
+  const sum = (k: string) => dialog.querySelector<HTMLElement>(`[data-sum="${k}"]`)!;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+  const EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+  const EMAIL = "barclaysd@me.com";
+
+  const KF: Record<string, Keyframe[]> = {
+    up: [
+      { opacity: 0, transform: "translate3d(0,40px,0)", filter: "blur(10px)" },
+      { opacity: 1, transform: "translate3d(0,0,0)", filter: "blur(0px)" },
+    ],
+    rise: [{ transform: "translate3d(0,115%,0)" }, { transform: "translate3d(0,0,0)" }],
+    track: [
+      { opacity: 0, letterSpacing: "0.9em", filter: "blur(14px)" },
+      { opacity: 1, letterSpacing: "0.24em", filter: "blur(0px)" },
+    ],
+    line: [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
+  };
+  const DUR: Record<string, number> = { up: 1100, rise: 1300, track: 1600, line: 1600 };
+
+  let step = 0;
+
+  const field = (name: string) => form.elements.namedItem(name) as HTMLInputElement | RadioNodeList | null;
+  const value = (name: string) => String(field(name)?.value ?? "").trim();
+  const typeTitle = () =>
+    dialog.querySelector<HTMLInputElement>('input[name="type"]:checked')?.closest("label")?.querySelector(".enq__opt-title")
+      ?.textContent ?? "";
+
+  function play(el: Element, kind: string, delay: number) {
+    if (reduced.matches) return;
+    el.animate(KF[kind], { duration: DUR[kind], delay, easing: EASE, fill: "backwards" });
+  }
+
+  function animateStep() {
+    const s = steps[step];
+    if (step === 3) {
+      play(s.querySelector(".enq__done-line")!, "line", 0);
+      [...s.children].slice(1).forEach((el, i) => play(el, "up", 60 + i * 80));
+      return;
+    }
+    const items = [s.querySelector("legend")!, ...s.querySelectorAll(".enq__opt, .enq__field")];
+    items.forEach((el, i) => play(el, "up", i * 55));
+  }
+
+  function valid(i = step) {
+    if (i === 0) return !!value("type");
+    if (i === 1) return !!value("timeline");
+    if (i === 2) return !!value("name") && /.+@.+\..+/.test(value("email"));
+    return true;
+  }
+
+  function mailto() {
+    const title = typeTitle();
+    if (!title) return `mailto:${EMAIL}`;
+    const name = value("name");
+    const company = value("company");
+    const subject = `${title} – ${name || "enquiry"}${company ? ` (${company})` : ""}`;
+    const body = [
+      `Enquiry: ${title}`,
+      `Timeline: ${value("timeline") || "–"}`,
+      `Name: ${name}`,
+      `Email: ${value("email")}`,
+      company ? `Company: ${company}` : null,
+      "",
+      value("message"),
+    ]
+      .filter((l) => l !== null)
+      .join("\n");
+    return `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  function render() {
+    const title = typeTitle();
+    const timeline = value("timeline");
+    const name = value("name");
+    const company = value("company");
+
+    steps.forEach((s, i) => (s.hidden = i !== step));
+    bars.hidden = step === 3;
+    barItems.forEach((b, i) => {
+      b.style.setProperty("--fill", step > i ? "100%" : step === i ? "42%" : "0%");
+      b.classList.toggle("is-on", step >= i);
+    });
+
+    back.hidden = !(step > 0 && step < 3);
+    nextLabel.textContent = step === 2 ? "Send enquiry" : step === 3 ? "Done" : "Continue";
+    next.setAttribute("aria-disabled", String(!valid()));
+
+    summary.textContent = step === 3 ? `Sent to ${EMAIL}` : [title, timeline].filter(Boolean).join(" · ") || "Choose an enquiry type";
+    sum("type").textContent = title || "—";
+    sum("timeline").textContent = timeline || "—";
+    sum("from").textContent = name ? name + (company ? `, ${company}` : "") : "—";
+
+    glow.style.setProperty("--glow-color", value("type") === "promptly" ? dialog.dataset.promptly! : "rgba(242, 242, 239, 0.9)");
+    fallback.href = mailto();
+  }
+
+  function go(to: number) {
+    step = to;
+    render();
+    animateStep();
+    // Move focus to the new step's heading so screen readers announce it.
+    steps[step].querySelector<HTMLElement>("legend, h3")?.focus({ preventScroll: true });
+    steps[step].closest<HTMLElement>("[data-enq-panel]")!.scrollTop = 0;
+  }
+
+  function open(type?: string) {
+    const pick = type ? form.querySelector<HTMLInputElement>(`input[name="type"][value="${CSS.escape(type)}"]`) : null;
+    if (pick) {
+      pick.checked = true;
+      step = 1;
+    } else if (step === 3) {
+      step = 0;
+    }
+    render();
+    if (!dialog.open) {
+      dialog.showModal();
+      root.classList.add("enquiry-open");
+      if (!reduced.matches) {
+        dialog.animate([{ clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)" }], {
+          duration: 800,
+          easing: EASE,
+        });
+        dialog
+          .querySelectorAll<HTMLElement>("[data-enq-in]")
+          .forEach((el) => play(el, el.dataset.enqIn!, +el.dataset.enqDelay!));
+      }
+    }
+    animateStep();
+    steps[step].querySelector<HTMLElement>("legend, h3")?.focus({ preventScroll: true });
+  }
+
+  function close() {
+    if (dialog.open) dialog.close();
+  }
+
+  form.addEventListener("input", (e) => {
+    (e.target as Element).closest(".enq__field")?.classList.remove("is-invalid");
+    render();
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!valid()) {
+      if (step === 2) {
+        const bad = (["name", "email"] as const).find((n) => (n === "email" ? !/.+@.+\..+/.test(value(n)) : !value(n)));
+        const input = bad && (field(bad) as HTMLInputElement);
+        input?.closest(".enq__field")?.classList.add("is-invalid");
+        input?.focus();
+      }
+      return;
+    }
+    if (step === 2) {
+      location.href = mailto();
+      go(3);
+    } else if (step === 3) {
+      close();
+    } else {
+      go(step + 1);
+    }
+  });
+
+  back.addEventListener("click", () => go(Math.max(0, step - 1)));
+  dialog.querySelector("[data-enq-close]")!.addEventListener("click", close);
+
+  dialog.addEventListener("close", () => {
+    root.classList.remove("enquiry-open");
+    if (step === 3) {
+      form.reset();
+      step = 0;
+      render();
+    }
+  });
+
+  addEventListener("db:enquire", (e) => open((e as CustomEvent<{ type?: string }>).detail?.type));
+
+  // Any [data-enquire] trigger opens the dialog. They stay mailto: links so
+  // they still work if this script never runs.
+  document.addEventListener("click", (e) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const trigger = (e.target as Element | null)?.closest?.<HTMLElement>("[data-enquire]");
+    if (!trigger) return;
+    e.preventDefault();
+    dispatchEvent(new CustomEvent("db:enquire", { detail: { type: trigger.dataset.enquire || undefined } }));
+  });
+
+  addEventListener("pageshow", (e) => e.persisted && close());
+
+  render();
+</script>

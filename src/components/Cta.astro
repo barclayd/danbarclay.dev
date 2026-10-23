@@ -1,0 +1,55 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { withAlpha } from "../lib/products";
+
+// The site's one button. `glow` is modelled on the reference glow button: a
+// dark fill with a light leak from the bottom-left corner. `enquire` turns the
+// link into a trigger for the enquiry dialog (it stays a mailto: link without JS).
+interface Props extends Omit<HTMLAttributes<"a">, "href"> {
+  href?: string;
+  variant?: "glow" | "secondary";
+  size?: "md" | "sm";
+  accent?: string;
+  magnetic?: boolean;
+  enquire?: string | boolean;
+  external?: boolean;
+}
+
+const {
+  href,
+  variant = "glow",
+  size = "md",
+  accent,
+  magnetic = true,
+  enquire,
+  external = false,
+  class: className,
+  rel,
+  ...rest
+} = Astro.props;
+
+const glow = accent ?? "oklch(0.74 0.09 70)";
+const style =
+  variant === "glow" ? `--glow-fill:${withAlpha(glow, accent ? 0.26 : 0.24)};--glow-edge:${withAlpha(glow, 0.95)}` : undefined;
+---
+
+<a
+  href={href ?? (enquire ? "mailto:barclaysd@me.com" : "#")}
+  class:list={["cta", variant === "secondary" && "cta--secondary", size === "sm" && "cta--sm", className]}
+  style={style}
+  data-magnetic={magnetic ? "" : undefined}
+  data-enquire={enquire === undefined || enquire === false ? undefined : enquire === true ? "" : enquire}
+  target={external ? "_blank" : undefined}
+  rel={rel ?? (external ? "noopener" : undefined)}
+  {...rest}
+>
+  {
+    variant === "glow" && (
+      <span class="cta__glow" aria-hidden="true" data-loop="glow">
+        <span />
+        <span />
+      </span>
+    )
+  }
+  <span class="cta__label"><slot /></span>
+</a>

@@ -1,82 +1,119 @@
 ---
 import Base from "../layouts/Base.astro";
-import HudFrame from "../components/HudFrame.astro";
+import Cta from "../components/Cta.astro";
+import PageIntro from "../components/PageIntro.astro";
+import { PRODUCT_LIST } from "../lib/products";
 
 const title = "404 - Page not found · danbarclay.dev";
 const description =
   "This page on Dan Barclay's site couldn't be found. Head back to the homepage or browse the about / work / projects sections.";
+
+const links: { label: string; value: string; href: string; accent?: string }[] = [
+  { label: "Home", value: "Dan Barclay, engineering leader in London", href: "/" },
+  { label: "About", value: "Background, profiles and FAQ", href: "/about" },
+  { label: "Work", value: "Four products, all live", href: "/work" },
+  ...PRODUCT_LIST.map((p) => ({ label: p.name, value: p.tagline, href: p.href, accent: p.accent })),
+  { label: "GitHub", value: "github.com/barclayd", href: "https://github.com/barclayd" },
+];
 ---
 
 <Base title={title} description={description}>
-  <main
-    class="mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col justify-center gap-12 py-10 sm:gap-16 sm:py-14 lg:py-20 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))] lg:pl-[max(3rem,env(safe-area-inset-left))] lg:pr-[max(3rem,env(safe-area-inset-right))]"
+  <PageIntro
+    eyebrow="Error · 404"
+    title="Page"
+    dim="Not found."
+    lead="That page on Dan Barclay's site couldn't be found. It may have moved, or it may never have existed. The links below lead somewhere useful."
+    tall
   >
-    <!-- Top system rail -->
-    <header
-      class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]"
-    >
-      <div class="flex items-center gap-2">
-        <span class="inline-block h-1.5 w-1.5 bg-[var(--color-amber)]"></span>
-        <span>DANBARCLAY.DEV</span>
-      </div>
-      <nav aria-label="Site" class="flex flex-1 justify-center gap-4">
-        <a href="/" class="hover:text-[var(--color-amber-glow)]">HOME</a>
-        <a href="/about" class="hover:text-[var(--color-amber-glow)]">ABOUT</a>
-        <a href="/work" class="hover:text-[var(--color-amber-glow)]">WORK</a>
-      </nav>
-    </header>
+    <div class="cta-row" data-stagger="90" data-delay="1000">
+      <Cta href="/" data-reveal="up">Back to home</Cta>
+    </div>
+  </PageIntro>
 
-    <HudFrame
-      label="NOT FOUND"
-      className="px-6 py-10 sm:px-10 sm:py-14"
-    >
-      <div class="flex flex-col gap-8">
-        <div>
-          <div class="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-hud text-[var(--color-mute)]">
-            <span class="h-px w-6 bg-[var(--color-amber)]"></span>
-            <span>ERROR · 404</span>
-          </div>
-          <h1
-            class="font-display font-semibold uppercase leading-[0.95] tracking-tight text-[var(--color-text-bright)]"
-            style="font-size: clamp(2.5rem, 11vw, 5.5rem);"
-          >
-            Page Not
-            <br />
-            Found
-          </h1>
-          <p class="mt-6 max-w-xl font-display text-base leading-relaxed text-[var(--color-mute)] sm:text-lg">
-            That page on Dan Barclay's site couldn't be found. It may have moved,
-            or it may never have existed. The links below will get you back to
-            somewhere useful.
-          </p>
-        </div>
-
-        <nav
-          aria-label="Site directory"
-          class="grid grid-cols-1 gap-px bg-[var(--color-rule)] sm:grid-cols-2"
-        >
-          {[
-            { label: "HOME", href: "/", desc: "Dan Barclay - engineering leader, London." },
-            { label: "ABOUT", href: "/about", desc: "Background, bio, and FAQ." },
-            { label: "WORK", href: "/work", desc: "Selected projects and shipped work." },
-            { label: "PROMPTLY", href: "/promptly", desc: "LLM prompt CMS for product teams." },
-            { label: "KEEPFRESH", href: "/keepfresh", desc: "iOS app - 77K+ downloads." },
-            { label: "GITHUB", href: "https://github.com/barclayd", desc: "Source code and side projects." },
-          ].map((l) => (
-            <a
-              href={l.href}
-              class="group flex flex-col gap-1 bg-[var(--color-void)] px-4 py-5 transition-colors hover:bg-[rgba(232,154,60,0.04)] sm:px-5 sm:py-6"
-            >
-              <span class="font-mono text-[10px] uppercase tracking-hud text-[var(--color-amber)]">
-                {l.label} <span aria-hidden="true">↗</span>
-              </span>
-              <span class="font-display text-sm text-[var(--color-text)] group-hover:text-[var(--color-amber-glow)]">
-                {l.desc}
-              </span>
-            </a>
-          ))}
-        </nav>
-      </div>
-    </HudFrame>
-  </main>
+  <section class="directory" aria-labelledby="directory-title">
+    <div class="wrap">
+      <h2 id="directory-title" class="eyebrow directory__title" data-reveal="track">Site directory</h2>
+      <ul class="links" data-stagger="50">
+        {
+          links.map((l) => (
+            <li data-reveal="up">
+              <a
+                class="link"
+                href={l.href}
+                style={l.accent ? `--accent:${l.accent}` : undefined}
+                {...(l.href.startsWith("/") ? {} : { target: "_blank", rel: "noopener me" })}
+              >
+                <span class="link__label">
+                  {l.accent && <span class="dot link__dot" aria-hidden="true" />}
+                  {l.label}
+                </span>
+                <span class="link__value">
+                  {l.value}
+                  {l.href.startsWith("/") && <span aria-hidden="true"> →</span>}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
 </Base>
+
+<style>
+  .directory {
+    padding-bottom: clamp(120px, 18vh, 200px);
+  }
+
+  .directory__title {
+    display: block;
+    margin-bottom: 28px;
+  }
+
+  .links {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    column-gap: 32px;
+    border-top: 1px solid var(--color-line-3);
+  }
+
+  .link {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 100%;
+    padding: 24px 20px 24px 0;
+    border-bottom: 1px solid var(--color-line-2);
+    transition: border-color 0.4s;
+  }
+
+  .link:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .link__label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+
+  .link__dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .link__value {
+    font-size: 17px;
+    color: var(--color-ink);
+    transition: color 0.4s;
+  }
+
+  .link:hover .link__value {
+    color: var(--color-ink-hi);
+  }
+</style>
